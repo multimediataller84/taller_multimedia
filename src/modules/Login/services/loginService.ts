@@ -25,6 +25,16 @@ export class LoginService implements ILogin {
         );
       }
 
+      // Almacena el token en el almacenamiento local
+      const token = (response.data as any).token;
+    if (token) {
+      sessionStorage.setItem("authToken", token);
+
+      // Configura axios para enviar el token
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    }
+
       return response.data;
     } catch (error) {
       throw new Error(`Invalid credentials or server error login`);
