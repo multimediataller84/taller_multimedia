@@ -1,6 +1,7 @@
 import { ILogin } from "../models/interfaces/ILogin";
 import { TEndpointLogin } from "../models/types/TEndpointLogin";
 import { TLogin } from "../models/types/TLogin";
+import { TPayload } from "../models/types/TPayload"; 
 import axios from "axios";
 
 export class LoginService implements ILogin {
@@ -14,10 +15,10 @@ export class LoginService implements ILogin {
     return LoginService.instance;
   }
 
-  async login(data: TLogin): Promise<TEndpointLogin> {
+  async login(data: TLogin): Promise<TPayload> {
     try {
           console.log(this.baseUrl + "/login")
-      const response = await axios.post<TEndpointLogin>(this.baseUrl + "/login", data);
+      const response = await axios.post<TPayload>(this.baseUrl + "/login", data);
 
       if (response.status !== 200) {
         throw new Error(
@@ -26,14 +27,13 @@ export class LoginService implements ILogin {
       }
 
       // Almacena el token en el almacenamiento local
-      const token = (response.data as any).token;
-    if (token) {
-      sessionStorage.setItem("authToken", token);
+      sessionStorage.setItem("authToken", response.data.token);
+      sessionStorage.setItem("authToken", response.data.user.username);
+      sessionStorage.setItem("authToken", response.data.user.role);
 
       // Configura axios para enviar el token
+      const token = (response.data as TPayload).token;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-    }
 
       return response.data;
     } catch (error) {
