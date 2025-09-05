@@ -1,58 +1,124 @@
 import { useState, useEffect } from "react";
 import { IProduct } from "../models/interfaces/IProduct";
+import { addProduct, updateProduct } from "../../../storage/productsLocal";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (product: IProduct) => void;
+  onSave: (product: IProduct) => void; // refresca la tabla en el padre
   initialData?: IProduct | null;
 };
 
+// tipado local para permitir "" en inputs numericos
+type ProductForm = Omit<IProduct, "id" | "cost" | "basePrice" | "stock" | "tax" | "discount"> & {
+  cost: number | "";
+  basePrice: number | "";
+  stock: number | "";
+  tax: number | "";
+  discount: number | "";
+};
+
 export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props) => {
-  const [formData, setFormData] = useState<IProduct>({
-  name: "",
-  category: "",
-  cost: "" as unknown as number,
-  basePrice: "" as unknown as number,
-  stock: "" as unknown as number,
-  tax: "" as unknown as number,
-  discount: "" as unknown as number,
-});
+  const [formData, setFormData] = useState<ProductForm>({
+    name: "",
+    category: "",
+    cost: "",
+    basePrice: "",
+    stock: "",
+    tax: "",
+    discount: "",
+  });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        name: initialData.name ?? "",
+        category: (initialData as any).category ?? "",
+        cost: (initialData as any).cost ?? "",
+        basePrice: (initialData as any).basePrice ?? "",
+        stock: (initialData as any).stock ?? "",
+        tax: (initialData as any).tax ?? "",
+        discount: (initialData as any).discount ?? "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        category: "",
+        cost: "",
+        basePrice: "",
+        stock: "",
+        tax: "",
+        discount: "",
+      });
     }
-  }, [initialData]);
+  }, [initialData, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: (name === "cost" || name === "basePrice" || name === "stock" || name === "tax" || name === "discount")
-      ? (value === "" ? "" : Number(value))
-      : value,
-  });
-};
+    const { name, value } = e.target;
+    const isNumberField = ["cost", "basePrice", "stock", "tax", "discount"].includes(name);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: isNumberField ? (value === "" ? "" : Number(value)) : value,
+    }));
+  };
+
+  const toNum = (v: number | "" | undefined) => (v === "" || v === undefined ? 0 : Number(v));
+  const utilidad = toNum(formData.basePrice) - toNum(formData.cost);
+
+  const reset = () =>
+    setFormData({
+      name: "",
+      category: "",
+      cost: "",
+      basePrice: "",
+      stock: "",
+      tax: "",
+      discount: "",
+    });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.category || !formData.cost || !formData.basePrice || !formData.stock) {
-    alert("Por favor complete todos los campos obligatorios.");
-    return;
+
+    // validaciones
+    if (
+      !formData.name ||
+      !formData.category ||
+      formData.cost === "" ||
+      formData.basePrice === "" ||
+      formData.stock === ""
+    ) {
+      alert("Por favor complete todos los campos obligatorios.");
+      return;
     }
-    onSave(formData);
+    if (toNum(formData.cost) <= 0 || toNum(formData.basePrice) <= 0 || toNum(formData.stock) < 0) {
+      alert("Revise los valores numericos: costo y precio base deben ser > 0.");
+      return;
+    }
+
+    // payload para storage
+    const payload = {
+      name: formData.name,
+      category: formData.category,
+      cost: toNum(formData.cost),
+      basePrice: toNum(formData.basePrice),
+      stock: toNum(formData.stock),
+      tax: formData.tax === "" ? undefined : toNum(formData.tax),
+      discount: formData.discount === "" ? undefined : toNum(formData.discount),
+    } as any;
+
+    // si venimos editando, actualizamos; si no, creamos
+    const editingId = (initialData as any)?.id as number | undefined;
+    if (typeof editingId === "number") {
+      const updated = updateProduct(editingId, payload) as unknown as IProduct | null;
+      onSave(updated ? updated : { ...(initialData as any), ...payload });
+    } else {
+      const created = addProduct(payload) as unknown as IProduct;
+      onSave(created);
+    }
+
     onClose();
-    setFormData({
-    name: "",
-    category: "",
-    cost: "" as unknown as number,
-    basePrice: "" as unknown as number,
-    stock: "" as unknown as number,
-    tax: "" as unknown as number,
-    discount: "" as unknown as number,
-  });
-};
+    reset();
+  };
 
   if (!isOpen) return null;
 
@@ -81,7 +147,7 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
             className="w-full border p-2 rounded"
             required
           >
-            <option value="">Seleccionar categoría</option>
+            <option value="">Seleccionar categoria</option>
             <option value="Verduras">Verduras</option>
             <option value="Frutas">Frutas</option>
             <option value="Lacteos">Lacteos</option>
@@ -99,6 +165,7 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
               value={formData.cost}
               onChange={handleChange}
               className="border p-2 rounded"
+              step="0.01"
               required
             />
             <input
@@ -108,9 +175,22 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
               value={formData.basePrice}
               onChange={handleChange}
               className="border p-2 rounded"
+              step="0.01"
               required
             />
           </div>
+
+          {/* Utilidad autocalculada (no editable) */}
+          <input
+            type="text"
+            name="profit"
+            placeholder="Utilidad (auto)"
+            value={Number.isFinite(utilidad) ? utilidad.toFixed(2) : ""}
+            readOnly
+            disabled
+            className="w-full border p-2 rounded bg-gray-100 text-gray-700"
+            aria-label="Utilidad (auto)"
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <input
@@ -120,7 +200,6 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
               value={formData.stock}
               onChange={handleChange}
               className="border p-2 rounded"
-              required
             />
             <input
               type="number"
@@ -129,6 +208,7 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
               value={formData.tax}
               onChange={handleChange}
               className="border p-2 rounded"
+              step="0.01"
             />
           </div>
 
@@ -136,7 +216,10 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props
             <button
               type="button"
               className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                reset();
+              }}
             >
               Cancelar
             </button>

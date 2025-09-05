@@ -1,26 +1,36 @@
-import axios from "axios";
+// src/modules/Product/services/productService.ts
+import apiClient from "../../Login/interceptors/apiClient";
 
-const baseUrl = import.meta.env.VITE_API_URL + "/products";
+const basePath = "/product";
 
 export const productService = {
   async getAll() {
-    const response = await axios.get(baseUrl);
-    return response.data;
+    const { data } = await apiClient.get(`${basePath}/all`);
+    return data;
   },
+
+  async getById(id: number) {
+    const { data } = await apiClient.get(`${basePath}/${id}`);
+    return data;
+  },
+
   async create(product: any) {
-    const response = await axios.post(baseUrl, product);
-    return response.data;
+    const { data } = await apiClient.post(basePath, product);
+    return data;
   },
+
   async update(id: number, product: any) {
-    const response = await axios.put(`${baseUrl}/${id}`, product);
-    return response.data;
+    const { data } = await apiClient.patch(`${basePath}/${id}`, product);
+    return data;
   },
+
   async delete(id: number) {
-    const response = await axios.delete(`${baseUrl}/${id}`);
-    return response.data;
+    const { data } = await apiClient.delete(`${basePath}/${id}`);
+    return data;
   },
+
   async search(query: string) {
-    const response = await axios.get(`${baseUrl}?q=${query}`);
-    return response.data;
+    console.warn("Search no implementado en backend, devolviendo todos los productos");
+    return this.getAll();
   },
 };
