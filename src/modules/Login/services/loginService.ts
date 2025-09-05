@@ -1,5 +1,4 @@
 import { ILogin } from "../models/interfaces/ILogin";
-import { TEndpointLogin } from "../models/types/TEndpointLogin";
 import { TLogin } from "../models/types/TLogin";
 import { TPayload } from "../models/types/TPayload"; 
 import axios from "axios";
@@ -17,12 +16,12 @@ export class LoginService implements ILogin {
 
   async login(data: TLogin): Promise<TPayload> {
     try {
-          console.log(this.baseUrl + "/login")
-      const response = await axios.post<TPayload>(this.baseUrl + "/login", data);
+          console.log(this.baseUrl + "/auth/login")
+      const response = await axios.post<TPayload>(this.baseUrl + "/auth/login", data);
 
       if (response.status !== 200) {
         throw new Error(
-          `Invalid credentials or server error at ${this.baseUrl + "/login"}`
+          `Invalid credentials or server error at ${this.baseUrl + "/auth/login"}`
         );
       }
 

@@ -16,12 +16,12 @@ export class RegisterService implements IRegister {
 
   async save(data: TRegister): Promise<TEndpointRegister> {
    try {
-    console.log(this.baseUrl + "/register", data)
-      const response = await axios.post<TEndpointRegister>(this.baseUrl + "/register", data);
+    console.log(this.baseUrl + "/auth/register", data)
+      const response = await axios.post<TEndpointRegister>(this.baseUrl + "/auth/register", data);
 
       if (response.status !== 201) {
         throw new Error(
-          `Invalid credentials or server error at ${this.baseUrl + "/register"}`
+          `Invalid credentials or server error at ${this.baseUrl + "/auth/register"}`
         );
       }
 

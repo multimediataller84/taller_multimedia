@@ -27,6 +27,7 @@ const useRegister = () => {
       validateEmail(data.email);
       setLoading(true);
 
+      data.role_id = 2;
       const result = await postRegisterUseCase.execute(data);
       const formatted: TRegister = createAddapterRegister(result);
 
