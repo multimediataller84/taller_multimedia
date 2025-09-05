@@ -10,7 +10,6 @@ export const Router = () => {
       <Route Component={Login} path="/" />
       <Route Component={Register} path="/register" />
       <Route Component={Home} path="/home" />
-      <Route Component={Home} path="/home" />
       <Route Component={Product} path="/products" />
     </Routes>
   );
