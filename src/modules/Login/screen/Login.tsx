@@ -16,7 +16,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate("/home", { replace: true });
+      navigate("/products", { replace: true });
     }
   }, [user, navigate]);
 

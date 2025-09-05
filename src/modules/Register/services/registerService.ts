@@ -1,11 +1,11 @@
+// src/modules/Register/services/registerService.ts
 import { IRegister } from "../models/interfaces/IRegister";
 import { TEndpointRegister } from "../models/types/TEndpointRegister";
 import { TRegister } from "../models/types/TRegister";
-import axios from "axios";
+import apiClient from "../../Login/interceptors/apiClient";
 
 export class RegisterService implements IRegister {
   private static instance: RegisterService;
-  private readonly baseUrl = import.meta.env.VITE_API_URL;
 
   static getInstance(): RegisterService {
     if (!RegisterService.instance) {
@@ -15,19 +15,16 @@ export class RegisterService implements IRegister {
   }
 
   async save(data: TRegister): Promise<TEndpointRegister> {
-   try {
-    console.log(this.baseUrl + "/auth/register", data)
-      const response = await axios.post<TEndpointRegister>(this.baseUrl + "/auth/register", data);
+    try {
+      const response = await apiClient.post<TEndpointRegister>("/auth/register", data);
 
-      if (response.status !== 201) {
-        throw new Error(
-          `Invalid credentials or server error at ${this.baseUrl + "/auth/register"}`
-        );
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Server error at /auth/register`);
       }
 
       return response.data;
     } catch (error) {
-      throw new Error(`Invalid credentials or server error register${error}`);
+      throw new Error(`Invalid credentials or server error register`);
     }
   }
 }
