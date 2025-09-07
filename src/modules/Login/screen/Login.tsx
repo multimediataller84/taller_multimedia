@@ -44,11 +44,11 @@ export default function Login() {
             },
           })}
           className={`w-full border ${
-            errors.email ? "border-red-500" : "border-gray-300"
-          } rounded-xl py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 mb-1`}
+            errors.email ? "border-blue-500" : "border-gray-300"
+          } rounded-xl py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-1`}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mb-3">{errors.email.message}</p>
+          <p className="text-blue-500 text-sm mb-3">{errors.email.message}</p>
         )}
 
         <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -65,8 +65,8 @@ export default function Login() {
             },
           })}
           className={`w-full border ${
-            errors.password ? "border-red-500" : "border-gray-300"
-          } rounded-xl py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 mb-1`}
+            errors.password ? "border-blue-500" : "border-gray-300"
+          } rounded-xl py-2 px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-1`}
         />
         {errors.password && (
           <p className="text-red-500 text-sm mb-3">{errors.password.message}</p>
@@ -74,12 +74,12 @@ export default function Login() {
 
         {loading ? (
           <div className="w-full flex justify-center py-2">
-            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin bg-red-500"></div>
+            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin bg-blue-500"></div>
           </div>
         ) : (
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-xl transition duration-200"
+            className="w-full bg-[#2F6AF2] hover:bg-blue-800 text-white font-semibold py-2 rounded-xl transition duration-200"
           >
             Login
           </button>

@@ -18,11 +18,11 @@ export class LoginService implements ILogin {
   async login(data: TLogin): Promise<TPayload> {
     try {
           console.log(this.baseUrl + "/login")
-      const response = await axios.post<TPayload>(this.baseUrl + "/login", data);
+      const response = await axios.post<TPayload>(this.baseUrl + "/auth/login", data);
 
       if (response.status !== 200) {
         throw new Error(
-          `Invalid credentials or server error at ${this.baseUrl + "/login"}`
+          `Invalid credentials or server error at ${this.baseUrl + "/auth/login"}`
         );
       }
 
