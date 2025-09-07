@@ -11,16 +11,17 @@ export const SearchBar = ({ onSearch, placeholder }: Props) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-auto ">
       <input
         type="text"
         placeholder={placeholder}
         onChange={handleChange}
-        className="w-full pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-[558px] h-9 pl-4 pb-1 
+        placeholder:font-medium placeholder:font-Lato placeholder:text-base placeholder:text-gray1
+        border border-gray2
+        rounded-2xl 
+        focus:outline-none focus:ring-2 focus:border-0 focus:ring-blue-500"
       />
-      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-        🔍
-      </span>
     </div>
   );
 };
