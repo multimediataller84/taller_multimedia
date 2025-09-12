@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Sidebar } from "./../Product/components/Sidebar";
+import { useNavigate } from 'react-router-dom';
 import { SearchBar } from "./../Product/components/SearchBar";
 
 type InvoiceForm = {
@@ -50,10 +51,13 @@ export const Invoice = () => {
           <SearchBar onSearch={handleSearch} placeholder="Buscar productos..." />
           <div className="flex items-center gap-4 ml-auto">
             <span className="text-xl">🔔</span>
-            <span className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-gray-300"></span>
-              Administrador
-            </span>
+            <span
+  className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded"
+  onClick={() => navigate('/perfiles')}
+>
+  <span className="w-8 h-8 rounded-full bg-gray-300"></span>
+  Administrador
+</span>
           </div>
         </div>
 

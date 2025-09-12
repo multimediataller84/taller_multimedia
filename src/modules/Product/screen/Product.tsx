@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { ProductFormModal } from "../components/ProductFormModal";
 import { Sidebar } from '../components/Sidebar';
+import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar'; // Importa la SearchBar
 import { IProduct } from "../models/interfaces/IProduct";
 
@@ -42,7 +43,10 @@ export const Product = () => {
           <SearchBar onSearch={handleSearch} placeholder="Buscar productos..." />
           <div className="flex items-center gap-4 ml-auto">
             <span className="text-xl">🔔</span>
-            <span className="flex items-center gap-2">
+            <span
+              className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-1 rounded"
+              onClick={() => navigate('/perfiles')}
+            >
               <span className="w-8 h-8 rounded-full bg-gray-300"></span>
               Administrador
             </span>
