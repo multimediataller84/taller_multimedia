@@ -4,7 +4,10 @@ import { Router } from "./routes/Router";
 function App() {
   return (
     <BrowserRouter>
-      <Router />
+  
+          <Router />
+ 
+  
     </BrowserRouter>
   );
 }

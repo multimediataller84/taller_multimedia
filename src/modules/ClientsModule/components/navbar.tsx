@@ -1,6 +1,5 @@
 import { SearchBar } from '../../Product/components/SearchBar';
 
-
 export const Navbar = () => {
 
       const search = (query: string) => {
@@ -11,7 +10,6 @@ export const Navbar = () => {
     search(query);
     };
 
-  
   return (
         
     <section className="flex w-full h-[102px] bg-white">
@@ -27,8 +25,7 @@ export const Navbar = () => {
             </div>
             
         </div>
-        
+
     </section>
   );
-
 };
