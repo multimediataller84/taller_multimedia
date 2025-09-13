@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../modules/Login/screen/Login";
 import Register from "../modules/Register/screen/Register";
 import { Home } from "../modules/Home/screen/Home";
-import { Product } from "../modules/Product/screen/Product";
+import Product  from "../components/Product/screen/Product";
 
 export const Router = () => {
   return (
@@ -10,8 +10,7 @@ export const Router = () => {
       <Route Component={Login} path="/" />
       <Route Component={Register} path="/register" />
       <Route Component={Home} path="/home" />
-      <Route Component={Home} path="/home" />
-      <Route Component={Product} path="/products" />
+      <Route Component={Product} path="/product" />
     </Routes>
   );
 };
