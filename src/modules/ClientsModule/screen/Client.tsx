@@ -1,5 +1,5 @@
 import { Navbar } from "../components/navbar"
-import { Sidebar } from '../../Product/components/Sidebar';
+import { Sidebar } from "../../../components/Sidebar";
 import EditClient from '../components/editClient'
 import AddClient from "../components/addClient";
 
