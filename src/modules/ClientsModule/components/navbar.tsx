@@ -1,4 +1,4 @@
-import { SearchBar } from '../../Product/components/SearchBar';
+import SearchBar from "../../../components/SearchBar";
 
 export const Navbar = () => {
 
