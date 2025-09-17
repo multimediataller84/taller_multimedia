@@ -14,7 +14,7 @@ export const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-white flex flex-col justify-between h-screen" >
+    <div className="w-64 bg-white flex flex-col justify-between h-full" >
       <div>
       <div className='ml-4'>
         <nav className="mt-4 flex flex-col space-y-1">
@@ -31,11 +31,8 @@ export const Sidebar = () => {
             </Link>
           ))}
         </nav>
-        
       </div>
       </div>
-
-      
     </div>
   );
 };

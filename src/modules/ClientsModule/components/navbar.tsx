@@ -12,9 +12,9 @@ export const Navbar = () => {
 
   return (
         
-    <section className="flex w-full h-[102px] bg-white">
+    <div className="flex w-full h-[102px] bg-white">
             
-        <div className='flex justify-center w-full size-auto items-center'>
+        <div className='flex justify-center w-full items-center'>
            
             <h1 className='w-[94px] ml-4 text-2xl leading-none font-lato text-gray1 text-center'>logo</h1>
             
@@ -26,6 +26,6 @@ export const Navbar = () => {
             
         </div>
 
-    </section>
+    </div>
   );
 };
