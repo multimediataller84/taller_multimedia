@@ -13,5 +13,5 @@ export const productRepository = {
   getCategories: () => categoryService.getAll(),
   getTaxes: () => taxService.getAll(),
 
-  importTaxesFromExcel: (file: File) => processDataService.patchUpdateAllTaxes(file),
+  importTaxesFromExcel: (file: File) => processDataService.postProcessExcel(file),
 };
