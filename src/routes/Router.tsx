@@ -2,7 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../modules/Login/screen/Login";
 import Register from "../modules/Register/screen/Register";
 import { Home } from "../modules/Home/screen/Home";
-import Product  from "../components/Product/screen/Product";
+import Product from "../modules/Product/screen/Product";
+
 
 export const Router = () => {
   return (

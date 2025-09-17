@@ -14,6 +14,7 @@ export default function TaxExcelUploader({ onUpload }: { onUpload: (file: File) 
       setFile(null);
     } catch (e: any) {
       setMsg(e?.message ?? "Error al actualizar impuestos.");
+      console.error(e);
     } finally {
       setBusy(false);
     }
