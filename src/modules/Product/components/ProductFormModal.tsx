@@ -34,16 +34,29 @@ export const ProductFormModal = ({
     state: "Active",
   });
 
+  const EMPTY: IProductForm = {
+  product_name: "", sku: "", category_id: "", tax_id: "",
+  profit_margin: "", unit_price: "", stock: "", state: "Active",
+  };
+
   const [skuStatus, setSkuStatus] = useState<"idle"|"checking"|"ok"|"dup">("idle");
   const [skuMsg, setSkuMsg] = useState<string>("");
 
   useEffect(() => {
+    if (!isOpen) return;
     if (initialData) {
       setForm(endpointToForm(initialData));
-      setSkuStatus("idle");
-      setSkuMsg("");
+    } else {
+      setForm(EMPTY);
     }
-  }, [initialData]);
+    setSkuStatus("idle");
+    setSkuMsg("");
+  }, [isOpen, initialData]);
+
+  const handleClose = () => {
+    setForm(EMPTY);
+    onClose();
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,7 +74,8 @@ export const ProductFormModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formToDomain(form));
+    await onSave(formToDomain(form));
+    setForm(EMPTY);
     onClose();
   };
 
@@ -86,16 +100,16 @@ export const ProductFormModal = ({
 
           {/* SKU con botón Auto */}
           <div className="relative">
-            <input
-              name="sku"
-              value={form.sku}
-              onChange={handleChange}
-              placeholder="SKU"
-              className="w-full border p-2 rounded pr-20"
-              pattern="^[A-Z0-9-]+$"
-              title="Solo letras mayúsculas, números y guiones"
-              required
-            />
+              <input
+                name="sku"
+                value={form.sku}
+                onChange={(e) => setForm(f => ({ ...f, sku: e.target.value.toUpperCase() }))}
+                placeholder="SKU"
+                pattern="^[A-Z0-9\-]+$"
+                title="Solo mayúsculas, números y guiones (A-Z, 0-9, -)"
+                required
+                className="w-full border p-2 rounded"
+              />
               <button
                 type="button"
                 onClick={handleAutoSku}
