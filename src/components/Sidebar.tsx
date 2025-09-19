@@ -6,7 +6,8 @@ const navItems = [
   { name: 'Facturas', icon: '', path: '/facturas' },
   { name: 'Clientes', icon: '', path: '/clients' },
   { name: 'Inventario', icon: '', path: '/product' },
-  { name: 'Impuestos', icon: '', path: '/impuestos' }
+  { name: 'Impuestos', icon: '', path: '/impuestos' },
+  { name: 'Perfiles', icon: '', path: '/profiles' }
 ];
 
 export const Sidebar = () => {
