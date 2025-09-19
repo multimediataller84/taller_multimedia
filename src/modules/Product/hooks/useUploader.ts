@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
+import { postProcessExcel } from "../../../shared/services/processDataService";
 
-export function useUploader(onUpload: (file: File) => Promise<void> | void) {
+export function useUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -17,24 +18,25 @@ export function useUploader(onUpload: (file: File) => Promise<void> | void) {
 
     setBusy(true);
     setMsg(null);
+
     try {
-      await onUpload(f);
-      setMsg("Archivo enviado");
+      console.log("Archivo a enviar:", f);
+      const fd = new FormData();
+      fd.append("file", f);
+      for (const [key, value] of fd.entries()) console.log(key, value);
+
+      await postProcessExcel(f);
+      setMsg("Archivo enviado correctamente");
+
       if (inputRef.current) inputRef.current.value = "";
       setFile(null);
-    } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Error al subir el archivo");
+    } catch (err: any) {
+      console.error(err);
+      setMsg(err.message || "Error al subir el archivo");
     } finally {
       setBusy(false);
     }
   };
 
-  return {
-    inputRef,
-    file,
-    busy,
-    msg,
-    handleSelect,
-    handleUpload,
-  };
+  return { inputRef, file, busy, msg, handleSelect, handleUpload };
 }

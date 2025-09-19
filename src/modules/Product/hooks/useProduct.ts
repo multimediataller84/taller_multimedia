@@ -15,7 +15,7 @@ export function useProduct() {
     setLoading(true);
     try {
       const list = await useCases.getAll.execute({
-        limit: 10,
+        limit: 50,
         offset: 0,
         orderDirection: "ASC"
       });
@@ -29,11 +29,7 @@ export function useProduct() {
     await useCases.delete.execute(id);
     await fetchProducts();
   };
-  /*
-  const importTaxesFromFile = async (file: File) => {
-    await useCases.importTaxes.execute(file);
-  };
-*/
+
   useEffect(() => {
     fetchProducts();
   }, [query]);
@@ -45,6 +41,5 @@ export function useProduct() {
     setQuery,
     deleteProduct,
     fetchProducts
-    /*  importTaxesFromFile,*/
   };
 }

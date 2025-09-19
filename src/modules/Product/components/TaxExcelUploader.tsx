@@ -1,12 +1,7 @@
 import { useUploader } from "../hooks/useUploader";
 
-export default function TaxExcelUploader({
-  onUpload,
-}: {
-  onUpload: (file: File) => Promise<void> | void;
-}) {
-  const { inputRef, file, busy, msg, handleSelect, handleUpload } =
-    useUploader(onUpload);
+export default function TaxExcelUploader() {
+  const { inputRef, file, busy, msg, handleSelect, handleUpload } = useUploader();
 
   return (
     <div className="flex items-center gap-2">
@@ -35,10 +30,7 @@ export default function TaxExcelUploader({
         {busy ? "Subiendo..." : "Subir Excel"}
       </button>
 
-      <span className="text-xs text-gray-600">
-        {file ? file.name : "Ningún archivo seleccionado"}
-      </span>
-
+      <span className="text-xs text-gray-600">{file ? file.name : "Ningún archivo seleccionado"}</span>
       {msg && <span className="text-xs text-gray-600 ml-2">{msg}</span>}
     </div>
   );

@@ -4,7 +4,7 @@ import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { ProductFormModal } from "../components/ProductFormModal";
 import { Sidebar } from "../../../components/Sidebar";
 import { Navbar } from "../../../components/navbar";
-/*import TaxExcelUploader from "../components/TaxExcelUploader";*/
+import TaxExcelUploader from "../components/TaxExcelUploader";
 import { ProductTable } from "../components/ProductsTable";
 
 export default function Product() {
@@ -13,7 +13,6 @@ export default function Product() {
     loading,
     deleteProduct,
     fetchProducts,
-   /* importTaxesFromFile,*/
   } = useProduct();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,14 +21,12 @@ export default function Product() {
   const openCreate = () => {
     setEditing(null);
     setIsModalOpen(true);
-    
   };
 
   const openEdit = (row: TProductEndpoint) => {
     setEditing(row);
     setIsModalOpen(true);
   };
-
 
   const handleDelete = async (row: TProductEndpoint) => {
     if (confirm(`¿Eliminar producto "${row.product_name}"?`)) {
@@ -69,7 +66,7 @@ export default function Product() {
             </div>
 
             <div className="mb-4">
-              {/*<TaxExcelUploader onUpload={importTaxesFromFile} />*/}
+              <TaxExcelUploader />
             </div>
 
             {loading ? (
