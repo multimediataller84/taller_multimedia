@@ -1,4 +1,4 @@
-import { Navbar } from "../components/navbar"
+import { Navbar } from "../../../components/navbar"
 import { Sidebar } from "../../../components/Sidebar";
 import EditClient from '../components/editClient'
 import AddClient from "../components/addClient";

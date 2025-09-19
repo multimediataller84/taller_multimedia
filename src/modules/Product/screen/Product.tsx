@@ -4,7 +4,8 @@ import type { TProduct } from "../models/types/TProduct";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { ProductFormModal } from "../components/ProductFormModal";
 import { Sidebar } from "../../../components/Sidebar";
-import SearchBar from "../../../components/SearchBar";
+import { Navbar } from "../../../components/navbar";
+
 import TaxExcelUploader from "../components/TaxExcelUploader";
 
 export default function Product() {
@@ -64,20 +65,17 @@ export default function Product() {
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex absolute flex-col w-screen h-screen overflow-x-hidden">
+      <div className="bg-[#DEE8ED] absolute size-full flex flex-col">
+      <div>
+        <Navbar></Navbar>
+      </div>
 
-      <Sidebar />
-
-      <main className="flex-1">
-        <SearchBar
-          placeholder="Buscar productos..."
-          value={query}
-          onChange={setQuery}
-          username="Administrador"
-        />
-
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
+      <div className="flex w-full h-full bg-[#DEE8ED]">
+        <Sidebar></Sidebar>
+        
+        <div className="p-6 flex-1">
+          <div className="flex items-center justify-between mb-4 bg-amber-200">
             <h1 className="text-2xl font-semibold mb-4">Productos</h1>
             <button
               onClick={openCreate}
@@ -95,7 +93,7 @@ export default function Product() {
             <div className="p-6">Cargando…</div>
           ) : (
             <div className="overflow-x-auto border rounded bg-white">
-              <table className="min-w-full text-sm">
+              <table className="min-w-full text-base ">
                 <thead className="bg-gray-50">
                   <tr>
                     {headers.map((h) => (
@@ -106,21 +104,21 @@ export default function Product() {
                         {h.label}
                       </th>
                     ))}
-                    <th className="px-3 py-2 text-right">Acciones</th>
+                    <th className="py-2 text-right">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((row) => (
                     <tr key={row.id} className="border-t">
-                      <td className="px-3 py-2">{row.product_name}</td>
-                      <td className="px-3 py-2">{row.sku}</td>
-                      <td className="px-3 py-2">{row.category_id}</td>
-                      <td className="px-3 py-2">{row.tax_id}</td>
-                      <td className="px-3 py-2">{fmtMargin(row.profit_margin)}</td>
-                      <td className="px-3 py-2">{fmtCRC(row.unit_price)}</td>
-                      <td className="px-3 py-2">{row.stock}</td>
-                      <td className="px-3 py-2">{row.state}</td>
-                      <td className="px-3 py-2">
+                      <td className=" py-2">{row.product_name}</td>
+                      <td className=" py-2">{row.sku}</td>
+                      <td className=" py-2">{row.category_id}</td>
+                      <td className=" py-2">{row.tax_id}</td>
+                      <td className=" py-2">{fmtMargin(row.profit_margin)}</td>
+                      <td className=" py-2">{fmtCRC(row.unit_price)}</td>
+                      <td className=" py-2">{row.stock}</td>
+                      <td className=" py-2">{row.state}</td>
+                      <td className=" py-2">
                         <div className="flex justify-end gap-2">
                           <button
                             title="Ver"
@@ -152,7 +150,7 @@ export default function Product() {
                     <tr>
                       <td
                         colSpan={headers.length + 1}
-                        className="px-3 py-6 text-center text-gray-500"
+                        className=" py-6 text-center text-gray-500"
                       >
                         No hay productos para mostrar.
                       </td>
@@ -162,7 +160,7 @@ export default function Product() {
               </table>
 
 
-              <div className="flex items-center justify-between px-3 py-2 text-xs text-gray-500">
+              <div className="flex items-center justify-between  py-2 text-xs text-gray-500">
                 <span>Mostrando {products.length} resultados</span>
                 <div className="flex items-center gap-1">
                   <button className="h-8 w-8 border rounded">◀</button>
@@ -176,7 +174,7 @@ export default function Product() {
             </div>
           )}
         </div>
-      </main>
+      </div>
 
       <ProductFormModal
         isOpen={isModalOpen}
@@ -187,6 +185,18 @@ export default function Product() {
         categories={options.categories}
         taxes={options.taxes}
       />
+      </div>
     </div>
   );
 }
+
+
+/*
+
+<SearchBar
+          placeholder="Buscar productos..."
+          value={query}
+          onChange={setQuery}
+          username="Administrador"
+        />
+*/
