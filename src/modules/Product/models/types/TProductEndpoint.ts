@@ -1,7 +1,15 @@
-import type { TProduct, TProductStatus } from "./TProduct";
+import type { TProductStatus } from "./TProductStatus.js";
 
-export type TProductEndpoint = TProduct & {
+export type TProductEndpoint = {
   id: number;
-  createdAt: string;
-  updatedAt: string;
+  product_name: string;
+  sku: string;
+  category_id:  number;
+  tax_id: number;
+  profit_margin: number;
+  unit_price: number;
+  stock: number;
+  state: TProductStatus;
+  createdAt: Date;
+  updatedAt: Date;
 };

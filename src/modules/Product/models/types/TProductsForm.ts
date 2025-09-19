@@ -1,4 +1,6 @@
-export interface IProductForm {
+import { TProductStatus } from "./TProductStatus";
+
+export type ProductFormInputs = {
   product_name: string;
   sku: string;
   category_id: string;
@@ -6,6 +8,5 @@ export interface IProductForm {
   profit_margin: string;
   unit_price: string;
   stock: string;
-
-  state: "Active" | "Inactive" | "Discontinued";
-}
+  state: TProductStatus;
+};
