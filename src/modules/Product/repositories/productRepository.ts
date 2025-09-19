@@ -1,36 +1,83 @@
-import { productService, categoryService, taxService, type ProductSearchPayload } from "../services/productService";
+import { TGetAllOptions } from "../../../models/types/TGetAllOptions";
+import { IProductRepository } from "../models/interfaces/IProductRepository";
+import { TCategoryEndpoint } from "../models/types/TCategoryEndpoint";
+import { TGetAllPagination } from "../models/types/TGetAllPagination";
+import { TGetAllPaginationTaxes } from "../models/types/TGetAllPaginationTaxes";
 import type { TProduct } from "../models/types/TProduct";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
-import { processDataService, } from "../../../shared/services/processDataService";
+import { ProductService } from "../services/productService";
 
-// si exportaste este tipo desde services, impórtalo; si no, define aquí el payload:
-export type TaxSearchPayload = {
-  description?: string;
-  limit?: number;
-  offset?: number;
-  orderBy?: string;
-  orderDirection?: "ASC" | "DESC";
-};
+export class ProductRepository implements IProductRepository {
+  public static instance: ProductRepository;
+  private readonly productService = ProductService.getInstance();
 
-export const productRepository = {
-  // Products
-  getProducts: (): Promise<TProductEndpoint[]> => productService.getAll(),
-  searchProducts: (p: ProductSearchPayload) => productService.search(p),
-  getProduct: (id: number): Promise<TProductEndpoint> => productService.getById(id),
-  createProduct: (p: TProduct): Promise<TProductEndpoint> => productService.create(p),
-  updateProduct: (id: number, p: TProduct): Promise<TProductEndpoint> => productService.update(id, p),
-  deleteProduct: (id: number): Promise<TProductEndpoint> => productService.delete(id),
+  static getInstance(): ProductRepository {
+    if (!ProductRepository.instance) {
+      ProductRepository.instance = new ProductRepository();
+    }
+    return ProductRepository.instance;
+  }
 
-  // Categories (normal)
-  getCategories: () => categoryService.getAll(),
+  async get(id: number): Promise<TProductEndpoint> {
+    try {
+      const response = await this.productService.get(id);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  }
 
-  // Taxes
-  // ✅ Nueva búsqueda paginada + filtro (usa POST /product/tax/all o /product/tax con fallback)
-  searchTaxes: (payload: TaxSearchPayload) => taxService.search(payload),
+  async getAll(options: TGetAllOptions): Promise<TGetAllPagination> {
+    try {
+      const response = await this.productService.getAll(options);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  }
 
-  // (Opcional) Compat: traer todos si el back lo soporta
-  getTaxes: () => taxService.getAll(),
+  getAllCategories = async (): Promise<TCategoryEndpoint[]> => {
+    try {
+      const response = await this.productService.getAllCategories();
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  };
 
-  // Excel -> proceso en el back
-  importTaxesFromExcel: (file: File) => processDataService.postProcessExcel(file),
-};
+  getAllTaxes = async (options: TGetAllOptions): Promise<TGetAllPaginationTaxes> => {
+    try {
+      const response = await this.productService.getAllTaxes(options);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  };
+
+  async post(data: TProduct): Promise<TProductEndpoint> {
+    try {
+      const response = await this.productService.post(data);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  }
+
+  async patch(id: number, data: TProduct): Promise<TProductEndpoint> {
+    try {
+      const response = await this.productService.patch(id, data);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  }
+
+  async delete(id: number): Promise<TProductEndpoint> {
+    try {
+      const response = await this.productService.delete(id);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}" `);
+    }
+  }
+}
