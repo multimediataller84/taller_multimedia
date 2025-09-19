@@ -1,4 +1,4 @@
-import SearchBar from "../../../components/SearchBar";
+import SearchBar from "../components/SearchBar";
 
 export const Navbar = () => {
 
@@ -20,7 +20,7 @@ export const Navbar = () => {
             
             <div className='flex justify-center w-full'>
             <SearchBar 
-                onSearch={handleSearch} placeholder="Buscar"
+                placeholder="Buscar"
             ></SearchBar>
             </div>
             
