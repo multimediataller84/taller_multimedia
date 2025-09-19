@@ -18,6 +18,12 @@ export default function Product() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<TProductEndpoint | null>(null);
 
+  const [activePage, setActivePage] = useState(1);
+  const clientsPerPage = 10; 
+  const indexOfLastClient = activePage * clientsPerPage;
+  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  const currentProducts = products.slice(indexOfFirstClient, indexOfLastClient);
+
   const openCreate = () => {
     setEditing(null);
     setIsModalOpen(true);
@@ -49,23 +55,26 @@ export default function Product() {
   );
 
   return (
-    <div className="flex absolute flex-col w-screen h-screen overflow-x-hidden">
-      <div className="bg-[#DEE8ED] absolute size-full flex flex-col">
-        <Navbar />
-        <div className="flex w-full h-full bg-[#DEE8ED]">
+    <div className="flex absolute bg-[#DEE8ED] flex-col w-screen h-screen overflow-x-hidden">
+      <div className="bg-[#DEE8ED] absolute size-full flex flex-col ">
+        <div> 
+          <Navbar></Navbar>
+        </div>
+        <div className="flex w-full h-full bg-[#DEE8ED] ">
           <Sidebar />
-          <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-semibold mb-4">Productos</h1>
+          <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-4">
+            <div className="flex items-center justify-between ">
+              <h2 className="font-Lato text-2xl ">Productos</h2>
               <button
                 onClick={openCreate}
-                className="px-4 py-2 rounded bg-blue-600 text-white text-sm"
+              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base mr-4 
+              transition duration-300 bg-blue-500 hover:bg-blue-800 text-white"
               >
                 + Nuevo producto
               </button>
             </div>
 
-            <div className="mb-4">
+            <div className="">
               <TaxExcelUploader />
             </div>
 
@@ -73,13 +82,30 @@ export default function Product() {
               <div className="p-6">Cargando…</div>
             ) : (
               <ProductTable
-                products={products}
+                products={currentProducts}
                 headers={headers}
                 onEdit={openEdit}
                 onDelete={handleDelete}
               />
             )}
-          </div>
+            
+
+            <div className="mt-6 mb-8 pr-19 w-auto space-x-4 justify-between font-Lato font-medium">
+              {[1, 2, 3, "...", 8].map((num, index) => (
+                <button
+                key={index}
+                className={`size-[42px] border rounded-full active:outline-0 
+                ${activePage === num 
+                ? "bg-blue-500 text-white" 
+                : "bg-white border-gray2 text-gray1"}`}
+                onClick={() => typeof num === "number" && setActivePage(num)}
+                >
+                  {num}
+                </button>
+                ))}
+            </div>
+             </div>
+          
         </div>
 
         <ProductFormModal
@@ -88,18 +114,8 @@ export default function Product() {
           initialData={editing}
           onChange={fetchProducts}
         />
+
       </div>
     </div>
   );
 }
-
-
-/*
-
-<SearchBar
-          placeholder="Buscar productos..."
-          value={query}
-          onChange={setQuery}
-          username="Administrador"
-        />
-*/

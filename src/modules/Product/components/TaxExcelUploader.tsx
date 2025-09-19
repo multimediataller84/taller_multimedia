@@ -4,7 +4,7 @@ export default function TaxExcelUploader() {
   const { inputRef, file, busy, msg, handleSelect, handleUpload } = useUploader();
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center space-x-4">
       <input
         ref={inputRef}
         type="file"
@@ -16,7 +16,7 @@ export default function TaxExcelUploader() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="px-3 py-2 rounded border"
+        className="rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 border bg-white text-gray1 border-gray2 hover:bg-gray2 hover:border-gray2"
       >
         Seleccionar archivo
       </button>
@@ -25,13 +25,13 @@ export default function TaxExcelUploader() {
         type="button"
         onClick={handleUpload}
         disabled={!file || busy}
-        className="px-3 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+        className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base mr-4 transition duration-300 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800"
       >
         {busy ? "Subiendo..." : "Subir Excel"}
       </button>
 
-      <span className="text-xs text-gray-600">{file ? file.name : "Ningún archivo seleccionado"}</span>
-      {msg && <span className="text-xs text-gray-600 ml-2">{msg}</span>}
+      <span className="text-base font-Lato text-gray1">{file ? file.name : "Ningún archivo seleccionado"}</span>
+      {msg && <span className="text-base text-gray1 ml-2">{msg}</span>}
     </div>
   );
 }
