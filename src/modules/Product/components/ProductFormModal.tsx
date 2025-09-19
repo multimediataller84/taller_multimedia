@@ -1,148 +1,174 @@
-import { useState, useEffect } from "react";
-import { IProduct } from "../models/interfaces/IProduct";
+import { Controller } from "react-hook-form";
+import Select from "react-select";
+import { useProductForm } from "../hooks/useProductModal";
+import { TProduct } from "../models/types/TProduct";
+import { TProductEndpoint } from "../models/types/TProductEndpoint";
+import { ProductFormInputs } from "../models/types/TProductsForm";
 
 type Props = {
   isOpen: boolean;
-  onClose: () => void;
-  onSave: (product: IProduct) => void;
-  initialData?: IProduct | null;
+  onClose: () => unknown;
+  initialData: TProductEndpoint | null;
+  onSave?: (payload: TProduct) => Promise<void>;
+  onChange: () => unknown;
 };
 
-export const ProductFormModal = ({ isOpen, onClose, onSave, initialData }: Props) => {
-  const [formData, setFormData] = useState<IProduct>({
-  name: "",
-  category: "",
-  cost: "" as unknown as number,
-  basePrice: "" as unknown as number,
-  stock: "" as unknown as number,
-  tax: "" as unknown as number,
-  discount: "" as unknown as number,
-});
-
-  useEffect(() => {
-    if (initialData) {
-      setFormData(initialData);
-    }
-  }, [initialData]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: (name === "cost" || name === "basePrice" || name === "stock" || name === "tax" || name === "discount")
-      ? (value === "" ? "" : Number(value))
-      : value,
-  });
-};
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.category || !formData.cost || !formData.basePrice || !formData.stock) {
-    alert("Por favor complete todos los campos obligatorios.");
-    return;
-    }
-    onSave(formData);
-    onClose();
-    setFormData({
-    name: "",
-    category: "",
-    cost: "" as unknown as number,
-    basePrice: "" as unknown as number,
-    stock: "" as unknown as number,
-    tax: "" as unknown as number,
-    discount: "" as unknown as number,
-  });
-};
+export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formattedCategoryOptions,
+    formattedTaxesOptions,
+    skuStatus,
+    setSkuStatus,
+    autoGenerateSku,
+    submit,
+  } = useProductForm(initialData, isOpen);
 
   if (!isOpen) return null;
 
+  const onSubmit = async (data: ProductFormInputs) => {
+    await submit(data);
+    await onChange();
+    onClose();
+  };
+
+  const stateOptions = [
+    { value: "Active", label: "Activo" },
+    { value: "Inactive", label: "Inactivo" },
+    { value: "Discontinued", label: "Descontinuado" },
+  ];
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+    <div className="fixed inset-0 grid place-items-center bg-black/50 z-50">
+      <div className="bg-white p-6 rounded-lg w-[520px]">
         <h2 className="text-xl font-semibold mb-4">
           {initialData ? "Editar producto" : "Nuevo producto"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <input
-            type="text"
-            name="name"
-            placeholder="Nombre del producto"
-            value={formData.name}
-            onChange={handleChange}
+            {...register("product_name", { required: true })}
+            placeholder="Nombre"
             className="w-full border p-2 rounded"
-            required
           />
 
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          >
-            <option value="">Seleccionar categoría</option>
-            <option value="Verduras">Verduras</option>
-            <option value="Frutas">Frutas</option>
-            <option value="Lacteos">Lacteos</option>
-            <option value="Carnes">Carnes</option>
-            <option value="Bebidas">Bebidas</option>
-            <option value="Snacks">Snacks</option>
-            <option value="Otros">Otros</option>
-          </select>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex gap-2">
             <input
-              type="number"
-              name="cost"
-              placeholder="Costo"
-              value={formData.cost}
-              onChange={handleChange}
-              className="border p-2 rounded"
-              required
+              {...register("sku", {
+                required: true,
+                pattern: /^[A-Z0-9-]+$/,
+              })}
+              onChange={() => setSkuStatus("idle")}
+              placeholder="SKU"
+              className="flex-1 border p-2 rounded"
             />
-            <input
-              type="number"
-              name="basePrice"
-              placeholder="Precio base"
-              value={formData.basePrice}
-              onChange={handleChange}
-              className="border p-2 rounded"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              type="number"
-              name="stock"
-              placeholder="Stock"
-              value={formData.stock}
-              onChange={handleChange}
-              className="border p-2 rounded"
-              required
-            />
-            <input
-              type="number"
-              name="tax"
-              placeholder="Impuesto (%) (opcional)"
-              value={formData.tax}
-              onChange={handleChange}
-              className="border p-2 rounded"
-            />
-          </div>
-
-          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={autoGenerateSku}
+              className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200"
+            >
+              Auto
+            </button>
+          </div>
+
+          <Controller
+            name="category_id"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={formattedCategoryOptions}
+                placeholder="Seleccione categoría"
+                onChange={(selectedOption) =>
+                  field.onChange(selectedOption?.value)
+                }
+                value={
+                  formattedCategoryOptions.find(
+                    (option) => option.value === field.value
+                  ) || null
+                }
+              />
+            )}
+          />
+
+          <Controller
+            name="tax_id"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={formattedTaxesOptions}
+                placeholder="Seleccione impuesto"
+                onChange={(selectedOption) =>
+                  field.onChange(selectedOption?.value)
+                }
+                value={
+                  formattedTaxesOptions.find(
+                    (option) => option.value === field.value
+                  ) || null
+                }
+              />
+            )}
+          />
+
+          <Controller
+            name="state"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={stateOptions}
+                placeholder="Seleccione estado"
+                onChange={(selectedOption) =>
+                  field.onChange(selectedOption?.value)
+                }
+                value={
+                  stateOptions.find((option) => option.value === field.value) ||
+                  null
+                }
+              />
+            )}
+          />
+
+          <input
+            type="number"
+            step="0.01"
+            {...register("profit_margin", { required: true })}
+            placeholder="Utilidad (ej. 0.25)"
+            className="w-full border p-2 rounded"
+          />
+
+          <input
+            type="number"
+            step="0.01"
+            {...register("unit_price", { required: true })}
+            placeholder="Precio unitario (₡)"
+            className="w-full border p-2 rounded"
+          />
+
+          <input
+            type="number"
+            {...register("stock", { required: true })}
+            placeholder="Stock"
+            className="w-full border p-2 rounded"
+          />
+
+          <div className="flex justify-end gap-2 pt-3">
+            <button
+              type="button"
               onClick={onClose}
+              className="px-4 py-2 rounded border"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+              disabled={skuStatus === "dup" || skuStatus === "checking"}
             >
               Guardar
             </button>

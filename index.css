@@ -1,1 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 @import "tailwindcss";
+
+@theme{
+      --font-Lato: "Lato", sans-serif;
+
+      --color-gray1: #6E6E6E;
+      --color-gray2: #BFBFBF;
+      --color-gray3: #E9EEF0;
+      --color-graybar: #BCC9CE;
+      --color-backgroundBlue: #DEE8ED;
+      
+}
+
+
+::-webkit-scrollbar {
+  width: 6px;  
+}
+
+::-webkit-scrollbar-track {
+  background: #D2DCE0;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9AAFB8;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #84959c;
+}

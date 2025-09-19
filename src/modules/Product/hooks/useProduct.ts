@@ -1,40 +1,45 @@
-import { useState, useEffect } from "react";
-import { productRepository } from "../repositories/productRepository";
+import { useEffect, useState } from "react";
+import { ProductRepository } from "../repositories/productRepository";
+import { UseCasesController } from "../controllers/useCasesController";
+import { TProductEndpoint } from "../models/types/TProductEndpoint";
 
-export const useProduct = () => {
-  const [products, setProducts] = useState<any[]>([]);
+const repository = ProductRepository.getInstance();
+const useCases = new UseCasesController(repository);
+
+export function useProduct() {
+  const [products, setProducts] = useState<TProductEndpoint[]>([]);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
 
   const fetchProducts = async () => {
     setLoading(true);
-    const data = await productRepository.getProducts();
-    setProducts(data);
-    setLoading(false);
-  };
-
-  const createProduct = async (product: any) => {
-    await productRepository.createProduct(product);
-    fetchProducts();
-  };
-
-  const updateProduct = async (id: number, product: any) => {
-    await productRepository.updateProduct(id, product);
-    fetchProducts();
+    try {
+      const list = await useCases.getAll.execute({
+        limit: 50,
+        offset: 0,
+        orderDirection: "ASC"
+      });
+      setProducts(list.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteProduct = async (id: number) => {
-    await productRepository.deleteProduct(id);
-    fetchProducts();
-  };
-
-  const searchProducts = async (query: string) => {
-    const results = await productRepository.searchProducts(query);
-    setProducts(results);
+    await useCases.delete.execute(id);
+    await fetchProducts();
   };
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [query]);
 
-  return { products, loading, createProduct, updateProduct, deleteProduct, searchProducts };
-};
+  return {
+    products,
+    loading,
+    query,
+    setQuery,
+    deleteProduct,
+    fetchProducts
+  };
+}

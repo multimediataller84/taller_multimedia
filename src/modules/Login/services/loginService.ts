@@ -1,12 +1,12 @@
+// src/modules/Login/services/loginService.ts
 import { ILogin } from "../models/interfaces/ILogin";
 import { TEndpointLogin } from "../models/types/TEndpointLogin";
 import { TLogin } from "../models/types/TLogin";
-import { TPayload } from "../models/types/TPayload"; 
-import axios from "axios";
+import { TPayload } from "../models/types/TPayload";
+import apiClient from "../interceptors/apiClient";
 
 export class LoginService implements ILogin {
   private static instance: LoginService;
-  private readonly baseUrl = import.meta.env.VITE_API_URL;
 
   static getInstance(): LoginService {
     if (!LoginService.instance) {
@@ -15,29 +15,26 @@ export class LoginService implements ILogin {
     return LoginService.instance;
   }
 
-  async login(data: TLogin): Promise<TPayload> {
-    try {
-          console.log(this.baseUrl + "/login")
-      const response = await axios.post<TPayload>(this.baseUrl + "/auth/login", data);
+async login(data: TLogin): Promise<TPayload> {
+  try {
+    const response = await apiClient.post<TPayload>("/auth/login", {
+      username: data.username,
+      password: data.password,
+    });
 
-      if (response.status !== 200) {
-        throw new Error(
-          `Invalid credentials or server error at ${this.baseUrl + "/auth/login"}`
-        );
-      }
-
-      // Almacena el token en el almacenamiento local
-      sessionStorage.setItem("authToken", response.data.token);
-      sessionStorage.setItem("authToken", response.data.user.username);
-      sessionStorage.setItem("authToken", response.data.user.role);
-
-      // Configura axios para enviar el token
-      const token = (response.data as TPayload).token;
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`Invalid credentials or server error login`);
+    if (response.status !== 200) {
+      throw new Error(`Invalid credentials or server error at /login`);
     }
+
+    const payload = response.data as TPayload;
+
+    sessionStorage.setItem("authToken", payload.token);
+    sessionStorage.setItem("username", payload.user.username);
+    sessionStorage.setItem("role", payload.user.role);
+
+    return payload;
+  } catch (_error) {
+    throw new Error("Invalid credentials or server error login");
   }
+}
 }
