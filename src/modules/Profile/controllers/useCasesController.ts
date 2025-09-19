@@ -22,7 +22,6 @@ export class UseCasesController implements TUseCasesController {
   }
 }
 
-
 /* UseHook
 const repository = ProfileRepository.getInstance()
 const useCasesController  = new UseCasesController(repository)
