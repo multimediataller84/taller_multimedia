@@ -46,7 +46,6 @@ export default function Login() {
                 ${errors.username ? "border-red-500" : "border-gray-300"} text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 mb-1`}
             />
 
-            
           {errors.password && (
             <p className="text-red-500 text-sm font-Lato">{errors.password.message}</p>
           )}
@@ -65,8 +64,6 @@ export default function Login() {
             } text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-500 mb-1`}
           />
           
-          
-
         {loading ? (
           <div className="w-full  flex justify-center py-2">
             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin bg-blue-500"></div>
@@ -79,8 +76,6 @@ export default function Login() {
             Login
           </button>
         )}
-
-
 
         {error && <p className="text-red-500 text-sm font-lato text-center mt-4">{error}</p>}
         

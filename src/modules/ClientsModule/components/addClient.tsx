@@ -1,4 +1,4 @@
-interface addClientProps{
+interface addProfileProps{
     visibleAdd: boolean;
     setVisibleAdd: React.Dispatch<React.SetStateAction<boolean>>;  
     clientSelect: any;
@@ -9,7 +9,7 @@ interface addClientProps{
 }
 
 
-export default function addClient (props: addClientProps){
+export default function addProfile (props: addProfileProps){
 
     return (
         <div className="flex-1 flex-col">

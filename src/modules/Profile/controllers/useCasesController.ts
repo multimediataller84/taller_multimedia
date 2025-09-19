@@ -21,6 +21,8 @@ export class UseCasesController implements TUseCasesController {
     this.delete = new DeleteUseCase(this.repository);
   }
 }
+
+
 /* UseHook
 const repository = ProfileRepository.getInstance()
 const useCasesController  = new UseCasesController(repository)
