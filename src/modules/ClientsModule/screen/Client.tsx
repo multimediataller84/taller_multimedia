@@ -22,9 +22,16 @@ export const Client = () => {
 
   const [activePage, setActivePage] = useState(1);
   const clientsPerPage = 10; 
+
+  const [search, setSearch] = useState(""); 
+  const filteredClients = clients.filter((c) => {
+    const fullName = `${c.name} ${c.last_name} ${c.id_number}`.toLowerCase();
+    return fullName.includes(search.toLowerCase());
+  });
+
   const indexOfLastClient = activePage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = clients.slice(indexOfFirstClient, indexOfLastClient);
+  const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -95,18 +102,16 @@ const handleDelete = async (id: number) => {
 };
 
   return (
-    <div className="flex absolute flex-col w-screen h-screen overflow-x-hidden">
-
-      <div className="bg-[#DEE8ED] absolute size-full flex flex-col">
-
-        <div>
-        <Navbar></Navbar>
-        </div>
-        
-        <div className="flex w-full h-full bg-[#DEE8ED]">
+    <div className="flex flex-col bg-backgroundBlue w-screen h-screen overflow-x-hidden ">
+        <Navbar
+        search={search}
+        setSearch={setSearch}
+        />
+        <div className="flex w-full flex-grow ">
           <Sidebar></Sidebar>
-          <div className="w-[378px] h-full bg-[#E9EEF0]">
-            <div className="pl-8 mt-8 flex  justify-between">
+
+          <div className="w-1/5 bg-[#E9EEF0] flex-col  ">
+            <div className="flex justify-between mt-8 ml-8">
               <h2 className="font-Lato text-2xl">Lista de Clientes</h2>
               <button className={`w-[94px] border rounded-3xl py-2 font-Lato text-base mr-4 transition duration-300 
               ${visibleAdd == true ? "bg-white text-gray1 border-gray2 hover:bg-gray2 hover:border-gray2" 
@@ -127,16 +132,16 @@ const handleDelete = async (id: number) => {
               >Añadir</button>
             </div>
 
-            <div className="w-full h-auto pl-8">
+             <div className="w-full h-auto pl-8">
               <h3 className="font-Lato font-medium text-base text-gray1">Todos los clientes registrados <br />en sistema</h3>
             </div>
 
-            <div className="w-full sm:h-96 xl:h-[520px] flex flex-col overflow-y-auto mt-11">
+            <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
               <div className="space-y-2">
                 {currentClients.map((items) => (
-                  <div className="w-full pl-8 pr-18 flex">
-                    <div className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-300 
-                    ${clientSelect === items ? "bg-blue-500 text-white" : "bg-white text-black"}
+                  <div className="w-full pl-8 pr-11 flex">
+                    <div className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
+                    ${clientSelect === items ? "bg-blue-500 text-white hover:bg-blue-800" : "bg-white text-black hover:bg-gray2"}
                     `}
                       onClick={() => {
                         setClientSelect(items);
@@ -153,11 +158,11 @@ const handleDelete = async (id: number) => {
               </div>
             </div>
 
-            <div className="pl-8 mt-6 mb-8 pr-19 w-full flex justify-between font-Lato font-medium">
+            <div className="pl-8 pr-18 pt-4 justify-between w-full flex  font-Lato font-medium">
               {[1, 2, 3, "...", 8].map((num, index) => (
                 <button
                 key={index}
-                className={`size-[42px] border rounded-full active:outline-0 
+                className={` size-[42px] border rounded-full active:outline-0 
                 ${activePage === num 
                 ? "bg-blue-500 text-white" 
                 : "bg-white border-gray2 text-gray1"}`}
@@ -167,9 +172,10 @@ const handleDelete = async (id: number) => {
                 </button>
                 ))}
             </div>
-            <h2 className="pl-8 font-Lato font-medium text-base text-gray1">Mostrando {clientsPerPage} de {clients.length} resultados...</h2>
+            <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">Mostrando {clientsPerPage} de {clients.length} resultados...</h2>
+
           </div>
-          
+
           {visibleEdit && (
           <EditClient
             clientSelect={clientSelect}
@@ -190,9 +196,8 @@ const handleDelete = async (id: number) => {
               handleAddClient={handleAddClient}
               handleChange={handleChange}
           />}
-          
         </div>
-      </div>
+
     </div>
   );
 

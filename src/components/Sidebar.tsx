@@ -6,15 +6,14 @@ const navItems = [
   { name: 'Facturas', icon: '', path: '/facturas' },
   { name: 'Clientes', icon: '', path: '/clients' },
   { name: 'Inventario', icon: '', path: '/product' },
-  { name: 'Impuestos', icon: '', path: '/impuestos' },
-  { name: 'Perfiles', icon: '', path: '/profiles' }
+  { name: 'Impuestos', icon: '', path: '/impuestos' }
 ];
 
 export const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-64 bg-white flex flex-col justify-between h-screen" >
+    <div className="w-[15%] bg-white flex flex-col justify-between h-screen" >
       <div>
       <div className='ml-4'>
         <nav className="mt-4 flex flex-col space-y-1">
