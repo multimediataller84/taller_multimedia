@@ -7,8 +7,7 @@ const navItems = [
   { name: "Facturas", icon: "", path: "/facturas", visibility: "all" },
   { name: "Clientes", icon: "", path: "/clients", visibility: "all" },
   { name: "Inventario", icon: "", path: "/product", visibility: "all" },
-  { name: "Impuestos", icon: "", path: "/impuestos", visibility: "all" },
-  { name: "Perfiles", icon: "", path: "/profiles", visibility: "all" },
+  { name: "Impuestos", icon: "", path: "/impuestos", visibility: "all" }
 ];
 
 export const Sidebar = () => {
@@ -18,7 +17,9 @@ export const Sidebar = () => {
   const filterItems = (role !== "admin") ? navItems.filter((i) => i.visibility !== "admin") : navItems
 
   return (
-    <div className="w-64 bg-white flex flex-col justify-between h-screen">
+
+    <div className="w-[15%] bg-white flex flex-col justify-between h-screen" >
+
       <div>
         <div className="ml-4">
           <nav className="mt-4 flex flex-col space-y-1">

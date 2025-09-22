@@ -10,8 +10,8 @@ interface editProfileProps {
 
 export default function editClient(props: editProfileProps) {
     return (
-            <div className="flex-1 flex-col ">
-            <div className="bg-gray3 w-full h-min flex flex-col">
+            <div className="w-[65%] flex flex-col ">
+            <div className="bg-gray3 w-full  flex flex-col">
               <div className="flex w-full justify-between pt-8">
                 <h2 className="pl-8 font-Lato text-2xl ">Datos del Cliente</h2>
                 <div className="flex space-x-8 pr-4">
@@ -81,7 +81,6 @@ export default function editClient(props: editProfileProps) {
                     placeholder="Nombre"
                   />
                 </div>
-
               </form>
             </div>
           </div>
