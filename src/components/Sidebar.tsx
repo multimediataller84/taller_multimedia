@@ -4,10 +4,10 @@ import { getRoleAuth } from "../utils/getRoleAuth";
 
 const navItems = [
   { name: "Dashboard", icon: "", path: "/dashboard", visibility: "admin" },
-  { name: "Facturas", icon: "", path: "/facturas", visibility: "all" },
+  { name: "Facturas", icon: "", path: "/invoices", visibility: "all" },
   { name: "Clientes", icon: "", path: "/clients", visibility: "all" },
   { name: "Inventario", icon: "", path: "/product", visibility: "all" },
-  { name: "Impuestos", icon: "", path: "/impuestos", visibility: "all" }
+  { name: "Impuestos", icon: "", path: "/taxes", visibility: "admin"},
 ];
 
 export const Sidebar = () => {

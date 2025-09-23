@@ -7,7 +7,8 @@ import { Client } from "../modules/ClientsModule/screen/Client";
 import {Profile} from "../modules/Profile/screen/Profile"
 import { ProtectedRoute } from "../middlewares/ProtectRoutes";
 import { Dashboard } from "../modules/Dashboard/screen/Dashboard";
-
+import { Taxes } from "../modules/Taxes/screen/Taxes";
+import { Invoices } from "../modules/Invoices/screen/Invoices";
 
 export const Router = () => {
   return (
@@ -36,6 +37,22 @@ export const Router = () => {
         element={
           <ProtectedRoute allowedRoles={["employee", "admin"]}>
             <Client />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/taxes"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Taxes />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/invoices"
+        element={
+          <ProtectedRoute allowedRoles={["employee", "admin"]}>
+            <Invoices />
           </ProtectedRoute>
         }
       />
