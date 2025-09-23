@@ -58,7 +58,7 @@ export const Navbar = (props: SerachProps) => {
             <button className="text-left px-4 font-lato text-base font-medium w-full py-4 hover:bg-gray3 hover:underline">Configuración</button>
             <div className="flex-col flex">
               <div className="px-2 h-0.5 w-full bg-gray2"></div>
-              <Link to="/" className="text-left px-4 w-full py-4 font-medium hover:bg-gray3 hover:underline">Cerrar Sesión</Link>
+              <Link to="/" onClick={()=>{sessionStorage.clear()}} className="text-left px-4 w-full py-4 font-medium hover:bg-gray3 hover:underline">Cerrar Sesión</Link>
             </div>
           </div>}
             
