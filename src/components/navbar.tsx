@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
 
-interface SerachProps {
+export interface SerachProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
 }

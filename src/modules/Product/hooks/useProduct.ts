@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ProductRepository } from "../repositories/productRepository";
 import { UseCasesController } from "../controllers/useCasesController";
 import { TProductEndpoint } from "../models/types/TProductEndpoint";
@@ -10,6 +10,14 @@ export function useProduct() {
   const [products, setProducts] = useState<TProductEndpoint[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editing, setEditing] = useState<TProductEndpoint | null>(null);
+
+  const [activePage, setActivePage] = useState(1);
+  const clientsPerPage = 10;
+  const indexOfLastClient = activePage * clientsPerPage;
+  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  const currentProducts = products.slice(indexOfFirstClient, indexOfLastClient);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -17,7 +25,7 @@ export function useProduct() {
       const list = await useCases.getAll.execute({
         limit: 50,
         offset: 0,
-        orderDirection: "ASC"
+        orderDirection: "ASC",
       });
       setProducts(list.data);
     } finally {
@@ -34,12 +42,50 @@ export function useProduct() {
     fetchProducts();
   }, [query]);
 
+  const openCreate = () => {
+    setEditing(null);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (row: TProductEndpoint) => {
+    setEditing(row);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (row: TProductEndpoint) => {
+    if (confirm(`¿Eliminar producto "${row.product_name}"?`)) {
+      await deleteProduct(row.id);
+    }
+  };
+
+  const headers = useMemo(
+    () => [
+      { key: "product_name", label: "Nombre" },
+      { key: "sku", label: "SKU" },
+      { key: "category_id", label: "Cat. ID" },
+      { key: "tax_id", label: "Impuesto ID" },
+      { key: "profit_margin", label: "Margen" },
+      { key: "unit_price", label: "Precio" },
+      { key: "stock", label: "Stock" },
+      { key: "state", label: "Estado" },
+    ],
+    []
+  );
+
   return {
-    products,
     loading,
     query,
     setQuery,
-    deleteProduct,
-    fetchProducts
+    fetchProducts,
+    isModalOpen,
+    editing,
+    setActivePage,
+    currentProducts,
+    headers,
+    handleDelete,
+    openEdit,
+    openCreate,
+    setIsModalOpen,
+    activePage,
   };
 }
