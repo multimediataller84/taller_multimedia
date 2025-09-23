@@ -14,7 +14,6 @@ type Props = {
   username?: string;
   avatarUrl?: string;
 
-  /** Campo para acciones a la derecha (opcional) */
   rightSlot?: React.ReactNode;
 
   inputAriaLabel?: string;
@@ -45,10 +44,13 @@ export default function SearchBar({
 
   return (
     
-    <div className="relative w-auto ">
+    <div className={`relative w-auto ${className}`}>
       <input
         type="text"
         placeholder={placeholder}
+        value={local}
+        onChange={handleInput}
+        aria-label={inputAriaLabel}
         className="w-[558px] h-9 pl-4 pb-1 
         placeholder:font-medium placeholder:font-Lato placeholder:text-base placeholder:text-gray1
         border border-gray2

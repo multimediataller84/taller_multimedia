@@ -18,11 +18,24 @@ export default function Product() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState<TProductEndpoint | null>(null);
 
+  const [search, setSearch] = useState("");
+
   const [activePage, setActivePage] = useState(1);
-  const clientsPerPage = 10; 
-  const indexOfLastClient = activePage * clientsPerPage;
-  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentProducts = products.slice(indexOfFirstClient, indexOfLastClient);
+  const itemsPerPage = 10; 
+  const filteredProducts = products.filter((p) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return p.product_name?.toLowerCase().includes(q);
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const safePage = Math.min(activePage, totalPages);
+  const indexOfLast = safePage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirst, indexOfLast);
+
+  if (activePage !== 1 && search.length > 0 && indexOfFirst >= filteredProducts.length) {
+    setActivePage(1);
+  }
 
   const openCreate = () => {
     setEditing(null);
@@ -58,7 +71,7 @@ export default function Product() {
     <div className="flex absolute bg-[#DEE8ED] flex-col w-screen h-screen overflow-x-hidden">
       <div className="bg-[#DEE8ED] absolute size-full flex flex-col ">
         <div> 
-          <Navbar></Navbar>
+          <Navbar search={search} onSearchChange={setSearch}></Navbar>
         </div>
         <div className="flex w-full h-full bg-[#DEE8ED] ">
           <Sidebar />
@@ -90,19 +103,19 @@ export default function Product() {
             )}
             
 
-            <div className="mt-6 mb-8 pr-19 w-auto space-x-4 justify-between font-Lato font-medium">
-              {[1, 2, 3, "...", 8].map((num, index) => (
+            <div className="mt-6 mb-8 pr-19 w-auto space-x-2 flex flex-wrap font-Lato font-medium">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
                 <button
-                key={index}
-                className={`size-[42px] border rounded-full active:outline-0 
-                ${activePage === num 
-                ? "bg-blue-500 text-white" 
-                : "bg-white border-gray2 text-gray1"}`}
-                onClick={() => typeof num === "number" && setActivePage(num)}
+                  key={num}
+                  className={`size-[42px] border rounded-full active:outline-0 
+                  ${activePage === num 
+                  ? "bg-blue-500 text-white" 
+                  : "bg-white border-gray2 text-gray1"}`}
+                  onClick={() => setActivePage(num)}
                 >
                   {num}
                 </button>
-                ))}
+              ))}
             </div>
              </div>
           

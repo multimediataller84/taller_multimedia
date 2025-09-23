@@ -1,14 +1,11 @@
 import SearchBar from "../components/SearchBar";
 
-export const Navbar = () => {
+type NavbarProps = {
+  search?: string;
+  onSearchChange?: (value: string) => void;
+};
 
-      const search = (query: string) => {
-    };
-
-
-    const handleSearch = (query: string) => {
-    search(query);
-    };
+export const Navbar = ({ search, onSearchChange }: NavbarProps) => {
 
   return (
         
@@ -21,6 +18,9 @@ export const Navbar = () => {
             <div className='flex justify-center w-full'>
             <SearchBar 
                 placeholder="Buscar"
+                value={search}
+                onChange={onSearchChange}
+                inputAriaLabel="Buscar global"
             ></SearchBar>
             </div>
             

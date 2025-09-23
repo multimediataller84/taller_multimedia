@@ -24,11 +24,23 @@ export const Profile = () => {
   const [addProfile, setAddProfile] = useState(false); 
   const [visibleAddProfile, setVisibleAddProfile] = useState(false);
 
+  const [search, setSearch] = useState("");
   const [activePage, setActivePage] = useState(1);
   const profilesPerPage = 10; 
-  const indexOfLastProfile = activePage * profilesPerPage;
+  const filteredProfiles = profiles.filter((p) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return p.username?.toLowerCase().includes(q);
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredProfiles.length / profilesPerPage));
+  const safePage = Math.min(activePage, totalPages);
+  const indexOfLastProfile = safePage * profilesPerPage;
   const indexOfFirstProfile = indexOfLastProfile- profilesPerPage;
-  const currentProfiles = profiles.slice(indexOfFirstProfile, indexOfLastProfile);
+  const currentProfiles = filteredProfiles.slice(indexOfFirstProfile, indexOfLastProfile);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [search]);
 
     useEffect(() => {
     const fetchClients = async () => {
@@ -108,7 +120,7 @@ const handleDelete = async (id: number) => {
 
               <div className="bg-[#DEE8ED] absolute size-full flex flex-col">
                 <div>
-                <Navbar></Navbar>
+                <Navbar search={search} onSearchChange={setSearch}></Navbar>
                 </div>
                 
                 <div className="flex w-full h-full bg-[#DEE8ED]">
@@ -171,7 +183,7 @@ const handleDelete = async (id: number) => {
                         </button>
                         ))}
                     </div>
-                    <h2 className="pl-8 font-Lato font-medium text-base text-gray1">Mostrando 10 de {profiles.length} resultados...</h2>
+                    <h2 className="pl-8 font-Lato font-medium text-base text-gray1">Mostrando {currentProfiles.length} de {filteredProfiles.length} resultados...</h2>
                   </div>
                   
                   {visibleEditProfile && <EditProfile

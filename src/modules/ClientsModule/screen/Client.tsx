@@ -20,11 +20,23 @@ export const Client = () => {
   const [add, setAdd] = useState(false); 
   const [visibleAdd, setVisibleAdd] = useState(false);
 
+  const [search, setSearch] = useState("");
   const [activePage, setActivePage] = useState(1);
   const clientsPerPage = 10; 
-  const indexOfLastClient = activePage * clientsPerPage;
+  const filteredClients = clients.filter((c) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.last_name.toLowerCase().includes(q) ||
+      c.id_number.toLowerCase().includes(q)
+    );
+  });
+  const totalPages = Math.max(1, Math.ceil(filteredClients.length / clientsPerPage));
+  const safePage = Math.min(activePage, totalPages);
+  const indexOfLastClient = safePage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = clients.slice(indexOfFirstClient, indexOfLastClient);
+  const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -37,6 +49,10 @@ export const Client = () => {
     };
     fetchClients();
   }, []);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [search]);
 
   const handleSave = async () => {
   if (!clientSelect) return;
@@ -100,13 +116,13 @@ const handleDelete = async (id: number) => {
       <div className="bg-[#DEE8ED] absolute size-full flex flex-col">
 
         <div>
-        <Navbar></Navbar>
+        <Navbar search={search} onSearchChange={setSearch}></Navbar>
         </div>
         
         <div className="flex w-full h-full bg-[#DEE8ED]">
           <Sidebar></Sidebar>
           <div className="w-[378px] h-full bg-[#E9EEF0]">
-            <div className="pl-8 mt-8 flex  justify-between">
+            <div className="pl-8 mt-8 flex items-center justify-between pr-4">
               <h2 className="font-Lato text-2xl">Lista de Clientes</h2>
               <button className={`w-[94px] border rounded-3xl py-2 font-Lato text-base mr-4 transition duration-300 
               ${visibleAdd == true ? "bg-white text-gray1 border-gray2 hover:bg-gray2 hover:border-gray2" 
@@ -153,21 +169,21 @@ const handleDelete = async (id: number) => {
               </div>
             </div>
 
-            <div className="pl-8 mt-6 mb-8 pr-19 w-full flex justify-between font-Lato font-medium">
-              {[1, 2, 3, "...", 8].map((num, index) => (
+            <div className="pl-8 mt-6 mb-8 pr-19 w-full flex gap-2 flex-wrap font-Lato font-medium">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
                 <button
-                key={index}
-                className={`size-[42px] border rounded-full active:outline-0 
-                ${activePage === num 
-                ? "bg-blue-500 text-white" 
-                : "bg-white border-gray2 text-gray1"}`}
-                onClick={() => typeof num === "number" && setActivePage(num)}
+                  key={num}
+                  className={`size-[42px] border rounded-full active:outline-0 
+                  ${activePage === num 
+                  ? "bg-blue-500 text-white" 
+                  : "bg-white border-gray2 text-gray1"}`}
+                  onClick={() => setActivePage(num)}
                 >
                   {num}
                 </button>
-                ))}
+              ))}
             </div>
-            <h2 className="pl-8 font-Lato font-medium text-base text-gray1">Mostrando {clientsPerPage} de {clients.length} resultados...</h2>
+            <h2 className="pl-8 font-Lato font-medium text-base text-gray1">Mostrando {currentClients.length} de {filteredClients.length} resultados...</h2>
           </div>
           
           {visibleEdit && (
