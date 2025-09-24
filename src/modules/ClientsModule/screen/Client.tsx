@@ -65,31 +65,20 @@ export const Client = () => {
         <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
           <div className="space-y-2">
             {currentClients.map((items) => (
-              <div className="w-full pl-8 pr-11 flex">
+              <div key={items.id} className="w-full pl-8 pr-11 flex">
                 <div
                   className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
-                    ${
-                      clientSelect === items
-                        ? "bg-blue-500 text-white hover:bg-blue-800"
-                        : "bg-white text-black hover:bg-gray2"
-                    }
-                    `}
+                    ${clientSelect === items ? "bg-blue-500 text-white hover:bg-blue-800" : "bg-white text-black hover:bg-gray2"}`}
                   onClick={() => {
                     setClientSelect(items);
                     setVisibleEdit(true);
                     setVisibleAdd(false);
                   }}
                 >
-                  <h2 className="w-full h-auto ml-4 mt-4 font-medium">
-                    {items.name}
-                  </h2>
-                  <h3 className="w-full h-auto ml-4 font-medium">
-                    {items.last_name}
-                  </h3>
+                  <h2 className="w-full h-auto ml-4 mt-4 font-medium">{items.name}</h2>
+                  <h3 className="w-full h-auto ml-4 font-medium">{items.last_name}</h3>
                   <h4 className="mt-1 ml-4">{items.id_number}</h4>
-                  <h5 className="mt-5 justify-end w-full flex pr-4">
-                    Facturas:{" "}
-                  </h5>
+                  <h5 className="mt-5 justify-end w-full flex pr-4">Facturas: </h5>
                 </div>
               </div>
             ))}
@@ -120,6 +109,7 @@ export const Client = () => {
       {visibleEdit && (
         <EditClient
           clientSelect={clientSelect}
+          setClientSelect={setClientSelect}
           edit={edit}
           handleSave={handleSave}
           handleChange={handleChange}
