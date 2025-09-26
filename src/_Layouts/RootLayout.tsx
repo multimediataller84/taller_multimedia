@@ -7,7 +7,7 @@ export const RootLayout = ({
   setSearch = () => {},
 }: React.PropsWithChildren<SerachProps>) => {
   return (
-    <div className="flex flex-col bg-backgroundBlue w-screen h-screen overflow-x-hidden ">
+    <div className="flex flex-col bg-backgroundBlue size-screen overflow-x-hidden ">
       <Navbar search={search} setSearch={setSearch} />
       <div className="flex w-full flex-grow">
         <Sidebar></Sidebar>
