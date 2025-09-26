@@ -10,6 +10,8 @@ const useCases = new UseCasesController(repository);
 export const useProfile = () => {
   const [profiles, setProfiles] = useState<TUserEndpoint[]>([]);
   const [profileSelect, setProfileSelect] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
 
   const [editProfile, setEditProfile] = useState(false);
   const [visibleEditProfile, setVisibleEditProfile] = useState(false);
@@ -19,9 +21,17 @@ export const useProfile = () => {
 
   const [activePage, setActivePage] = useState(1);
   const profilesPerPage = 10;
+
+  const [searchProfiles, setSearchProfiles] = useState("");
+  const filteredProfiles = profiles.filter((c) => {
+    const findProfile = `${c.name} ${c.last_name} ${c.username}`.toLowerCase();
+    return findProfile.includes(searchProfiles.toLowerCase());
+  });
+
   const indexOfLastProfile = activePage * profilesPerPage;
   const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
-  const currentProfiles = profiles.slice(
+
+  const currentProfiles = filteredProfiles.slice(
     indexOfFirstProfile,
     indexOfLastProfile
   );
@@ -33,6 +43,8 @@ export const useProfile = () => {
         setProfiles(data);
       } catch (error) {
         console.error("Error al cargar perfiles:", error);
+      }finally {
+        setLoading(false); 
       }
     };
     fetchClients();
@@ -106,6 +118,8 @@ export const useProfile = () => {
   };
 
   return {
+    searchProfiles,
+    setSearchProfiles,
     handleAddProfile,
     handleChange,
     handleDelete,
@@ -122,5 +136,7 @@ export const useProfile = () => {
     addProfile,
     editProfile,
     visibleEditProfile,
+    loading,
+    setLoading
   };
 };
