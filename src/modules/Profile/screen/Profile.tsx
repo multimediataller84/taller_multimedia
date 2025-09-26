@@ -2,9 +2,12 @@ import EditProfile from "../../Profile/components/editProfile";
 import AddProfile from "../components/addProfile";
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { useProfile } from "../hooks/useProfile";
+import ContentLoader from 'react-content-loader'
 
 export const Profile = () => {
   const {
+    searchProfiles,
+    setSearchProfiles,
     handleAddProfile,
     handleChange,
     handleDelete,
@@ -20,11 +23,28 @@ export const Profile = () => {
     setActivePage,
     addProfile,
     editProfile,
-    visibleEditProfile
+    visibleEditProfile,
+    loading,
+    setLoading
   } = useProfile();
 
+  const ProfileLoader = () => (
+  <ContentLoader
+    speed={2}
+    width="100%"
+    height="auto"
+    backgroundColor="#f3f3f3"
+    foregroundColor="#ecebeb"
+    className="w-full"
+  >
+    <rect x="20" y="20" rx="4" ry="4" width="200" height="5" />
+    <rect x="20" y="45" rx="4" ry="4" width="180" height="5" />
+  </ContentLoader>
+  );
+
+
   return (
-    <RootLayout search="" setSearch={() => {}}>
+    <RootLayout search={searchProfiles} setSearch={setSearchProfiles}>
       <div className="w-1/5 bg-[#E9EEF0] flex-col  ">
         <div className="flex justify-between mt-8 ml-8">
           <h2 className="font-Lato text-2xl">Lista de Perfiles</h2>
@@ -59,14 +79,23 @@ export const Profile = () => {
 
         <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
           <div className="space-y-2">
-            {currentProfiles.map((items) => (
+            {loading ? ( 
+            [...Array(currentProfiles)].map((_, index) => (
+              <div key={index} className="w-full pl-8 pr-11 flex">
+                <div className="w-full rounded-xl pb-4 shadow bg-white">
+                  <ProfileLoader />
+                </div>
+              </div>
+            ))
+          ) : ( 
+            currentProfiles.map((items) => (
               <div className="w-full pl-8 pr-18 flex">
                 <div
-                  className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-300 
+                  className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                             ${
                               profileSelect === items
-                                ? "bg-blue-500 text-white"
-                                : "bg-white text-black"
+                                ? "bg-blue-500 text-white hover:bg-blue-800"
+                                : "bg-white text-black hover:bg-gray2"
                             }
                             `}
                   onClick={() => {
@@ -84,7 +113,10 @@ export const Profile = () => {
                   </h3>
                 </div>
               </div>
-            ))}
+            ))
+          )}
+
+
           </div>
         </div>
 

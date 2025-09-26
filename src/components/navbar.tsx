@@ -21,7 +21,7 @@ export const Navbar = (props: SerachProps) => {
             <div className='flex justify-center w-full'>
             <input
               type="text"
-              placeholder="Buscar cliente..."
+              placeholder="Buscar"
               value={props.search}
               onChange={(e) => props.setSearch(e.target.value)}
               className={`w-[558px] h-9 pl-4 pb-1 
