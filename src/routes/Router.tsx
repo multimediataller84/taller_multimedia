@@ -59,7 +59,7 @@ export const Router = () => {
       <Route
         path="/profiles"
         element={
-          <ProtectedRoute allowedRoles={["employee", "admin"]}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <Profile />
           </ProtectedRoute>
         }
