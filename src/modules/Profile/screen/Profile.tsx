@@ -80,7 +80,7 @@ export const Profile = () => {
         <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
           <div className="space-y-2">
             {loading ? ( 
-            [...Array(currentProfiles)].map((_, index) => (
+            [...Array(5)].map((_, index) => (
               <div key={index} className="w-full pl-8 pr-11 flex">
                 <div className="w-full rounded-xl pb-4 shadow bg-white">
                   <ProfileLoader />

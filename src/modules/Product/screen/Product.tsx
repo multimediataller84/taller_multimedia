@@ -1,5 +1,6 @@
 import { useProduct } from "../hooks/useProduct";
 import { ProductFormModal } from "../components/ProductFormModal";
+import Select from "react-select";
 import TaxExcelUploader from "../components/TaxExcelUploader";
 import { ProductTable } from "../components/ProductsTable";
 import { RootLayout } from "../../../_Layouts/RootLayout";
@@ -24,19 +25,37 @@ export default function Product() {
 
   return (
     <RootLayout search={searchProducts} setSearch={setSearchProducts}>
-      <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-4">
-        <div className="flex items-center justify-between ">
-          <h2 className="font-Lato text-2xl ">Productos</h2>
-          <button
+      <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-8 ">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col space-y-2.5">
+            <h2 className="font-Lato text-2xl">Inventario</h2>
+            <h3 className="font-Lato font-medium text-base text-gray1">
+              Lista completa del inventario de productos en sistema
+            </h3>
+          </div>
+          
+          <div className="flex space-x-2">
+
+            <select className="appearance-none w-[220px]  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
+            id="categoria"
+            name="categoria">
+              <option>Categoría</option>
+              <option >Administrador</option>
+              <option >Empleado</option>
+            </select> 
+        
+            <button
             onClick={openCreate}
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base mr-4 
-              transition duration-300 bg-blue-500 hover:bg-blue-800 text-white"
-          >
-            + Nuevo producto
-          </button>
+            className="w-[220px] border rounded-3xl py-2  font-Lato text-base mr-4 
+              transition duration-300 bg-blue-500 hover:bg-blue-800 text-white">
+              Añadir Producto
+            </button>
+          </div>
+                   
+      
         </div>
 
-        <TaxExcelUploader />
+       {/*<TaxExcelUploader />*/}
 
         {loading ? (
           <div className="p-6">Cargando…</div>
