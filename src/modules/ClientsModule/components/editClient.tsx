@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
+import { useCredit } from "../hooks/useCredit";
+import CreditSummary from "../components/CreditSummary";
+import CreditTable from "../components/CreditTable";
+import CreditRequestModal from "../components/CreditRequestModal";
+import CreditPaymentModal from "../components/CreditPaymentModal";
 
-interface editClientProps {
+interface editClientProps { 
   clientSelect: TCustomerEndpoint | null;
   setClientSelect: React.Dispatch<React.SetStateAction<any>>;
   edit: boolean;
@@ -29,6 +34,22 @@ export default function editClient(props: editClientProps) {
       };
     });
   }, [props.clientSelect?.id]);
+
+  const {
+  list,
+  summary,
+  loading,
+  requestCredit,
+  approve,
+  reject,
+  close,
+  addPayment,
+  refetch,     
+} = useCredit(props.clientSelect?.id ?? 0);
+
+  const [openRequest, setOpenRequest] = useState(false);
+  const [openPay, setOpenPay] = useState(false);
+  const [currentCredit, setCurrentCredit] = useState<any>(null);
 
   return (
     <div className="w-[65%] flex flex-col ">
@@ -207,6 +228,44 @@ export default function editClient(props: editClientProps) {
                 <label htmlFor="credit_enabled" className="font-medium">
                   Habilitar crédito
                 </label>
+
+                  {/* --- Resumen de crédito --- */}
+                  <div className="mt-4">
+                    <CreditSummary summary={summary} />
+                  </div>
+
+                  {/* --- Tabla de créditos --- */}
+                  <div className="mt-2">
+                    {loading ? (
+                      <div className="text-sm text-gray-500">Cargando créditos…</div>
+                    ) : (
+                      <CreditTable
+                        rows={list}
+                        onApprove={approve}
+                        onReject={reject}
+                        onClose={close}
+                        onPay={(row) => { setCurrentCredit(row); setOpenPay(true); }}
+                      />
+                    )}
+                  </div>
+
+                  {/* --- Modales --- */}
+                  <CreditRequestModal
+                    open={openRequest}
+                    onClose={() => setOpenRequest(false)}
+                    onSubmit={({ credit_amount, due_date }) =>
+                      requestCredit({ credit_amount, due_date })
+                    }
+                  />
+
+                  <CreditPaymentModal
+                    open={openPay}
+                    credit={currentCredit}
+                    onClose={() => setOpenPay(false)}
+                    onSubmit={(amount) => currentCredit && addPayment(currentCredit.id, amount)}
+                  />
+
+
               </div>
 
               {props.clientSelect?.credit_enabled && (
