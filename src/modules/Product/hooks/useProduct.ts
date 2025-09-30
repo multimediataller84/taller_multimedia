@@ -14,7 +14,7 @@ export function useProduct() {
   const [editing, setEditing] = useState<TProductEndpoint | null>(null);
 
   const [activePage, setActivePage] = useState(1);
-  const productosPerPage = 10;
+  const productosPerPage = 8;
 
   const [searchProducts, setSearchProducts] = useState("");
   const filteredProducts = products.filter((c) => {
@@ -65,9 +65,7 @@ export function useProduct() {
   };
 
   const handleDelete = async (row: TProductEndpoint) => {
-    if (confirm(`¿Eliminar producto "${row.product_name}"?`)) {
-      await deleteProduct(row.id);
-    }
+     deleteProduct(row.id);
   };
 
   const headers = useMemo(

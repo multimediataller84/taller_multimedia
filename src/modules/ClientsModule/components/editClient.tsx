@@ -65,6 +65,7 @@ export default function editClient(props: editClientProps) {
                     focus:outline-blue-500 focus:outline-2"
                       type="text"
                       id="cedula"
+                      maxLength={9}
                       name="id_number"
                       value={props.clientSelect?.id_number || ""}
                       onChange={props.handleChange}
@@ -76,8 +77,9 @@ export default function editClient(props: editClientProps) {
                     <label htmlFor="telefono">Teléfono</label>
                     <input className="w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     focus:outline-blue-500 focus:outline-2"
-                      type="text"
+                      type="number"
                       id="telefono"
+                      maxLength={8}
                       name="phone"
                       value={props.clientSelect?.phone || ""}
                       onChange={props.handleChange}

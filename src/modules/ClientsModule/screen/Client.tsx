@@ -32,11 +32,9 @@ export const Client = () => {
   const ClientLoader = () => (
   <ContentLoader
     speed={2}
-    width="100%"
-    height="auto"
-    backgroundColor="#f3f3f3"
+
     foregroundColor="#ecebeb"
-    className="w-full"
+    className="w-full h-auto  bg-white rounded-xl pb-4 shadow"
   >
     <rect x="20" y="20" rx="4" ry="4" width="200" height="10" />
     <rect x="20" y="45" rx="4" ry="4" width="180" height="10" />
@@ -82,11 +80,9 @@ export const Client = () => {
        <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8">
         <div className="space-y-2">
           {loading ? ( 
-            [...Array(currentClients)].map((_, index) => (
+            [...Array(4)].map((_, index) => (
               <div key={index} className="w-full pl-8 pr-11 flex">
-                <div className="w-full rounded-xl pb-4 shadow bg-white">
                   <ClientLoader />
-                </div>
               </div>
             ))
           ) : (
