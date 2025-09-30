@@ -30,7 +30,7 @@ export const useInvoiceHistory = () => {
     return [...invoices].sort((a, b) => {
       const da = new Date(a.issue_date ?? a.createdAt ?? 0).getTime();
       const db = new Date(b.issue_date ?? b.createdAt ?? 0).getTime();
-      return db - da; //más recientes primero
+      return db - da; 
     });
   }, [invoices]);
 

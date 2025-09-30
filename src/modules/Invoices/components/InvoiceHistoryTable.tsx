@@ -23,7 +23,6 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data }) => {
           </thead>
           <tbody className="divide-y">
             {data.map((inv) => {
-              // Prefer createdAt (backend creation timestamp) for exact time
               const dateStr = inv.createdAt || inv.issue_date || inv.updatedAt || inv.due_date || "";
               const d = dateStr ? new Date(dateStr) : null;
               const formatted = d ? d.toLocaleString() : "-";
