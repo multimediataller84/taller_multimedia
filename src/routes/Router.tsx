@@ -5,6 +5,7 @@ import { Home } from "../modules/Home/screen/Home";
 import Product from "../modules/Product/screen/Product";
 import { Client } from "../modules/ClientsModule/screen/Client";
 import {Profile} from "../modules/Profile/screen/Profile"
+import { Invoices } from "../modules/Invoices/screen/Invoices";
 
 
 export const Router = () => {
@@ -16,6 +17,7 @@ export const Router = () => {
       <Route Component={Product} path="/product" />
       <Route Component={Client} path="/clients" />
       <Route Component={Profile} path="/profiles"></Route>
+      <Route Component={Invoices} path="/facturas" />
     </Routes>
   );
 };
