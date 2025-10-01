@@ -68,13 +68,13 @@ export default function addProfile (props: addClientProps){
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
-                    <select className="w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <select className="appearance-none w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     focus:outline-blue-500 focus:outline-2"
                       id="role_id"
                       name="role_id"
                       value={props.profileSelect?.role_id || ""}
                       onChange={props.handleChange}>
-                        <option >Escoger rol</option>
+                        <option>Escoger rol</option>
                         <option value={1}>Administrador</option>
                         <option value={2}>Empleado</option>
                       </select>  
