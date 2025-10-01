@@ -1,55 +1,18 @@
-import { useEffect, useState } from "react";
 import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
-import { useCredit } from "../hooks/useCredit";
-import CreditSummary from "../components/CreditSummary";
-import CreditTable from "../components/CreditTable";
-import CreditRequestModal from "../components/CreditRequestModal";
-import CreditPaymentModal from "../components/CreditPaymentModal";
+import { useState } from "react";
+import Credit from "../../Credit/screen/Credit";
 
-interface editClientProps { 
-  clientSelect: TCustomerEndpoint | null;
-  setClientSelect: React.Dispatch<React.SetStateAction<any>>;
+interface editClientProps {
+  clientSelect: TCustomerEndpoint | null; 
   edit: boolean;
   handleSave: () => void;
-  handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
   handleDelete: (id: number) => void;
 }
 
 export default function editClient(props: editClientProps) {
+
   const [moveBar, setmMoveBar] = useState(0);
-
-  useEffect(() => {
-    if (!props.clientSelect) return;
-    props.setClientSelect((prev: any) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        credit_enabled: prev?.credit_enabled ?? false,
-        credit_unlimited: prev?.credit_unlimited ?? false,
-        credit_limit: prev?.credit_unlimited
-          ? null
-          : (typeof prev?.credit_limit === "number" ? prev.credit_limit : 0),
-      };
-    });
-  }, [props.clientSelect?.id]);
-
-  const {
-  list,
-  summary,
-  loading,
-  requestCredit,
-  approve,
-  reject,
-  close,
-  addPayment,
-  refetch,     
-} = useCredit(props.clientSelect?.id ?? 0);
-
-  const [openRequest, setOpenRequest] = useState(false);
-  const [openPay, setOpenPay] = useState(false);
-  const [currentCredit, setCurrentCredit] = useState<any>(null);
 
   return (
     <div className="w-[65%] flex flex-col ">
@@ -107,6 +70,7 @@ export default function editClient(props: editClientProps) {
       </div>
 
       <div className="w-auto bg-[#DEE8ED] size-full">
+        {/* TAB 0: Información General */}
         {moveBar === 0 && (
           <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
             <div className="flex space-x-8">
@@ -143,7 +107,7 @@ export default function editClient(props: editClientProps) {
               <label htmlFor="nombre" className="text-base text-black font-medium">Nombre</label>
               <input
                 className="w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        focus:outline-blue-500 focus:outline-2"
+                          focus:outline-blue-500 focus:outline-2"
                 type="text"
                 id="name"
                 name="name"
@@ -157,7 +121,7 @@ export default function editClient(props: editClientProps) {
               <label htmlFor="apellidos">Apellidos</label>
               <input
                 className="w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        focus:outline-blue-500 focus:outline-2"
+                          focus:outline-blue-500 focus:outline-2"
                 type="text"
                 id="apellidos"
                 name="last_name"
@@ -171,7 +135,7 @@ export default function editClient(props: editClientProps) {
               <label htmlFor="correoElectronico">Correo Eletrónico</label>
               <input
                 className="w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        focus:outline-blue-500 focus:outline-2"
+                          focus:outline-blue-500 focus:outline-2"
                 type="text"
                 id="correoElectronico"
                 name="email"
@@ -185,10 +149,10 @@ export default function editClient(props: editClientProps) {
               <label htmlFor="direccion">Dirección</label>
               <textarea
                 className="w-[472px] min-h-[96px] max-h-[132px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        focus:outline-blue-500 focus:outline-2 pt-2"
+                          focus:outline-blue-500 focus:outline-2 pt-2"
                 id="direccion"
                 name="address"
-                value={props.clientSelect?.address || ""}
+                value={props.clientSelect?.address}
                 onChange={props.handleChange}
                 placeholder="Dirección del cliente o empresa"
               />
@@ -196,137 +160,21 @@ export default function editClient(props: editClientProps) {
           </form>
         )}
 
+        {/*Facturas*/}
         {moveBar === 1 && (
-          <div className="p-8 font-Lato text-gray-600">
-            No hay facturas para mostrar.
+          <div className="p-8 font-Lato">
+            {/*Aquí se agregan facturas, digo yo*/}
+            Sección de Facturas (pendiente de implementar)
           </div>
         )}
 
-        {moveBar === 2 && (
-          <div className="pt-8 pl-8 pr-8">
-            <div className="border rounded-2xl bg-white p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <input
-                  id="credit_enabled"
-                  type="checkbox"
-                  checked={!!props.clientSelect?.credit_enabled}
-                  onChange={(e) =>
-                    props.setClientSelect((prev: any) => ({
-                      ...prev,
-                      credit_enabled: e.target.checked,
-                      ...(e.target.checked
-                        ? {
-                            credit_unlimited: prev?.credit_unlimited ?? false,
-                            credit_limit: prev?.credit_unlimited
-                              ? null
-                              : (typeof prev?.credit_limit === "number" ? prev.credit_limit : 0),
-                          }
-                        : {})
-                    }))
-                  }
-                />
-                <label htmlFor="credit_enabled" className="font-medium">
-                  Habilitar crédito
-                </label>
-
-                  {/* --- Resumen de crédito --- */}
-                  <div className="mt-4">
-                    <CreditSummary summary={summary} />
-                  </div>
-
-                  {/* --- Tabla de créditos --- */}
-                  <div className="mt-2">
-                    {loading ? (
-                      <div className="text-sm text-gray-500">Cargando créditos…</div>
-                    ) : (
-                      <CreditTable
-                        rows={list}
-                        onApprove={approve}
-                        onReject={reject}
-                        onClose={close}
-                        onPay={(row) => { setCurrentCredit(row); setOpenPay(true); }}
-                      />
-                    )}
-                  </div>
-
-                  {/* --- Modales --- */}
-                  <CreditRequestModal
-                    open={openRequest}
-                    onClose={() => setOpenRequest(false)}
-                    onSubmit={({ credit_amount, due_date }) =>
-                      requestCredit({ credit_amount, due_date })
-                    }
-                  />
-
-                  <CreditPaymentModal
-                    open={openPay}
-                    credit={currentCredit}
-                    onClose={() => setOpenPay(false)}
-                    onSubmit={(amount) => currentCredit && addPayment(currentCredit.id, amount)}
-                  />
-
-
-              </div>
-
-              {props.clientSelect?.credit_enabled && (
-                <div className="pl-6 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <input
-                      id="credit_limited"
-                      type="radio"
-                      name="credit_type"
-                      checked={!props.clientSelect?.credit_unlimited}
-                      onChange={() =>
-                        props.setClientSelect((prev: any) => ({
-                          ...prev,
-                          credit_unlimited: false,
-                          credit_limit: typeof prev?.credit_limit === "number" ? prev.credit_limit : 0,
-                        }))
-                      }
-                    />
-                    <label htmlFor="credit_limited">Límite</label>
-
-                    <input
-                      className="w-[200px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      placeholder="₡ 0.00"
-                      value={
-                        props.clientSelect?.credit_unlimited
-                          ? ""
-                          : (props.clientSelect?.credit_limit ?? 0)
-                      }
-                      disabled={props.clientSelect?.credit_unlimited}
-                      onChange={(e) =>
-                        props.setClientSelect((prev: any) => ({
-                          ...prev,
-                          credit_limit: Number(e.target.value || 0),
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <input
-                      id="credit_unlimited"
-                      type="radio"
-                      name="credit_type"
-                      checked={!!props.clientSelect?.credit_unlimited}
-                      onChange={() =>
-                        props.setClientSelect((prev: any) => ({
-                          ...prev,
-                          credit_unlimited: true,
-                          credit_limit: null,
-                        }))
-                      }
-                    />
-                    <label htmlFor="credit_unlimited">Sin límite</label>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+        {/*Créditos*/}
+        {moveBar === 2 && props.clientSelect?.id && (
+          <Credit
+            clientId={props.clientSelect.id}
+            clientName={`${props.clientSelect.name} ${props.clientSelect.last_name}`}
+            key={props.clientSelect.id}   // fuerza remount limpio al cambiar de cliente
+          />
         )}
       </div>
     </div>

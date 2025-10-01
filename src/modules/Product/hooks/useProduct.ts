@@ -14,10 +14,22 @@ export function useProduct() {
   const [editing, setEditing] = useState<TProductEndpoint | null>(null);
 
   const [activePage, setActivePage] = useState(1);
-  const clientsPerPage = 10;
-  const indexOfLastClient = activePage * clientsPerPage;
-  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentProducts = products.slice(indexOfFirstClient, indexOfLastClient);
+  const productosPerPage = 10;
+
+  const [searchProducts, setSearchProducts] = useState("");
+  const filteredProducts = products.filter((c) => {
+    const findProduct = `${c.category_id} ${c.product_name} ${c.id}`.toLowerCase();
+    return findProduct.includes(searchProducts.toLowerCase());
+  });
+
+  const indexOfLastProduct = activePage * productosPerPage;
+  const indexOfFirsProduct = indexOfLastProduct - productosPerPage;
+  
+  const currentProducts = filteredProducts.slice(
+    indexOfFirsProduct,
+    indexOfLastProduct
+  );
+
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -73,6 +85,8 @@ export function useProduct() {
   );
 
   return {
+    searchProducts,
+    setSearchProducts,
     loading,
     query,
     setQuery,

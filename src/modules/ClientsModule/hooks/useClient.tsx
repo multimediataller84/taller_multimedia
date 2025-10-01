@@ -7,6 +7,7 @@ const customerService = CustomerService.getInstance();
 export const useClient = () => {
   const [clients, setClients] = useState<TCustomerEndpoint[]>([]);
   const [clientSelect, setClientSelect] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const [edit, setEdit] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
@@ -25,6 +26,7 @@ export const useClient = () => {
 
   const indexOfLastClient = activePage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  
   const currentClients = filteredClients.slice(
     indexOfFirstClient,
     indexOfLastClient
@@ -37,6 +39,8 @@ export const useClient = () => {
         setClients(data);
       } catch (error) {
         console.error("Error al cargar clientes:", error);
+      }finally {
+        setLoading(false); 
       }
     };
     fetchClients();
@@ -125,5 +129,7 @@ export const useClient = () => {
     handleChange,
     handleAddClient,
     handleDelete,
+    loading,
+    setLoading
   };
 };

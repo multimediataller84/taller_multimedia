@@ -6,6 +6,8 @@ import { RootLayout } from "../../../_Layouts/RootLayout";
 
 export default function Product() {
   const {
+    searchProducts,
+    setSearchProducts,
     loading,
     fetchProducts,
     isModalOpen,
@@ -21,7 +23,7 @@ export default function Product() {
   } = useProduct();
 
   return (
-    <RootLayout search="" setSearch={() => {}}>
+    <RootLayout search={searchProducts} setSearch={setSearchProducts}>
       <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-4">
         <div className="flex items-center justify-between ">
           <h2 className="font-Lato text-2xl ">Productos</h2>

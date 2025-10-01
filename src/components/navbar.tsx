@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from 'react-router-dom';
-
+import { getRoleAuth } from "../utils/getRoleAuth";
+import { getUsernameAuth } from "../utils/getUsernameAuth";
 export interface SerachProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -21,7 +22,7 @@ export const Navbar = (props: SerachProps) => {
             <div className='flex justify-center w-full'>
             <input
               type="text"
-              placeholder="Buscar cliente..."
+              placeholder="Buscar"
               value={props.search}
               onChange={(e) => props.setSearch(e.target.value)}
               className={`w-[558px] h-9 pl-4 pb-1 
@@ -34,8 +35,8 @@ export const Navbar = (props: SerachProps) => {
           
           <div className="flex space-x-4">
             <div className="flex flex-col w-auto ">
-              <h2 className="text-base">Nombre</h2>
-              <h3 className="text-sm">Administrador</h3>
+              <h2 className="text-base">{getUsernameAuth()}</h2>
+              <h3 className="text-sm">{getRoleAuth()}</h3>
             </div>
 
             <button className="rounded-full w-13 h-12 border border-gray2 group active:outline-hidden
@@ -54,7 +55,7 @@ export const Navbar = (props: SerachProps) => {
           </div>
 
           {optionsMenu && <div className="bg-white absolute flex flex-col mt-[98px] right-0 mr-4 h-auto w-52 p-1 rounded-[4px] shadow-md text-gray1 z-100">
-            <Link to="/profiles" className="text-left px-4 font-lato text-base font-medium w-full py-4 hover:bg-gray3 hover:underline">Administración Perfiles</Link>
+            <Link to="/profiles" className={`text-left px-4 font-lato text-base font-medium w-full py-4 hover:bg-gray3 hover:underline ${getRoleAuth() === "admin" ? "block": "hidden"}`}>Administración Perfiles</Link>
             <button className="text-left px-4 font-lato text-base font-medium w-full py-4 hover:bg-gray3 hover:underline">Configuración</button>
             <div className="flex-col flex">
               <div className="px-2 h-0.5 w-full bg-gray2"></div>
