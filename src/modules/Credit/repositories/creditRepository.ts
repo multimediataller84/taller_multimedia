@@ -17,64 +17,85 @@ export type BackCredit = {
   createdAt?: string; updatedAt?: string;
 };
 
+export type TPaymentMethod = "Cash" | "Credit" | "Debit Card" | "Transfer";
+
 export type BackPayment = {
   id: number;
   credit_id: number;
+  invoice_id?: number;
   amount: number;
   payment_date?: string;
+  payment_method?: TPaymentMethod;
+  note?: string | null;
   createdAt?: string; updatedAt?: string;
 };
 
 export const creditRepository = {
-  async getCreditByCustomer(customerId: number): Promise<BackCredit | null> {
-    try {
-      const res = await apiClient.get(`/credit/all`, { params: { customer_id: customerId } });
-      const rows = unwrap<any[]>(res) ?? [];
-      return rows[0] ?? null;
-    } catch (e: any) {
-      if (e?.response?.status === 404) return null; // ✅ “sin crédito” es válido
+ async getCreditByCustomer(customerId: number): Promise<BackCredit | null> {
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+  const fetchAll = async () => {
+    const res = await apiClient.get(`/credit/all`);
+    const rows = unwrap<any[]>(res) ?? [];
+    // ✅ FILTRA ESTRICTO POR customer_id
+    const found = rows.find((x: any) => Number(x?.customer_id) === Number(customerId)) ?? null;
+    return found as BackCredit | null;
+  };
+
+  try {
+    // Hacemos UNA sola llamada a /credit/all y filtramos
+    const found = await fetchAll();
+    if (found) return found;
+
+    // Si no se encontró, no retornes la primera fila: simplemente null
+    return null;
+  } catch (e1: any) {
+    // Si hay rate limit (429), reintenta UNA vez tras 250ms
+    if (e1?.response?.status === 429) {
+      await sleep(250);
       try {
-        const res = await apiClient.get(`/credit/all`);
-        const rows = unwrap<any[]>(res) ?? [];
-        return rows.find((x: any) => x?.customer_id === customerId) ?? null;
-      } catch (e2: any) {
-        if (e2?.response?.status === 404) return null;
-        throw e2;
+        const found = await fetchAll();
+        return found ?? null;
+      } catch {
+        return null;
       }
     }
-  },
+
+    // Si el backend devuelve 404 en /credit/all, significa que no hay filas
+    if (e1?.response?.status === 404) return null;
+
+    // Otros errores: devuelve null para que la UI no herede estado
+    return null;
+  }
+},
 
   async getPayments(creditId: number): Promise<BackPayment[]> {
     try {
       const res = await apiClient.get(`/credit/payment/all`, { params: { credit_id: creditId } });
       return unwrap<BackPayment[]>(res) ?? [];
     } catch (e: any) {
-      if (e?.response?.status === 404) return []; // ✅ “sin pagos” es válido
+      if (e?.response?.status === 404) return []; // sin pagos
       throw e;
     }
   },
 
-  // ⬇️ Versión con diagnóstico de token y header Authorization forzado
   async createCredit(customerId: number, amount: number): Promise<BackCredit> {
     const body = {
       customer_id: customerId,
       approved_credit_amount: Number(amount),
       balance: Number(amount),
-      status: "Pending" as const, // el back espera "Pending" | "Aproved" | "Revoked"
+      status: "Pending" as const,
     };
 
-    // Diagnóstico: ¿tenemos token?
     const token = sessionStorage.getItem("authToken");
     if (import.meta.env.MODE !== "production") {
       console.log("[createCredit] body:", body, "hasToken:", !!token);
     }
 
-    // Forzamos Authorization en este POST (además del interceptor)
-    const res = await apiClient.post(
-      `/credit`,
-      body,
-      token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
-    );
+    const res = await apiClient.post(`/credit`, body, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      withCredentials: false, // evita CSRF por cookie si aplica
+    });
 
     return unwrap<BackCredit>(res);
   },
@@ -91,14 +112,25 @@ export const creditRepository = {
     await apiClient.delete(`/credit/${creditId}`);
   },
 
-  async createPayment(creditId: number, amount: number): Promise<BackPayment> {
-    const res = await apiClient.post(`/credit/payment`, {
-      credit_id: creditId,
-      amount: Number(amount),
-      payment_date: new Date().toISOString(),
-      payment_method_id: 1,
-      note: null,
-    });
+  // ✅ Firma nueva: un solo payload con invoice_id y payment_method opcionales
+  async createPayment(payload: {
+    credit_id: number;
+    amount: number;
+    payment_date?: string;
+    payment_method?: TPaymentMethod;
+    note?: string | null;
+    invoice_id?: number;
+  }): Promise<BackPayment> {
+    const body = {
+      credit_id: payload.credit_id,
+      amount: Number(payload.amount),
+      payment_date: payload.payment_date ?? new Date().toISOString(),
+      ...(payload.payment_method ? { payment_method: payload.payment_method } : {}),
+      ...(typeof payload.invoice_id === "number" ? { invoice_id: payload.invoice_id } : {}),
+      note: payload.note ?? null,
+    };
+
+    const res = await apiClient.post(`/credit/payment`, body);
     return unwrap<BackPayment>(res);
   },
 

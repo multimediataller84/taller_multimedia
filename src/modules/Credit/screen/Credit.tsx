@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCredit } from "../hooks/useCredit";
 import CreditAssignForm from "../components/CreditAssignForm";
 import CreditBalance from "../components/CreditBalance";
 import CreditActions from "../components/CreditActions";
 import PaymentModal from "../components/PaymentModal";
-import InvoiceModal from "../components/InvoiceModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import InvoiceCard from "../components/InvoiceCard";
 import PaymentCard from "../components/PaymentCard";
@@ -25,7 +24,6 @@ export default function Credit({ clientId, clientName = "" }: Props) {
     credit,
     hasCredit,
     create,
-    addInvoice,
     removeInvoice,
     payInvoice,
     removePayment,
@@ -35,7 +33,6 @@ export default function Credit({ clientId, clientName = "" }: Props) {
     errorMsg,
   } = useCredit(clientId);
 
-  const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
 
   const [confirmDeleteCreditOpen, setConfirmDeleteCreditOpen] = useState(false);
@@ -45,6 +42,14 @@ export default function Credit({ clientId, clientName = "" }: Props) {
   const [invoiceForPayment, setInvoiceForPayment] = useState<string | null>(null);
 
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setInvoiceToDelete(null);
+    setPaymentToDelete(null);
+    setInvoiceToCancel(null);
+    setInvoiceForPayment(null);
+    setSelectedInvoiceId(null);
+  }, [clientId]);
 
   const selectedInvoice = useMemo(
     () => credit?.invoices.find(i => i.id === selectedInvoiceId) ?? null,
@@ -90,13 +95,6 @@ export default function Credit({ clientId, clientName = "" }: Props) {
           <CreditBalance credit={credit!} />
           {errorMsg && <span className="text-red-600 text-sm">{errorMsg}</span>}
 
-          <button
-            type="button"
-            onClick={() => setInvoiceOpen(true)}
-            className="w-[160px] h-[34px] rounded-3xl bg-white border border-blue-500 text-blue-500 font-Lato font-bold transition duration-300 hover:bg-blue-500 hover:text-white"
-          >
-            Agregar factura
-          </button>
           <span className="text-xs text-gray-600">
             Disponible: {formatCRC(credit!.remaining)}
           </span>
@@ -164,16 +162,6 @@ export default function Credit({ clientId, clientName = "" }: Props) {
           )}
         </div>
       </div>
-
-      <InvoiceModal
-        open={invoiceOpen}
-        maxAmount={credit!.remaining}
-        onClose={() => setInvoiceOpen(false)}
-        onConfirm={(amount) => {
-          const res = addInvoice(amount);
-          if (res.ok) setInvoiceOpen(false);
-        }}
-      />
 
       <PaymentModal
         open={payOpen}
