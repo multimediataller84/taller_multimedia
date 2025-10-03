@@ -69,13 +69,13 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               placeholder="Ej. LPZ-HB-01"
               className="flex-1 border p-2 rounded"
             />
-            <button
+            {/*<button
               type="button"
               onClick={autoGenerateSku}
               className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200"
             >
               Auto
-            </button>
+            </button> */}
           </div>
 
           {/* Categoría (bloqueada al editar) */}
