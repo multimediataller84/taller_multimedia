@@ -3,6 +3,9 @@ import AddProfile from "../components/addProfile";
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { useProfile } from "../hooks/useProfile";
 import ContentLoader from 'react-content-loader'
+import ConfirmationAddProfile from "../components/confirmationAddProfile";
+import ConfirmationDeleteProfile from "../components/confirmationDeleteProfile";
+import ConfirmationEditProfile from "../components/confirmationEditProfile";
 
 export const Profile = () => {
   const {
@@ -25,23 +28,23 @@ export const Profile = () => {
     editProfile,
     visibleEditProfile,
     loading,
-    setLoading
+    confirmationAddProfile,
+    setConfirmationAddProfile,
+    confirmationEditProfile,
+    setConfirmationEditProfile,
+    confirmationDeleteProfile,
+    setConfirmationDeleteProfile
   } = useProfile();
 
   const ProfileLoader = () => (
-  <ContentLoader
-    speed={2}
-    width="100%"
-    height="auto"
-    backgroundColor="#f3f3f3"
-    foregroundColor="#ecebeb"
-    className="w-full"
-  >
-    <rect x="20" y="20" rx="4" ry="4" width="200" height="5" />
-    <rect x="20" y="45" rx="4" ry="4" width="180" height="5" />
-  </ContentLoader>
+    <ContentLoader
+      speed={2}
+      foregroundColor="#ecebeb"
+      className="w-full h-20 bg-white rounded-xl pb-4 shadow"
+    >
+      <rect x="20" y="20" rx="4" ry="4" width="200" height="5" />
+    </ContentLoader>
   );
-
 
   return (
     <RootLayout search={searchProfiles} setSearch={setSearchProfiles}>
@@ -80,11 +83,9 @@ export const Profile = () => {
         <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
           <div className="space-y-2">
             {loading ? ( 
-            [...Array(5)].map((_, index) => (
+            [...Array(4)].map((_, index) => (
               <div key={index} className="w-full pl-8 pr-11 flex">
-                <div className="w-full rounded-xl pb-4 shadow bg-white">
                   <ProfileLoader />
-                </div>
               </div>
             ))
           ) : ( 
@@ -93,7 +94,7 @@ export const Profile = () => {
                 <div
                   className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                             ${
-                              profileSelect === items
+                              profileSelect?.id === items.id
                                 ? "bg-blue-500 text-white hover:bg-blue-800"
                                 : "bg-white text-black hover:bg-gray2"
                             }
@@ -102,6 +103,9 @@ export const Profile = () => {
                     setProfileSelect(items);
                     setVisibleEditProfile(true);
                     setVisibleAddProfile(false);
+                    setConfirmationAddProfile(false);
+                    setConfirmationDeleteProfile(false);
+                    setConfirmationEditProfile(false);
                   }}
                 >
                   <h2 className="w-full h-auto ml-4 mt-4 font-medium">
@@ -115,8 +119,6 @@ export const Profile = () => {
               </div>
             ))
           )}
-
-
           </div>
         </div>
 
@@ -140,6 +142,15 @@ export const Profile = () => {
           Mostrando 10 de {profiles.length} resultados...
         </h2>
       </div>
+
+      {confirmationAddProfile && 
+      (<ConfirmationAddProfile/>)}
+
+      {confirmationDeleteProfile && 
+      (<ConfirmationDeleteProfile/>)}
+
+      {confirmationEditProfile &&
+      (<ConfirmationEditProfile/>)}
 
       {visibleEditProfile && (
         <EditProfile

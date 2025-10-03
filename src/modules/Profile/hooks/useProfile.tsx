@@ -12,7 +12,6 @@ export const useProfile = () => {
   const [profileSelect, setProfileSelect] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-
   const [editProfile, setEditProfile] = useState(false);
   const [visibleEditProfile, setVisibleEditProfile] = useState(false);
 
@@ -35,6 +34,10 @@ export const useProfile = () => {
     indexOfFirstProfile,
     indexOfLastProfile
   );
+
+  const [confirmationEditProfile, setConfirmationEditProfile] = useState(false);
+  const [confirmationAddProfile, setConfirmationAddProfile] = useState(false);
+  const [confirmationDeleteProfile, setConfirmationDeleteProfile] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -59,6 +62,12 @@ export const useProfile = () => {
 
       setVisibleAddProfile(false);
       setProfileSelect(null);
+      if (addProfile){
+        setConfirmationAddProfile(true);
+        setTimeout(()=>{
+          setConfirmationAddProfile(false);
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error al crear perfil:", error);
     }
@@ -80,6 +89,11 @@ export const useProfile = () => {
       if (editProfile) {
         setVisibleAddProfile(false);
         setVisibleEditProfile(false);
+        setConfirmationEditProfile(true);
+         setProfileSelect(false);
+       setTimeout(()=>{
+          setConfirmationEditProfile(false);
+        }, 2000);
       }
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
@@ -112,6 +126,12 @@ export const useProfile = () => {
       await useCases.delete.execute(id);
       setProfiles((prev) => prev.filter((c) => c.id !== id));
       setEditProfile(false);
+      setVisibleEditProfile(false);
+      setVisibleAddProfile(false);
+      setConfirmationDeleteProfile(true);
+      setTimeout(()=>{
+        setConfirmationDeleteProfile(false);
+      }, 2000);
     } catch (error) {
       console.error("Error al eliminar cliente:", error);
     }
@@ -137,6 +157,11 @@ export const useProfile = () => {
     editProfile,
     visibleEditProfile,
     loading,
-    setLoading
+    confirmationAddProfile,
+    setConfirmationAddProfile,
+    confirmationEditProfile,
+    setConfirmationEditProfile,
+    confirmationDeleteProfile,
+    setConfirmationDeleteProfile
   };
 };

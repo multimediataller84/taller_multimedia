@@ -32,6 +32,10 @@ export const useClient = () => {
     indexOfLastClient
   );
 
+  const [confirmationEditClient, setConfirmationEditClient] = useState(false);
+  const [confirmationAddClient, setConfirmationAddClient] = useState(false);
+  const [confirmationDeleteClient, setConfirmationDeleteClient] = useState(false);
+
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -62,6 +66,11 @@ export const useClient = () => {
       if (edit) {
         setVisibleEdit(false);
         setEdit(false);
+        setConfirmationEditClient(true);
+        setClientSelect(false);
+      setTimeout(() => {
+        setConfirmationEditClient(false);
+      }, 2000);
       }
     } catch (error) {
       console.error("Error al actualizar cliente:", error);
@@ -73,6 +82,12 @@ export const useClient = () => {
       const created = await customerService.post(newClient);
       setClients((prev) => [...prev, created]);
       setVisibleAdd(false);
+      if (add){
+        setConfirmationAddClient(true);
+        setTimeout(()=>{
+          setConfirmationAddClient(false);
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error al añadir cliente:", error);
     }
@@ -104,6 +119,10 @@ export const useClient = () => {
       await customerService.delete(id);
       setClients((prev) => prev.filter((c) => c.id !== id));
       setVisibleEdit(false);
+      setConfirmationDeleteClient(true);
+      setTimeout(()=>{
+          setConfirmationDeleteClient(false);
+        }, 2000);
     } catch (error) {
       console.error("Error al eliminar cliente:", error);
     }
@@ -130,6 +149,11 @@ export const useClient = () => {
     handleAddClient,
     handleDelete,
     loading,
-    setLoading
+    confirmationEditClient,
+    setConfirmationEditClient,
+    confirmationAddClient,
+    setConfirmationAddClient,
+    confirmationDeleteClient,
+    setConfirmationDeleteClient
   };
 };
