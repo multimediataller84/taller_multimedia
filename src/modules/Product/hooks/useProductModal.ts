@@ -93,7 +93,7 @@ export function useProductForm(
     try {
       const options = {
         description: categoryId,
-        limit: 50,
+        limit: 55,
         offset: 0,
         orderDirection: "ASC",
       } as TGetAllOptions;
