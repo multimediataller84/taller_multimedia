@@ -8,6 +8,7 @@ import { TCategoryEndpoint } from "../models/types/TCategoryEndpoint";
 import { generateSku } from "../utils/generateSku";
 import { ProductFormInputs } from "../models/types/TProductsForm";
 import { TTaxEndpoint } from "../models/types/TTaxEndpoint";
+import type { TGetAllOptions } from "../../../models/types/TGetAllOptions";
 
 const repository = ProductRepository.getInstance();
 const useCases = new UseCasesController(repository);
@@ -85,26 +86,28 @@ export function useProductForm(
     setSkuStatus("idle");
   }, [isOpen, initialData, reset]);
 
-  // Cargar impuestos según el nombre (o todos si vacío)
   useEffect(() => {
     if (!isOpen) return;
 
-    const loadTaxes = async () => {
-      try {
-        const taxesResponse = await useCases.getAllTaxes.execute({
-          description: productName || "",
-          limit: 50,
-          offset: 0,
-          orderDirection: "ASC",
-        });
-        setTaxes(taxesResponse.data);
-      } catch (err) {
-        console.error("Error al cargar impuestos", err);
-      }
-    };
+  const loadTaxes = async () => {
+    try {
+      const options = {
+        limit: 50,
+        offset: 0,
+        orderDirection: "ASC" as const,
+        ...(categoryId ? { category: Number(categoryId) } : {}),
+      } as TGetAllOptions & { category?: number };
+
+      const taxesResponse = await useCases.getAllTaxes.execute(options as any);
+      setTaxes(taxesResponse.data);
+    } catch (err) {
+      console.error("Error al cargar impuestos", err);
+      setTaxes([]);
+    }
+  };
 
     loadTaxes();
-  }, [productName, isOpen]);
+  }, [categoryId, isOpen]);
 
   // SKU auto
   const autoGenerateSku = () => {
