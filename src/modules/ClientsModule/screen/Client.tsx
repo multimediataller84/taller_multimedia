@@ -3,8 +3,13 @@ import AddClient from "../components/addClient";
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { useClient } from "../hooks/useClient";
 import ContentLoader from 'react-content-loader'
+import ConfirmationEditClient from "../components/confirmationEditClient";
+import ConfirmationAddClient from "../components/confirmationAddClient";
+import ConfirmationDeleteClient from "../components/confirmationDeleteClient"
+
 
 export const Client = () => {
+
   const {
     search,
     setSearch,
@@ -26,15 +31,19 @@ export const Client = () => {
     handleAddClient,
     handleDelete,
     loading,
-    setLoading
+    confirmationEditClient,
+    setConfirmationEditClient,
+    confirmationAddClient,
+    setConfirmationAddClient,
+    confirmationDeleteClient,
+    setConfirmationDeleteClient
   } = useClient();
 
   const ClientLoader = () => (
   <ContentLoader
     speed={2}
-
     foregroundColor="#ecebeb"
-    className="w-full h-auto  bg-white rounded-xl pb-4 shadow"
+    className="w-full h-auto bg-white rounded-xl pb-4 shadow"
   >
     <rect x="20" y="20" rx="4" ry="4" width="200" height="10" />
     <rect x="20" y="45" rx="4" ry="4" width="180" height="10" />
@@ -91,7 +100,7 @@ export const Client = () => {
                 <div
                   className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                     ${
-                      clientSelect === items
+                      clientSelect?.id === items.id
                         ? "bg-blue-500 text-white hover:bg-blue-800"
                         : "bg-white text-black hover:bg-gray2"
                     }`}
@@ -99,6 +108,9 @@ export const Client = () => {
                     setClientSelect(items);
                     setVisibleEdit(true);
                     setVisibleAdd(false);
+                    setConfirmationEditClient(false);
+                    setConfirmationAddClient(false);
+                    setConfirmationDeleteClient(false);   
                   }}
                 >
                   <h2 className="w-full ml-4 mt-4 font-medium">{items.name}</h2>
@@ -144,6 +156,15 @@ export const Client = () => {
         />
       )}
 
+      {confirmationEditClient &&
+      (<ConfirmationEditClient/>)}
+      
+      {confirmationAddClient && 
+      (<ConfirmationAddClient/>)}
+
+      {confirmationDeleteClient && 
+      (<ConfirmationDeleteClient/>)}
+
       {visibleAdd && (
         <AddClient
           visibleAdd={visibleAdd}
@@ -155,6 +176,8 @@ export const Client = () => {
           handleChange={handleChange}
         />
       )}
+
+      
     </RootLayout>
   );
 };
