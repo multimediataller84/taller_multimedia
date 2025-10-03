@@ -3,6 +3,14 @@ import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
 import { TCustomer } from "../models/types/TCustomer";
 import apiClient from "../../Login/interceptors/apiClient";
 
+type CreditSummary = {
+  enabled: boolean;
+  unlimited: boolean;
+  limit: number | null;
+  used: number;
+  available: number | "infinite";
+};
+
 export class CustomerService implements ICustomerService {
   private static instance: CustomerService;
 
@@ -11,6 +19,31 @@ export class CustomerService implements ICustomerService {
       CustomerService.instance = new CustomerService();
     }
     return CustomerService.instance;
+  }
+
+  private toDto(data: TCustomer) {
+    const anyData = data as any;
+    const hasNested = anyData.credit != null;
+
+    const enabled = hasNested ? !!anyData.credit.enabled : !!anyData.credit_enabled;
+    const unlimited = hasNested ? !!anyData.credit.unlimited : !!anyData.credit_unlimited;
+    const limit = unlimited
+      ? null
+      : (hasNested
+          ? (anyData.credit.limit ?? 0)
+          : (anyData.credit_limit ?? 0));
+
+    return {
+      id_number: anyData.id_number ?? null,
+      phone: anyData.phone ?? null,
+      name: anyData.name,
+      last_name: anyData.last_name ?? null,
+      email: anyData.email ?? null,
+      address: anyData.address ?? null,
+      credit_enabled: enabled,
+      credit_unlimited: unlimited,
+      credit_limit: limit,
+    };
   }
 
   async post(data: TCustomer): Promise<TCustomerEndpoint> {

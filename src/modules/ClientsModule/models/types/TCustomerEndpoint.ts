@@ -6,6 +6,9 @@ export type TCustomerEndpoint = {
   id_number: string,
   email: string,
   phone: number,
+  credit_enabled: boolean,
+  credit_unlimited: boolean,
+  credit_limit: number | null,
   createdAt: Date,
   updatedAt: Date
 }

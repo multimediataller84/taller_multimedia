@@ -10,6 +10,7 @@ const useLogin = () => {
   const [user, setUser] = useState<TUser | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const clearError = () => setError(null);
 
   const loginRepository = LoginRepository.getInstance();
   const postLoginUseCase = new PostLoginUseCase(loginRepository);
@@ -32,7 +33,7 @@ const useLogin = () => {
   }
 };
 
-  return { requestUser, user, loading, error, refresh: requestUser };
+  return { requestUser, user, loading, error, clearError, refresh: requestUser };
 };
 
 export default useLogin;

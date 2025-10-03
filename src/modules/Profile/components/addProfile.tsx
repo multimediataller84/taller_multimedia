@@ -1,3 +1,4 @@
+import { useState } from "react";
 interface addClientProps{
     visibleAddProfile: boolean;
     setVisibleAddProfile: React.Dispatch<React.SetStateAction<boolean>>;  
@@ -9,12 +10,12 @@ interface addClientProps{
 }
 
 export default function addProfile (props: addClientProps){
-
+    const [moveBar, setmMoveBar] = useState(0);
     return (
-        <div className="flex-1 flex-col">
-            <div className="bg-gray3 w-full h-min flex flex-col">
+        <div className="w-[65%] flex flex-col">
+            <div className="bg-gray3 w-full flex flex-col">
               <div className="flex w-full justify-between pt-8">
-                <h2 className="pl-8 font-Lato text-2xl ">Añadir Cliente</h2>
+                <h2 className="pl-8 font-Lato text-2xl ">Añadir Perfil</h2>
                 <div className="flex space-x-8 pr-4">
                   <button
                     className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300  ${
@@ -40,25 +41,40 @@ export default function addProfile (props: addClientProps){
                 </div>
               </div>
 
-              <div className="w-full flex pt-8 pl-8 pb-4 font-Lato text-base space-x-8">
-                <button className="w-[220px] text-center font-medium">Información General</button>
+              <div className="flex flex-col w-full">
+                <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
+                  <h2 className={`w-1/3 text-center ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
+                  onClick={() => (setmMoveBar(0))}
+                  >Información General</h2>
+                  <h3 className={`w-1/3 text-center ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
+                  onClick={() => (setmMoveBar(1))}
+                  >Facturas</h3>
+                  <h4 className={`w-1/3 text-center ${moveBar === 2 ? "text-blue-500" : "text-gray1"}`}
+                  onClick={() => (setmMoveBar(2))}
+                  >Créditos</h4>
+                </div>
+                <div className="w-full h-1 bg-graybar relative">
+                <div
+                  className={`h-1 w-1/3 bg-blue-500 transition-transform duration-150 ease-in-out
+                    ${moveBar === 0 ? "translate-x-0" : ""} ${moveBar === 1 ? "translate-x-full" : ""} ${moveBar === 2 ? "translate-x-[200%]" : ""}`}
+                ></div>
               </div>
-              <div className="w-full h-1 bg-graybar"></div>
+             </div>
             </div>
 
-              <div className="w-auto bg-[#DEE8ED] h-min">
+              <div className="bg-[#DEE8ED] size-full">
               <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
                 
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
-                    <select className="w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <select className="appearance-none w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     focus:outline-blue-500 focus:outline-2"
                       id="role_id"
                       name="role_id"
                       value={props.profileSelect?.role_id || ""}
                       onChange={props.handleChange}>
-                        <option >Escoger rol</option>
+                        <option>Escoger rol</option>
                         <option value={1}>Administrador</option>
                         <option value={2}>Empleado</option>
                       </select>  

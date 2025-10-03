@@ -1,23 +1,17 @@
-import React, { ReactNode } from "react";
+import { Navbar, SerachProps } from "../components/navbar";
 import { Sidebar } from "../components/Sidebar";
-import { Navbar } from "../components/navbar";
 
-type RootLayoutProps = {
-  search?: string;
-  setSearch?: React.Dispatch<React.SetStateAction<string>>;
-  children: ReactNode;
-};
-
-export const RootLayout = ({ search, setSearch, children }: RootLayoutProps) => {
+export const RootLayout = ({
+  children,
+  search = "",
+  setSearch = () => {},
+}: React.PropsWithChildren<SerachProps>) => {
   return (
-    <div className="flex min-h-screen w-full bg-[#DEE8ED]">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Navbar
-          search={search}
-          onSearchChange={value => setSearch?.(value)}
-        />
-        <main className="flex-1">{children}</main>
+    <div className="flex flex-col bg-backgroundBlue size-screen overflow-x-hidden ">
+      <Navbar search={search} setSearch={setSearch} />
+      <div className="flex w-full flex-grow">
+        <Sidebar></Sidebar>
+        {children}
       </div>
     </div>
   );
