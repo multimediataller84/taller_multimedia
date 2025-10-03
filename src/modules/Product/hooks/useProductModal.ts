@@ -16,9 +16,51 @@ export function useProductForm(
   initialData: TProductEndpoint | null,
   isOpen: boolean
 ) {
-  const { register, handleSubmit, control, reset, setValue, watch } =
-    useForm<ProductFormInputs>({
-      defaultValues: {
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    watch,
+  } = useForm<ProductFormInputs>({
+    defaultValues: {
+      product_name: "",
+      sku: "",
+      category_id: "",
+      tax_id: "",
+      profit_margin: "",
+      unit_price: "",
+      stock: "",
+      state: "Active",
+    },
+  });
+
+  const isEditing = !!initialData?.id;
+
+  const productName = watch("product_name");
+  const categoryId = watch("category_id");
+
+  const [categories, setCategories] = useState<TCategoryEndpoint[]>([]);
+  const [taxes, setTaxes] = useState<TTaxEndpoint[]>([]);
+  const [skuStatus, setSkuStatus] = useState<"idle" | "checking" | "ok" | "dup">("idle");
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (initialData) {
+      reset({
+        product_name: initialData.product_name ?? "",
+        sku: initialData.sku ?? "",
+        category_id: String(initialData.category_id ?? ""),
+        tax_id: String(initialData.tax_id ?? ""),
+        profit_margin: String(initialData.profit_margin ?? ""),
+        unit_price: String(initialData.unit_price ?? ""),
+        stock: String(initialData.stock ?? ""),
+        state: initialData.state ?? "Active",
+      });
+    } else {
+      reset({
         product_name: "",
         sku: "",
         category_id: "",
@@ -27,34 +69,7 @@ export function useProductForm(
         unit_price: "",
         stock: "",
         state: "Active",
-      },
-    });
-
-  const productName = watch("product_name");
-  const categoryId = watch("category_id");
-
-  const [categories, setCategories] = useState<TCategoryEndpoint[]>([]);
-  const [taxes, setTaxes] = useState<TTaxEndpoint[]>([]);
-  const [skuStatus, setSkuStatus] = useState<
-    "idle" | "checking" | "ok" | "dup"
-  >("idle");
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    if (initialData) {
-      reset({
-        product_name: initialData.product_name,
-        sku: initialData.sku,
-        category_id: String(initialData.category_id),
-        tax_id: String(initialData.tax_id),
-        profit_margin: String(initialData.profit_margin),
-        unit_price: String(initialData.unit_price),
-        stock: String(initialData.stock),
-        state: initialData.state,
       });
-    } else {
-      reset();
     }
 
     const loadCategories = async () => {
@@ -70,6 +85,7 @@ export function useProductForm(
     setSkuStatus("idle");
   }, [isOpen, initialData, reset]);
 
+  // Cargar impuestos según el nombre (o todos si vacío)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -90,14 +106,17 @@ export function useProductForm(
     loadTaxes();
   }, [productName, isOpen]);
 
+  // SKU auto
   const autoGenerateSku = () => {
     const generated = generateSku({
       product_name: productName,
       category_id: categoryId,
     });
     setValue("sku", generated);
+    setSkuStatus("idle");
   };
 
+  // Opciones para selects
   const formattedCategoryOptions = categories.map((item) => ({
     value: item.id.toString(),
     label: item.name,
@@ -108,6 +127,7 @@ export function useProductForm(
     label: item.description,
   }));
 
+  // Guardar (crear/editar)
   const submit = async (data: ProductFormInputs) => {
     const payload: TProduct = {
       product_name: data.product_name,
@@ -119,6 +139,7 @@ export function useProductForm(
       stock: parseInt(data.stock, 10),
       state: data.state,
     };
+
     if (initialData?.id) {
       await useCases.patch.execute(initialData.id, payload);
     } else {
@@ -136,5 +157,6 @@ export function useProductForm(
     setSkuStatus,
     autoGenerateSku,
     submit,
+    isEditing,
   };
 }

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { creditRepository as repo, BackCredit, BackPayment } from "../repositories/creditRepository";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { creditRepository as repo, BackCredit } from "../repositories/creditRepository";
+import { invoiceRepository, BackInvoice, TPaymentMethod } from "../repositories/invoiceRepository";
 
 type UIInvoice = { id: string; amount: number; dueRemaining: number; createdAt: string; locked?: boolean };
 type UIPayment = { id: string | number; amount: number; createdAt: string; locked?: boolean; invoiceId?: string };
@@ -19,6 +20,7 @@ const mapStatus = (s?: BackCredit["status"]): UICredit["status"] =>
   s === "Aproved" ? "approved" : s === "Revoked" ? "closed" : "pending_review";
 
 const nowISO = () => new Date().toISOString();
+const DEV = typeof import.meta !== "undefined" && import.meta.env?.MODE !== "production";
 
 type OpRes = { ok: true } | { ok: false; message: string };
 
@@ -27,17 +29,70 @@ export function useCredit(clientId: number | null) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [credit, setCredit] = useState<UICredit | null>(null);
 
+  // Ignorar respuestas viejas al cambiar de cliente
+  const requestSeq = useRef(0);
+
+  // Limpiar al cambiar cliente
+  useEffect(() => {
+    setCredit(null);
+    setErrorMsg(null);
+  }, [clientId]);
+
   const hasCredit = !!credit;
+
+  const mapInvoices = (rows: BackInvoice[], currentId: number): UIInvoice[] => {
+    const onlyMine = (rows ?? []).filter(r => Number(r.customer_id) === Number(currentId));
+    return onlyMine.map(inv => {
+      const total = Number(inv.total ?? 0);
+      const paid = Number(inv.amount_paid ?? 0);
+      const due = Math.max(total - paid, 0);
+      return {
+        id: String(inv.id),
+        amount: total,
+        dueRemaining: due,
+        createdAt: (inv.issue_date as unknown as string) ?? inv.createdAt ?? nowISO(),
+        locked: due === 0, // ✅ bloqueada cuando está saldada
+      };
+    });
+  };
 
   const load = useCallback(async () => {
     if (!clientId) { setCredit(null); return; }
+
+    const mySeq = ++requestSeq.current;
+    setCredit(null);
     setLoading(true);
     setErrorMsg(null);
+    if (DEV) console.log("[useCredit.load] start for clientId:", clientId, "seq:", mySeq);
+
     try {
       const back = await repo.getCreditByCustomer(clientId);
-      if (!back) { setCredit(null); return; }
+      if (mySeq !== requestSeq.current) return;
 
-      const payments = await repo.getPayments(back.id);
+      if (!back) {
+        if (DEV) console.log("[useCredit.load] no credit for clientId:", clientId);
+        setCredit(null);
+        return;
+      }
+
+      if (Number(back.customer_id) !== Number(clientId)) {
+        if (DEV) console.warn("[useCredit.load] credit belongs to another customer",
+          { returned: back.customer_id, expected: clientId });
+        setCredit(null);
+        return;
+      }
+
+      let paymentsRes: any[] = [];
+      let invoicesRes: BackInvoice[] = [];
+
+      try { paymentsRes = await repo.getPayments(back.id); }
+      catch (ep) { if (DEV) console.warn("[useCredit.load] getPayments failed, []", ep); }
+
+      try { invoicesRes = await invoiceRepository.getByCustomer(clientId); }
+      catch (ei) { if (DEV) console.warn("[useCredit.load] getByCustomer failed, []", ei); }
+
+      if (mySeq !== requestSeq.current) return;
+
       const ui: UICredit = {
         id: back.id,
         customer_id: back.customer_id,
@@ -45,102 +100,64 @@ export function useCredit(clientId: number | null) {
         remaining: Number(back.balance ?? 0),
         status: mapStatus(back.status),
         createdAt: back.createdAt ?? undefined,
-        invoices: [], // se manejan localmente en este módulo
-        payments: (payments ?? []).map(p => ({
+        invoices: mapInvoices(invoicesRes, clientId),
+        payments: (paymentsRes ?? []).map(p => ({
           id: p.id,
           amount: Number(p.amount),
           createdAt: p.createdAt ?? nowISO(),
           locked: false,
-          // invoiceId se setea cuando el pago nace desde una factura concreta (ver payInvoice)
         })),
       };
+
+      if (DEV) console.log("[useCredit.load] setCredit for clientId:", clientId, "creditId:", back.id,
+        "invoices:", ui.invoices.length, "payments:", ui.payments.length);
+
       setCredit(ui);
     } catch (e: any) {
+      if (mySeq !== requestSeq.current) return;
+      setCredit(null);
       setErrorMsg("No se pudo cargar el crédito");
+      if (DEV) console.error("[useCredit.load] error for clientId:", clientId, e?.response?.status, e?.message);
     } finally {
-      setLoading(false);
+      if (mySeq === requestSeq.current) setLoading(false);
     }
   }, [clientId]);
 
   useEffect(() => { load(); }, [load]);
 
-  // Crear línea de crédito (con validación, update optimista y reload)
+  // Crear línea de crédito
   const create = async (amount: number): Promise<OpRes> => {
-  if (!clientId) return { ok: false, message: "Cliente inválido" };
+    if (!clientId) return { ok: false, message: "Cliente inválido" };
 
-  const amt = Number(amount);
-  if (!Number.isFinite(amt) || amt <= 0) {
-    return { ok: false, message: "Monto inválido" };
-  }
+    const amt = Number(amount);
+    if (!Number.isFinite(amt) || amt <= 0) {
+      return { ok: false, message: "Monto inválido" };
+    }
 
-  try {
-    const created = await repo.createCredit(clientId, amt);
-
-    setCredit({
-      id: created.id,
-      customer_id: created.customer_id,
-      assigned: Number(created.approved_credit_amount ?? amt),
-      remaining: Number(created.balance ?? amt),
-      status: mapStatus(created.status),
-      createdAt: created.createdAt ?? undefined,
-      invoices: [],
-      payments: [],
-    });
-
-    await load();
-    return { ok: true };
-  } catch (e: any) {
-    // 👇 extrae mensaje útil del backend si viene
-    const msg =
-      e?.response?.data?.message ||
-      e?.response?.data?.error ||
-      e?.message ||
-      "No se pudo crear el crédito";
-
-    setErrorMsg(msg);
-    return { ok: false, message: msg };
-  }
-};
-
-  // Eliminar crédito
-  const removeCredit = async (): Promise<OpRes> => {
-    if (!credit) return { ok: false, message: "No hay crédito" };
     try {
-      await repo.deleteCredit(credit.id);
-      setCredit(null);
+      const created = await repo.createCredit(clientId, amt);
+
+      // Estado optimista
+      setCredit({
+        id: created.id,
+        customer_id: created.customer_id,
+        assigned: Number(created.approved_credit_amount ?? amt),
+        remaining: Number(created.balance ?? amt),
+        status: mapStatus(created.status),
+        createdAt: created.createdAt ?? undefined,
+        invoices: [],
+        payments: [],
+      });
+
+      await load(); // sincronizar
       return { ok: true };
     } catch (e: any) {
-      return { ok: false, message: "No se pudo eliminar el crédito" };
+      setErrorMsg("No se pudo crear el crédito");
+      return { ok: false, message: "No se pudo crear el crédito" };
     }
   };
 
-  // Agregar “factura” (cargo): descuenta del remaining y crea invoice local
-  const addInvoice = (amount: number): OpRes => {
-    if (!credit) return { ok: false, message: "No hay crédito" };
-    const amt = Number(amount);
-    if (amt <= 0) return { ok: false, message: "Monto inválido" };
-    if (amt > credit.remaining) return { ok: false, message: "Excede el disponible" };
-
-    const newRemaining = credit.remaining - amt;
-    const inv: UIInvoice = {
-      id: crypto.randomUUID(),
-      amount: amt,
-      dueRemaining: amt,
-      createdAt: nowISO(),
-      locked: false,
-    };
-
-    setCredit(prev => prev ? { ...prev, remaining: newRemaining, invoices: [inv, ...prev.invoices] } : prev);
-    // Persistimos el nuevo balance inmediatamente
-    repo.patchCredit(credit.id, { balance: newRemaining }).catch(() => {
-      // si falla, revertimos visualmente
-      setCredit(prev => prev ? { ...prev, remaining: credit.remaining, invoices: prev.invoices.filter(i => i.id !== inv.id) } : prev);
-    });
-
-    return { ok: true };
-  };
-
-  // Pagar una factura (abono): crea payment en back y baja dueRemaining
+  // Abonar a una factura (crea CreditPayment en el back)
   const payInvoice = (invoiceId: string, amount: number): OpRes => {
     if (!credit) return { ok: false, message: "No hay crédito" };
     const inv = credit.invoices.find(i => i.id === invoiceId);
@@ -150,90 +167,116 @@ export function useCredit(clientId: number | null) {
     if (payAmt <= 0) return { ok: false, message: "Monto inválido" };
     if (payAmt > inv.dueRemaining) return { ok: false, message: "Excede el saldo de la factura" };
 
-    // Optimista: bajamos el dueRemaining
+    // Optimista: bajar dueRemaining en UI y bloquear si quedó saldada
     setCredit(prev => {
       if (!prev) return prev;
-      const invoices = prev.invoices.map(i => i.id === inv.id ? { ...i, dueRemaining: i.dueRemaining - payAmt, locked: (i.dueRemaining - payAmt) > 0 } : i);
+      const newDue = inv.dueRemaining - payAmt;
+      const invoices = prev.invoices.map(i =>
+        i.id === inv.id
+          ? { ...i, dueRemaining: newDue, locked: newDue === 0 }
+          : i
+      );
       return { ...prev, invoices };
     });
 
-    // Creamos el pago en el back (esto incrementa el balance disponible del crédito)
-    repo.createPayment(credit.id, payAmt)
+    const DEFAULT_METHOD: TPaymentMethod = "Cash";
+
+    repo.createPayment({
+      credit_id: credit.id,
+      amount: payAmt,
+      payment_method: DEFAULT_METHOD,
+      invoice_id: Number(invoiceId),
+      note: null,
+    })
       .then(saved => {
-        // asociamos el pago a la factura en memoria
         setCredit(prev => prev ? {
           ...prev,
-          payments: [{ id: saved.id, amount: payAmt, createdAt: saved.createdAt ?? nowISO(), invoiceId }, ...prev.payments],
+          payments: [
+            {
+              id: saved.id,
+              amount: payAmt,
+              createdAt: saved.createdAt ?? nowISO(),
+              invoiceId,
+            },
+            ...prev.payments,
+          ],
         } : prev);
-
-        // recargamos el crédito (para traer remaining actualizado del back)
-        load();
+        load(); // recarga para traer balances/estado desde el back
       })
       .catch(() => {
-        // revertimos visualmente el dueRemaining si falla
+        // revertir UI si falla
         setCredit(prev => {
           if (!prev) return prev;
-          const invoices = prev.invoices.map(i => i.id === inv.id ? { ...i, dueRemaining: i.dueRemaining + payAmt } : i);
+          const invoices = prev.invoices.map(i =>
+            i.id === inv.id ? { ...i, dueRemaining: inv.dueRemaining, locked: inv.dueRemaining === 0 } : i
+          );
           return { ...prev, invoices };
         });
       });
 
     return { ok: true };
-  };
+    };
 
-  // Cancelar factura (sin pagos): devuelve su dueRemaining al remaining
+  // Cancelar factura: abonar automáticamente TODO lo pendiente y bloquearla (pagada)
   const cancelInvoice = (invoiceId: string): OpRes => {
     if (!credit) return { ok: false, message: "No hay crédito" };
     const inv = credit.invoices.find(i => i.id === invoiceId);
     if (!inv) return { ok: false, message: "Factura no encontrada" };
+    if (inv.dueRemaining <= 0) return { ok: true }; // ya está saldada
 
-    // Si tuviera pagos asociados, podrías bloquear aquí (tu UI lo avisa en el diálogo).
-    const newRemaining = credit.remaining + inv.dueRemaining;
+    // Reutiliza payInvoice con el total pendiente
+    return payInvoice(invoiceId, inv.dueRemaining);
+  };
 
-    // Optimista
-    setCredit(prev => prev ? { ...prev, remaining: newRemaining, invoices: prev.invoices.filter(i => i.id !== invoiceId) } : prev);
+  // Eliminar factura: llama al back y recarga (el back debe ajustar el balance)
+  const removeInvoice = (invoiceId: string): OpRes => {
+    if (!credit) return { ok: false, message: "No hay crédito" };
 
-    repo.patchCredit(credit.id, { balance: newRemaining }).catch(() => {
-      // revertir
-      setCredit(prev => prev ? { ...prev, remaining: credit.remaining, invoices: [inv, ...(prev.invoices ?? [])] } : prev);
-    });
+    // Optimista: sacar la factura de la lista (el back ajustará balance)
+    const prevSnapshot = credit.invoices;
+    setCredit(prev => prev ? {
+      ...prev,
+      invoices: prev.invoices.filter(i => i.id !== invoiceId),
+    } : prev);
+
+    invoiceRepository.deleteInvoice(Number(invoiceId))
+      .then(() => load())
+      .catch(() => {
+        // revert si falla
+        setCredit(prev => prev ? { ...prev, invoices: prevSnapshot } : prev);
+      });
 
     return { ok: true };
   };
 
-  // Eliminar factura (igual a cancelar)
-  const removeInvoice = (invoiceId: string): OpRes => cancelInvoice(invoiceId);
-
-  // Eliminar pago: borra en back y reajusta factura si estaba asociada
+  // Eliminar pago
   const removePayment = (paymentId: string | number): OpRes => {
     if (!credit) return { ok: false, message: "No hay crédito" };
 
-    // Buscamos el pago y su invoiceId
     const pay = credit.payments.find(p => String(p.id) === String(paymentId));
     if (!pay) return { ok: false, message: "Pago no encontrado" };
 
-    // Optimista: quitamos el pago
+    // Optimista
     setCredit(prev => prev ? { ...prev, payments: prev.payments.filter(p => String(p.id) !== String(paymentId)) } : prev);
 
-    // Si estaba ligado a una factura, subimos su dueRemaining
     if (pay.invoiceId) {
       setCredit(prev => {
         if (!prev) return prev;
-        const invoices = prev.invoices.map(i => i.id === pay.invoiceId ? { ...i, dueRemaining: i.dueRemaining + pay.amount } : i);
+        const invoices = prev.invoices.map(i => i.id === pay.invoiceId ? { ...i, dueRemaining: i.dueRemaining + pay.amount, locked: false } : i);
         return { ...prev, invoices };
       });
     }
 
     repo.deletePayment(Number(paymentId))
-      .then(() => load()) // el back ajusta balance al borrar el pago; recarga
+      .then(() => load())
       .catch(() => {
-        // revertir: volvemos a insertar el pago
+        // revert
         setCredit(prev => prev ? { ...prev, payments: [pay, ...(prev.payments ?? [])] } : prev);
 
         if (pay.invoiceId) {
           setCredit(prev => {
             if (!prev) return prev;
-            const invoices = prev.invoices.map(i => i.id === pay.invoiceId ? { ...i, dueRemaining: Math.max(i.dueRemaining - pay.amount, 0) } : i);
+            const invoices = prev.invoices.map(i => i.id === pay.invoiceId ? { ...i, dueRemaining: Math.max(i.dueRemaining - pay.amount, 0), locked: i.dueRemaining - pay.amount === 0 } : i);
             return { ...prev, invoices };
           });
         }
@@ -242,15 +285,28 @@ export function useCredit(clientId: number | null) {
     return { ok: true };
   };
 
+  const removeCredit = async (): Promise<OpRes> => {
+    if (!credit) return { ok: false, message: "No hay crédito" };
+    try {
+      await repo.deleteCredit(credit.id);
+      setCredit(null);
+      return { ok: true };
+    } catch {
+      return { ok: false, message: "No se pudo eliminar el crédito" };
+    }
+  };
+
   return {
     credit,
     hasCredit,
     create,
-    addInvoice,
-    removeInvoice,
+    // Facturas (vienen del módulo de facturación)
     payInvoice,
-    removePayment,
     cancelInvoice,
+    removeInvoice,
+    // Pagos
+    removePayment,
+    // Crédito
     removeCredit,
     loading,
     errorMsg,
