@@ -92,13 +92,13 @@ export function useProductForm(
   const loadTaxes = async () => {
     try {
       const options = {
+        description: categoryId,
         limit: 50,
         offset: 0,
-        orderDirection: "ASC" as const,
-        ...(categoryId ? { category: Number(categoryId) } : {}),
-      } as TGetAllOptions & { category?: number };
+        orderDirection: "ASC",
+      } as TGetAllOptions;
 
-      const taxesResponse = await useCases.getAllTaxes.execute(options as any);
+      const taxesResponse = await useCases.getAllTaxes.execute(options);
       setTaxes(taxesResponse.data);
     } catch (err) {
       console.error("Error al cargar impuestos", err);
