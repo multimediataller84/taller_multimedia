@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from 'react-router-dom';
 import { getRoleAuth } from "../utils/getRoleAuth";
 import { getUsernameAuth } from "../utils/getUsernameAuth";
+import logoImg from "./utils/logo_lamaravilla.png";
 export interface SerachProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -17,7 +18,7 @@ export const Navbar = (props: SerachProps) => {
             
         <div className='flex justify-between w-full h-24 items-center mr-4'>
            
-            <h1 className='w-[94px] ml-4 text-2xl leading-none font-lato text-gray1 text-center'>logo</h1>
+            <img src={logoImg} alt="Logo" className='ml-4 w-[135px] h-18 object-contain' />
             
             <div className='flex justify-center w-full'>
             <input

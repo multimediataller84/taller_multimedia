@@ -6,6 +6,7 @@ export type TInvoiceEndpoint = {
   subtotal?: string | number | null;
   tax_total?: string | number | null;
   total?: string | number | null;
+  amount_paid?: string | number | null;
   payment_method: string;
   products?: { id: number; quantity: number }[];
   status: string;

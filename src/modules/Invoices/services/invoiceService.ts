@@ -15,7 +15,15 @@ export class InvoiceService implements IInvoiceService {
 
   async post(data: TInvoice): Promise<TInvoiceEndpoint> {
     try {
-      const response = await apiClient.post<TInvoiceEndpoint>("/invoice", data);
+      const token = sessionStorage.getItem("authToken");
+      const response = await apiClient.post<TInvoiceEndpoint>(
+        "/invoice",
+        data,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          withCredentials: false,
+        }
+      );
       if (response.status !== 200 && response.status !== 201) {
         throw new Error("Server error at /invoice");
       }
@@ -34,6 +42,18 @@ export class InvoiceService implements IInvoiceService {
       return response.data;
     } catch (error) {
       throw new Error("Invalid Get Invoices");
+    }
+  }
+
+  async get(id: number): Promise<TInvoiceEndpoint> {
+    try {
+      const response = await apiClient.get<TInvoiceEndpoint>(`/invoice/${id}`);
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error("Server error at /invoice/:id");
+      }
+      return response.data;
+    } catch (error) {
+      throw new Error("Invalid Get Invoice");
     }
   }
 }

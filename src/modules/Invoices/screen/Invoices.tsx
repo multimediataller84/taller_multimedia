@@ -10,6 +10,10 @@ import type { TInvoiceTab } from "../models/types/TInvoiceTab";
 import { useSubmitInvoice } from "../hooks/useSubmitInvoice";
 import { useInvoiceHistory } from "../hooks/useInvoiceHistory";
 import { InvoiceHistoryTable } from "../components/InvoiceHistoryTable";
+import { InvoiceDetailModal } from "../components/InvoiceDetailModal";
+import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
+import { AlertModal } from "../components/AlertModal";
+import { creditRepository } from "../../Credit/repositories/creditRepository";
 
 export const Invoices = () => {
   const [search, setSearch] = useState("");
@@ -37,8 +41,22 @@ export const Invoices = () => {
 
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
+  const [initialCreditPayment, setInitialCreditPayment] = useState<string>("");
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
   const { invoices, loading: loadingHistory, error: errorHistory, refetch } = useInvoiceHistory();
+
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<TInvoiceEndpoint | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertTitle, setAlertTitle] = useState<string>("");
+  const [alertMsg, setAlertMsg] = useState<string>("");
+  const [alertType, setAlertType] = useState<"success" | "error" | "info">("info");
+  const showAlert = (title: string, message: string, type: "success" | "error" | "info" = "info") => {
+    setAlertTitle(title);
+    setAlertMsg(message);
+    setAlertType(type);
+    setAlertOpen(true);
+  };
 
   return (
     <RootLayout search={search} setSearch={setSearch}>
@@ -66,7 +84,17 @@ export const Invoices = () => {
             </button>
             <button
               className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base bg-white border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={submitting || !selectedClient || items.length === 0}
+              disabled={
+                submitting ||
+                !selectedClient ||
+                items.length === 0 ||
+                (paymentMethod === "Crédito" && (
+                  initialCreditPayment.trim() === "" ||
+                  Number(initialCreditPayment) <= 0 ||
+                  Number.isNaN(Number(initialCreditPayment)) ||
+                  Number(initialCreditPayment) > subtotal
+                ))
+              }
               onClick={async () => {
                 if (!selectedClient) return;
                 try {
@@ -74,12 +102,29 @@ export const Invoices = () => {
                     Efectivo: "Cash",
                     Tarjeta: "Card",
                     Transferencia: "Transfer",
+                    "Crédito": "Credit",
                   };
                   if (items.length === 0) {
-                    alert("Debe agregar al menos un producto");
+                    showAlert("Acción requerida", "Debe agregar al menos un producto", "error");
                     return;
                   }
                   const issueNow = new Date().toISOString();
+                  const isCredit = paymentMethod === "Crédito";
+                  const initialPaid = isCredit ? Number(initialCreditPayment) : 0;
+                  if (isCredit) {
+                    if (initialCreditPayment.trim() === "") {
+                      showAlert("Pago inicial requerido", "Ingrese un monto de pago inicial para usar Crédito.", "error");
+                      return;
+                    }
+                    if (Number.isNaN(initialPaid) || initialPaid <= 0) {
+                      showAlert("Monto inválido", "El pago inicial debe ser un número válido mayor que 0", "error");
+                      return;
+                    }
+                    if (initialPaid > subtotal) {
+                      showAlert("Monto inválido", "El pago inicial no puede ser mayor que el total", "error");
+                      return;
+                    }
+                  }
                   const payload = {
                     customer_id: selectedClient.id,
                     issue_date: issueNow,
@@ -88,21 +133,38 @@ export const Invoices = () => {
                     status: "Issued",
                   } as const;
                   console.log('[Invoice Submit] payload', payload);
-                  await submit(payload);
-                  alert("Factura creada correctamente");
+                  const created = await submit(payload);
+                  if (isCredit && initialPaid > 0) {
+                    try {
+                      const backCredit = await creditRepository.getCreditByCustomer(selectedClient.id);
+                      if (!backCredit) {
+                        showAlert("Crédito no encontrado", "El cliente no tiene una línea de crédito asignada.", "error");
+                        return;
+                      }
+                      await creditRepository.createPayment({
+                        credit_id: backCredit.id,
+                        amount: initialPaid,
+                        payment_method: "Credit",
+                        invoice_id: created.id,
+                      });
+                    } catch (payErr) {
+                      showAlert("Error", "La factura se creó, pero no se pudo registrar el pago inicial en crédito.", "error");
+                    }
+                  }
+                  showAlert("Factura creada", "La factura fue creada correctamente", "success");
                   
                   setPaymentMethod("Efectivo");
+                  setInitialCreditPayment("");
                   clearItems();
-                  
+                   
                   setQuery("");
                   setSelectedClient(null);
-                  
+                   
                   refetch();
                 } catch (e) {
-                  alert("No se pudo crear la factura");
+                  showAlert("Error", "No se pudo crear la factura", "error");
                 }
-              }}
-            >
+              }}>
               {submitting ? "Guardando…" : "Generar factura"}
             </button>
           </div>
@@ -164,7 +226,23 @@ export const Invoices = () => {
                 <option value="Efectivo">Efectivo</option>
                 <option value="Tarjeta">Tarjeta</option>
                 <option value="Transferencia">Transferencia</option>
+                <option value="Crédito">Crédito</option>
               </select>
+              {paymentMethod === "Crédito" && (
+                <div className="mt-2">
+                  <label className="block text-sm text-gray-600 mb-1">Pago inicial (opcional)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={initialCreditPayment}
+                    onChange={(e) => setInitialCreditPayment(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">No puede exceder el total actual.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -199,7 +277,13 @@ export const Invoices = () => {
             {loadingHistory ? (
               <div className="bg-white rounded-md p-6 shadow-sm">Cargando historial…</div>
             ) : (
-              <InvoiceHistoryTable data={invoices} />
+              <InvoiceHistoryTable
+                data={invoices}
+                onSelect={(inv) => {
+                  setSelectedInvoice(inv);
+                  setDetailOpen(true);
+                }}
+              />
             )}
           </div>
         )}
@@ -212,6 +296,22 @@ export const Invoices = () => {
         onAdd={(p) => {
           addProduct(p);
         }}
+      />
+
+      {/* Modal detalle de factura */}
+      <InvoiceDetailModal
+        open={detailOpen}
+        invoice={selectedInvoice}
+        onClose={() => setDetailOpen(false)}
+      />
+
+      {/* Alert modal */}
+      <AlertModal
+        open={alertOpen}
+        title={alertTitle}
+        message={alertMsg}
+        type={alertType}
+        onClose={() => setAlertOpen(false)}
       />
     </RootLayout>
   );

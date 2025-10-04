@@ -15,7 +15,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr className="text-left">
-              <th className="px-6 py-3">SKU</th>
+              <th className="px-6 py-3">Producto</th>
               <th className="px-6 py-3">Cant.</th>
               <th className="px-6 py-3">Impuesto ID</th>
               <th className="px-6 py-3 text-right">Precio Unit.</th>
@@ -26,7 +26,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
           <tbody className="divide-y">
             {items.map((i) => (
               <tr key={i.product_id}>
-                <td className="px-6 py-3 text-gray-700">{i.sku}</td>
+                <td className="px-6 py-3 text-gray-700">{i.product_name}</td>
                 <td className="px-6 py-3">
                   <div className="inline-flex items-center border rounded-full overflow-hidden">
                     <button className="px-3 py-1" onClick={() => onDecrease(i.product_id)}>-</button>

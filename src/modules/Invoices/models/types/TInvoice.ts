@@ -10,4 +10,5 @@ export type TInvoice = {
   payment_method: string;
   products: TInvoiceProduct[];
   status: string;
+  amount_paid?: number; // optional initial payment (e.g., when using Credit)
 };
