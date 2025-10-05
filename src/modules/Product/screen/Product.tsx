@@ -47,7 +47,7 @@ export default function Product() {
             <button
             onClick={openCreate}
             className="w-[220px] border rounded-3xl py-2  font-Lato text-base mr-4 
-              transition duration-300 bg-blue-500 hover:bg-blue-800 text-white">
+              transition duration-300 bg-blue-500 border-blue-500 hover:bg-blue-800 hover:border-blue-800 text-white">
               Añadir Producto
             </button>
           </div>

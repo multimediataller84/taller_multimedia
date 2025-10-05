@@ -25,7 +25,9 @@ export const Profile = () => {
     profiles,
     setActivePage,
     addProfile,
+    setAddProfile,
     editProfile,
+    setEditProfile,
     visibleEditProfile,
     loading,
     confirmationAddProfile,
@@ -55,12 +57,13 @@ export const Profile = () => {
             className={`w-[94px] border rounded-3xl py-2 font-Lato text-base mr-4 transition duration-300 
                       ${
                         visibleAddProfile == true
-                          ? "bg-white text-gray1 border-gray2 hover:bg-gray2 hover:border-gray2"
+                          ? "bg-gray3 text-gray1 border-gray2 "
                           : "bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800"
                       }`}
             onClick={() => {
               setVisibleAddProfile(true);
               setVisibleEditProfile(false);
+              setAddProfile(false);
               setProfileSelect({
                 name: "",
                 username: "",
@@ -96,7 +99,7 @@ export const Profile = () => {
                             ${
                               profileSelect?.id === items.id
                                 ? "bg-blue-500 text-white hover:bg-blue-800"
-                                : "bg-white text-black hover:bg-gray2"
+                                : "bg-white text-black hover:bg-gray-200"
                             }
                             `}
                   onClick={() => {
@@ -106,6 +109,7 @@ export const Profile = () => {
                     setConfirmationAddProfile(false);
                     setConfirmationDeleteProfile(false);
                     setConfirmationEditProfile(false);
+                    setEditProfile(false);
                   }}
                 >
                   <h2 className="w-full h-auto ml-4 mt-4 font-medium">
@@ -155,6 +159,8 @@ export const Profile = () => {
       {visibleEditProfile && (
         <EditProfile
           profileSelect={profileSelect}
+          setProfileSelect={setProfileSelect}
+          setVisibleEditProfile={setVisibleEditProfile}
           editProfile={editProfile}
           handleSave={handleSave}
           handleChange={handleChange}

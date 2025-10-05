@@ -44,9 +44,9 @@ export default function addProfile (props: addClientProps){
                 <div className="flex space-x-8 pr-4">
                   <button
                     className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300  ${
-                      props.addProfile ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
+                      props.addProfile ? "bg-blue-500 border border-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                       : 
-                      "bg-white border border-gray2 text-gray1 hover:bg-gray2 hover:border-gray2"
+                      "bg-gray3 border border-gray2 text-gray1 "
                     }`}
                     onClick={() => {
                       if (validateOnSave() && props.profileSelect) {
@@ -57,7 +57,7 @@ export default function addProfile (props: addClientProps){
                   >
                     Confirmar
                   </button>
-                  <button className="w-[94px] py-2 rounded-3xl bg-white border border-gray2 hover:bg-gray2 hover:border-gray2 text-gray1 font-Lato font-bold transition duration-300 "
+                  <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
                   onClick={() => {props.setVisibleAddProfile(false)
                     props.setProfileSelect(null)
                   }
@@ -69,7 +69,7 @@ export default function addProfile (props: addClientProps){
               <div className="flex flex-col w-full">
                 <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
                   <h2 className="w-1/3 text-center text-blue-500">
-                    Información General
+                    Información General  
                   </h2>
                 </div>
                 <div className="w-full h-1 bg-blue-500 mt-4"></div>
@@ -82,7 +82,7 @@ export default function addProfile (props: addClientProps){
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
-                    <select className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <select className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                       transition-colors ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       id="role_id"
                       name="role_id"
@@ -105,7 +105,7 @@ export default function addProfile (props: addClientProps){
 
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="username">Nombre de Usuario</label>
-                    <input className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <input className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                       transition-colors ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
                       id="username"
@@ -127,7 +127,7 @@ export default function addProfile (props: addClientProps){
 
                 <div className="flex flex-col space-y-4">
                   <label htmlFor="nombre" className="text-base text-black font-medium">Nombre</label>
-                  <input className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                  <input className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     transition-colors ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     type="text"
                     id="name"
@@ -149,7 +149,7 @@ export default function addProfile (props: addClientProps){
                 <div className="flex flex-col space-y-4">
                 <label htmlFor="password" className="text-base text-black font-medium">Contraseña</label>
                 <input
-                    className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     transition-colors ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     type="password"
                     id="password"
