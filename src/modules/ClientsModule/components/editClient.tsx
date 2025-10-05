@@ -4,6 +4,8 @@ import Credit from "../../Credit/screen/Credit";
 
 interface editClientProps {
   clientSelect: TCustomerEndpoint | null; 
+  setClientSelect: React.Dispatch<React.SetStateAction<any>>;
+  setVisibleEdit: React.Dispatch<React.SetStateAction<boolean>>;  
   edit: boolean;
   handleSave: () => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
@@ -65,17 +67,23 @@ export default function editClient(props: editClientProps) {
             <button
               className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
                 ${props.edit ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
-                : "bg-white border border-gray2 text-gray1 hover:bg-gray2 hover:border-gray2"}`}
+                : "bg-gray3 border border-gray2 text-gray1"}`}
               onClick={validateOnSave}
             >
               Editar
             </button>
             <button
-              className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300 "
+              className="w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-[#D32626] hover:border-[#D32626] text-white font-Lato font-bold transition duration-300 "
               onClick={() => props.clientSelect && props.handleDelete(props.clientSelect.id)}
             >
               Eliminar
             </button>
+             <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
+                  onClick={() => {props.setVisibleEdit(false)
+                    props.setClientSelect(null)
+                  }
+                  }
+              >Cancelar</button>
           </div>
         </div>
 
@@ -120,7 +128,7 @@ export default function editClient(props: editClientProps) {
                     Cédula
                   </label>
                   <input
-                  className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                  className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     transition-colors
                     ${errors.id_number ? "border-red-500" : "border-gray2"}
                     focus:outline-2 focus:outline-blue-500`}
@@ -145,7 +153,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-4">
                 <label htmlFor="telefono">Teléfono</label>
                   <input
-                    className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     transition-colors ${errors.phone ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     type="string"
                     id="telefono"
@@ -171,7 +179,7 @@ export default function editClient(props: editClientProps) {
             <div className="flex flex-col space-y-4">
               <label htmlFor="nombre" className="text-base text-black font-medium">Nombre</label>
               <input
-                className="w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                className="w-[472px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 focus:outline-blue-500 focus:outline-2"
                 type="text"
                 id="name"
@@ -193,7 +201,7 @@ export default function editClient(props: editClientProps) {
             <div className="flex flex-col space-y-4">
               <label htmlFor="apellidos">Apellidos</label>
               <input
-                className={`w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 transition-colors ${errors.last_name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                 type="text"
                 id="apellidos"
@@ -215,7 +223,7 @@ export default function editClient(props: editClientProps) {
             <div className="flex flex-col space-y-4">
                <label htmlFor="correoElectronico">Correo Electrónico</label>
                 <input
-                  className={`w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                  className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                   transition-colors ${errors.email ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="email"
                   id="correoElectronico"
@@ -237,7 +245,7 @@ export default function editClient(props: editClientProps) {
             <div className="flex flex-col space-y-4">
               <label htmlFor="direccion">Dirección</label>
               <textarea
-                className={`pt-1 w-[472px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                className={`pt-1 w-[472px] min-h-30 max-h-40 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 transition-colors ${errors.address ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                 id="direccion"
                 name="address"

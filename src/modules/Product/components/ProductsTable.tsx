@@ -38,7 +38,7 @@ export function ProductTable( props : ProductsProps) {
       </thead>
       <tbody className="bg-white">
         {props.products.map((row) => (
-            <tr key={row.id} className={`border-graybar border-y-2 text-center h-16 font-Lato hover:bg-gray3 transition ${openMenuId === row.id ? "bg-gray3":""}`}>
+            <tr key={row.id} className={`border-graybar border-y-2 text-center h-16 font-Lato hover:bg-gray3 transition ${openMenuId === row.id ? "bg-gray-200":""}`}>
               <td className="text-base">{row.product_name}</td>
               <td className="text-sm">{row.sku}</td>
               <td className="text-sm">{row.category_id}</td>

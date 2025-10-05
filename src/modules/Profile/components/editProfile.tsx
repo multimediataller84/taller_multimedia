@@ -3,6 +3,8 @@ import { useState } from "react";
 
 interface editProfileProps {
   profileSelect: TUserEndpoint | null; 
+  setProfileSelect: React.Dispatch<React.SetStateAction<any>>;
+  setVisibleEditProfile: React.Dispatch<React.SetStateAction<boolean>>;  
   editProfile: boolean;
   handleSave: () => void;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
@@ -43,16 +45,22 @@ export default function editClient(props: editProfileProps) {
                   <button className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
                   ${props.editProfile ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                   : 
-                  "bg-white border border-gray2 text-gray1 hover:bg-gray2 hover:border-gray2"}`}
+                  "bg-gray3 border border-gray2 text-gray1 "}`}
                     onClick={validateOnSave}>
                     Editar
                   </button>
                   <button
-                    className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300 "
+                    className="w-[94px] py-2 rounded-3xl bg-black border-black border hover:border-[#D32626] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300 "
                     onClick={() => props.profileSelect && props.handleDelete(props.profileSelect.id)}
                   >
                     Eliminar
                   </button>
+                   <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
+                  onClick={() => {props.setVisibleEditProfile(false)
+                    props.setProfileSelect(null)
+                  }
+                  }
+                  >Cancelar</button>
                 </div>
               </div>
 
@@ -67,7 +75,7 @@ export default function editClient(props: editProfileProps) {
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
-                    <select className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <select className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                       transition-colors ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       id="role_id"
                       name="role_id"
@@ -90,7 +98,7 @@ export default function editClient(props: editProfileProps) {
 
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="username">Nombre de Usuario</label>
-                    <input className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <input className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                       transition-colors ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
                       id="username"
@@ -112,7 +120,7 @@ export default function editClient(props: editProfileProps) {
 
                 <div className="flex flex-col space-y-4">
                   <label htmlFor="nombre" className="text-base text-black font-medium">Nombre</label>
-                  <input className={`w-[220px] h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                  <input className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                     transition-colors ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     type="text"
                     id="name"
