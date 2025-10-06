@@ -29,7 +29,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
 
   if (!isOpen) return null;
 
-  const onSubmit = async (data: ProductFormInputs) => {
+  const onSubmit = async (data: ProductFormInputs & { cost?: string }) => {
     await submit(data);
     await onChange();
     onClose();
@@ -69,13 +69,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               placeholder="Ej. LPZ-HB-01"
               className="flex-1 border p-2 rounded"
             />
-            {/*<button
-              type="button"
-              onClick={autoGenerateSku}
-              className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200"
-            >
-              Auto
-            </button> */}
+            {/* <button type="button" onClick={autoGenerateSku} className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200">Auto</button> */}
           </div>
 
           {/* Categoría (bloqueada al editar) */}
@@ -130,22 +124,28 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
-                options={stateOptions}
+                options={["Active","Inactive","Discontinued"].map(v => ({ value: v, label: v === "Active" ? "Activo" : v === "Inactive" ? "Inactivo" : "Descontinuado" }))}
                 placeholder="Seleccione estado"
                 onChange={(opt) => field.onChange((opt as any)?.value)}
-                value={stateOptions.find((option) => option.value === field.value) || null}
+                value={
+                  ["Active","Inactive","Discontinued"].map(v => ({ value: v, label: v === "Active" ? "Activo" : v === "Inactive" ? "Inactivo" : "Descontinuado" }))
+                    .find((option) => option.value === field.value) || null
+                }
               />
             )}
           />
 
-          {/* Utilidad */}
-          <label className="block text-sm text-gray-700 font-medium">Utilidad (ej. 0.25)</label>
+          {/* Utilidad (MARKUP) como ENTERO % */}
+          <label className="block text-sm text-gray-700 font-medium">
+            Utilidad (markup) — (Precio − Costo) / Costo
+          </label>
           <input
             type="number"
-            step="0.01"
-            {...register("profit_margin", { required: true })}
-            placeholder="0.25"
-            className="w-full border p-2 rounded"
+            step="1"
+            {...register("profit_margin")}
+            placeholder="0"
+            className="w-full border p-2 rounded bg-gray-100 text-gray-600"
+            readOnly
           />
 
           {/* Precio unitario */}
@@ -154,6 +154,16 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             type="number"
             step="0.01"
             {...register("unit_price", { required: true })}
+            placeholder="0.00"
+            className="w-full border p-2 rounded"
+          />
+
+          {/* 💰 Costo (solo interno; no va al backend) */}
+          <label className="block text-sm text-gray-700 font-medium">Costo</label>
+          <input
+            type="number"
+            step="0.01"
+            {...register("cost" as any)}
             placeholder="0.00"
             className="w-full border p-2 rounded"
           />
@@ -168,11 +178,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           />
 
           <div className="flex justify-end gap-2 pt-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded border"
-            >
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded border">
               Cancelar
             </button>
             <button
