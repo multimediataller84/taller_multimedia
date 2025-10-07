@@ -7,6 +7,7 @@ import PaymentModal from "../components/PaymentModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import InvoiceCard from "../components/InvoiceCard";
 import PaymentCard from "../components/PaymentCard";
+import CreditStatusModal from "../components/CreditStatusModal";
 import { formatCRC } from "../utils/currency";
 
 type Props = {
@@ -15,7 +16,6 @@ type Props = {
 };
 
 export default function Credit({ clientId, clientName = "" }: Props) {
-  // guardia: no render ni requests sin ID
   if (!clientId) {
     return <div className="p-8">Seleccione un cliente para gestionar su crédito.</div>;
   }
@@ -40,6 +40,13 @@ export default function Credit({ clientId, clientName = "" }: Props) {
   const [paymentToDelete, setPaymentToDelete] = useState<string | null>(null);
   const [invoiceToCancel, setInvoiceToCancel] = useState<string | null>(null);
   const [invoiceForPayment, setInvoiceForPayment] = useState<string | null>(null);
+
+  const [statusModal, setStatusModal] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    status: "success" | "error";
+  }>({ open: false, title: "", message: "", status: "success" });
 
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
 
@@ -75,16 +82,47 @@ export default function Credit({ clientId, clientName = "" }: Props) {
     return credit.payments.filter(p => p.invoiceId === selectedInvoiceId);
   }, [credit, selectedInvoiceId]);
 
+  // Crear crédito -> modal éxito/error
+  const handleCreate = (amount: number) => {
+    (async () => {
+      const res = await create(amount);
+      if (res.ok) {
+        setStatusModal({
+          open: true,
+          title: "Creación de crédito exitosa",
+          message: "El crédito se creó correctamente.",
+          status: "success",
+        });
+      } else {
+        setStatusModal({
+          open: true,
+          title: "Error al crear el crédito",
+          message: res.message || "No se pudo crear el crédito. Intenta de nuevo.",
+          status: "error",
+        });
+      }
+    })();
+  };
+
   if (loading) {
     return <div className="p-8">Cargando...</div>;
   }
 
   if (!hasCredit) {
     return (
-      <CreditAssignForm
-        clientName={clientName}
-        onCreate={(amount) => create(amount)}
-      />
+      <>
+        <CreditAssignForm
+          clientName={clientName}
+          onCreate={handleCreate}
+        />
+        <CreditStatusModal
+          open={statusModal.open}
+          title={statusModal.title}
+          message={statusModal.message}
+          status={statusModal.status}
+          onClose={() => setStatusModal(s => ({ ...s, open: false }))}
+        />
+      </>
     );
   }
 
@@ -181,6 +219,14 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         }}
       />
 
+      <CreditStatusModal
+        open={statusModal.open}
+        title={statusModal.title}
+        message={statusModal.message}
+        status={statusModal.status}
+        onClose={() => setStatusModal(s => ({ ...s, open: false }))}
+      />
+
       <ConfirmDialog
         open={!!invoiceToCancel}
         onCancel={() => setInvoiceToCancel(null)}
@@ -194,12 +240,29 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         cancelLabel="No"
       />
 
+      {/* ⬇️ Eliminación de crédito con modal de estado ⬇️ */}
       <ConfirmDialog
         open={confirmDeleteCreditOpen}
         onCancel={() => setConfirmDeleteCreditOpen(false)}
-        onConfirm={() => {
-          removeCredit();
+        onConfirm={async () => {
+          const res = await removeCredit();
           setConfirmDeleteCreditOpen(false);
+
+          if (res.ok) {
+            setStatusModal({
+              open: true,
+              title: "Crédito eliminado",
+              message: "El crédito del cliente se eliminó correctamente.",
+              status: "success",
+            });
+          } else {
+            setStatusModal({
+              open: true,
+              title: "No se pudo eliminar",
+              message: res.message || "Ocurrió un problema al eliminar el crédito.",
+              status: "error",
+            });
+          }
         }}
         title="¿Estás seguro?"
         message="Esto eliminará el crédito del cliente y su historial."
