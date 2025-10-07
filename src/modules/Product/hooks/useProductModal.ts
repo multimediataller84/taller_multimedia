@@ -8,66 +8,51 @@ import { TCategoryEndpoint } from "../models/types/TCategoryEndpoint";
 import { generateSku } from "../utils/generateSku";
 import { ProductFormInputs } from "../models/types/TProductsForm";
 import { TTaxEndpoint } from "../models/types/TTaxEndpoint";
-import type { TGetAllOptions } from "../../../models/types/TGetAllOptions";
 
 const repository = ProductRepository.getInstance();
 const useCases = new UseCasesController(repository);
 
-const COST_LS_KEY = "product_cost_by_sku";
-type CostMap = Record<string, number>;
+type ProductFormInputsWithCost = ProductFormInputs & { cost: string };
 
-function readCostMap(): CostMap {
-  try {
-    const raw = localStorage.getItem(COST_LS_KEY);
-    return raw ? (JSON.parse(raw) as CostMap) : {};
-  } catch {
-    return {};
-  }
-}
-function writeCostMap(map: CostMap) {
-  try {
-    localStorage.setItem(COST_LS_KEY, JSON.stringify(map));
-  } catch {}
-}
-function getCostForSku(sku?: string | null): string {
-  if (!sku) return "";
-  const map = readCostMap();
-  const v = map[sku];
-  return typeof v === "number" && isFinite(v) ? String(v) : "";
-}
-function setCostForSku(sku: string, cost: number) {
-  if (!sku) return;
-  const map = readCostMap();
-  map[sku] = Number.isFinite(cost) ? Number(cost) : 0;
-  writeCostMap(map);
+function inferCostFromPriceAndMarkup(unitPrice?: number, markupPct?: number) {
+  const price = Number(unitPrice);
+  const pct = Number(markupPct);
+  if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(pct)) return "";
+  const cost = price / (1 + pct / 100);
+  return cost > 0 ? cost.toFixed(2) : "";
 }
 
 export function useProductForm(
   initialData: TProductEndpoint | null,
   isOpen: boolean
 ) {
-  const { register, handleSubmit, control, reset, setValue, watch } =
-    useForm<ProductFormInputs & { cost?: string }>({
-      defaultValues: {
-        product_name: "",
-        sku: "",
-        category_id: "",
-        tax_id: "",
-        profit_margin: "",
-        unit_price: "",
-        stock: "",
-        state: "Active",
-        cost: "",
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    watch,
+  } = useForm<ProductFormInputsWithCost>({
+    defaultValues: {
+      product_name: "",
+      sku: "",
+      category_id: "",
+      tax_id: "",
+      profit_margin: "",
+      unit_price: "",
+      stock: "",
+      state: "Active",
+      cost: "",
+    },
+  });
 
   const isEditing = !!initialData?.id;
 
   const productName = watch("product_name");
-  const categoryId = watch("category_id");
-  const sku = watch("sku");
-  const unitPriceStr = watch("unit_price");
-  const costStr = watch("cost");
+  const categoryId  = watch("category_id");
+  const unitPrice   = watch("unit_price");
+  const costStr     = watch("cost");
 
   const [categories, setCategories] = useState<TCategoryEndpoint[]>([]);
   const [taxes, setTaxes] = useState<TTaxEndpoint[]>([]);
@@ -77,21 +62,24 @@ export function useProductForm(
     if (!isOpen) return;
 
     if (initialData) {
-      const pm = initialData.profit_margin;
-      const pmInt = (pm ?? pm === 0) ? String(Math.round(Number(pm) * 100)) : "";
+      const inferredCost = inferCostFromPriceAndMarkup(
+        initialData.unit_price as any,
+        initialData.profit_margin as any
+      );
 
       reset({
         product_name: initialData.product_name ?? "",
         sku: initialData.sku ?? "",
         category_id: String(initialData.category_id ?? ""),
         tax_id: String(initialData.tax_id ?? ""),
-        profit_margin: pmInt, // entero en UI
+        profit_margin: String(initialData.profit_margin ?? ""),
         unit_price: String(initialData.unit_price ?? ""),
         stock: String(initialData.stock ?? ""),
         state: initialData.state ?? "Active",
-        cost: getCostForSku(initialData.sku),
+        cost: inferredCost || "",
       });
     } else {
+
       reset({
         product_name: "",
         sku: "",
@@ -123,24 +111,30 @@ export function useProductForm(
 
     const loadTaxes = async () => {
       try {
-        const options = {
-          description: categoryId,
+        const taxesResponse = await useCases.getAllTaxes.execute({
+          description: categoryId || "",
           limit: 55,
           offset: 0,
           orderDirection: "ASC",
-        } as TGetAllOptions;
-
-        const taxesResponse = await useCases.getAllTaxes.execute(options);
-        setTaxes(taxesResponse.data || []);
+        });
+        setTaxes(taxesResponse.data);
       } catch (err) {
         console.error("Error al cargar impuestos", err);
         setTaxes([]);
       }
     };
 
-    setValue("tax_id", "");
     loadTaxes();
-  }, [categoryId, isOpen, setValue]);
+  }, [categoryId, isOpen]);
+
+  useEffect(() => {
+    const price = Number(unitPrice);
+    const c = Number(costStr);
+    if (Number.isFinite(price) && price > 0 && Number.isFinite(c) && c > 0) {
+      const pct = ((price - c) / c) * 100;
+      setValue("profit_margin", String(Math.round(pct)), { shouldValidate: false });
+    }
+  }, [unitPrice, costStr, setValue]);
 
   const autoGenerateSku = () => {
     const generated = generateSku({
@@ -148,24 +142,8 @@ export function useProductForm(
       category_id: categoryId,
     });
     setValue("sku", generated);
-    setValue("cost", getCostForSku(generated));
     setSkuStatus("idle");
   };
-
-  useEffect(() => {
-    const price = parseFloat(String(unitPriceStr ?? "").replace(",", "."));
-    const cost = parseFloat(String(costStr ?? "").replace(",", "."));
-
-    if (Number.isFinite(price) && Number.isFinite(cost) && cost > 0) {
-      const profit = price - cost;
-      const markup = profit / cost;
-      const pctInt = Math.round(markup * 100); 
-      const bounded = Number.isFinite(pctInt) ? Math.max(-100000000, Math.min(100000000, pctInt)) : NaN;
-      setValue("profit_margin", Number.isFinite(bounded) ? String(bounded) : "");
-    } else {
-      setValue("profit_margin", "");
-    }
-  }, [unitPriceStr, costStr, setValue]);
 
   const formattedCategoryOptions = categories.map((item) => ({
     value: item.id.toString(),
@@ -177,31 +155,29 @@ export function useProductForm(
     label: item.description,
   }));
 
-  const submit = async (data: ProductFormInputs & { cost?: string }) => {
-    const pmInt = data.profit_margin === "" ? 0 : parseFloat(data.profit_margin);
-    const pmDecimal = Number.isFinite(pmInt) ? pmInt / 100 : 0; 
+  const submit = async (data: ProductFormInputsWithCost) => {
+    const price = Number(data.unit_price);
+    const c = Number(data.cost);
+    let profit = Number(data.profit_margin);
+    if (Number.isFinite(price) && price > 0 && Number.isFinite(c) && c > 0) {
+      profit = Math.round(((price - c) / c) * 100);
+    }
 
     const payload: TProduct = {
       product_name: data.product_name,
       sku: data.sku,
       category_id: Number(data.category_id),
       tax_id: Number(data.tax_id),
-      profit_margin: pmDecimal, 
-      unit_price: parseFloat(data.unit_price),
+      profit_margin: profit,
+      unit_price: parseFloat(String(price)),
       stock: parseInt(data.stock, 10),
       state: data.state,
-    };
+    } as unknown as TProduct;
 
     if (initialData?.id) {
       await useCases.patch.execute(initialData.id, payload);
     } else {
       await useCases.post.execute(payload);
-    }
-
-    const cleanSku = (data.sku || "").trim();
-    const cleanCost = parseFloat(String(data.cost ?? "").trim());
-    if (cleanSku && Number.isFinite(cleanCost)) {
-      setCostForSku(cleanSku, cleanCost);
     }
   };
 

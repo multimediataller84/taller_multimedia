@@ -35,19 +35,21 @@ export function ProductTable(props: ProductsProps) {
   const keyNum = Number.isFinite(Number(tax_id)) ? Number(tax_id) : null;
 
   let pct: any =
-    taxPctById[keyStr as any] ??
-    (keyNum != null ? taxPctById[keyNum as any] : undefined);
+    (taxPctById as any)[keyStr] ??
+    (keyNum != null ? (taxPctById as any)[keyNum] : undefined);
 
   if (pct == null) {
-    // 🔎 Deja este log un momento para verificar qué id llega y qué claves hay en el mapa
-    console.warn("[TABLE] sin porcentaje para tax_id =", tax_id, "keys sample =", Object.keys(taxPctById).slice(0,5));
+    // if (import.meta.env.MODE !== "production") {
+    //   console.warn("[TABLE] sin porcentaje para tax_id =", tax_id, "keys sample =", Object.keys(taxPctById).slice(0,5));
+    // }
     return "—";
   }
 
   pct = typeof pct === "number" ? pct : Number(pct);
   if (!Number.isFinite(pct)) return "—";
 
-  return `${pct.toFixed(2)}%`; // 1 → "1.00%" (si en tu back 1 significa 1%)
+  const shown = Number.isInteger(pct) ? pct.toFixed(0) : pct.toFixed(2);
+  return `${shown}%`;
 };
 
 
