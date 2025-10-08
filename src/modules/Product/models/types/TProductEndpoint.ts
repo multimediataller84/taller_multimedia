@@ -6,6 +6,7 @@ export type TProductEndpoint = {
   sku: string;
   category_id:  number;
   tax_id: number;
+  tax: {description: string, name: string, percentage: number}
   profit_margin: number;
   unit_price: number;
   stock: number;
