@@ -89,7 +89,9 @@ export default function addProfile (props: addProfileProps){
                     Información General
                   </h2>
                 </div>
-                <div className="w-full h-1 bg-blue-500 mt-4"></div>
+                <div className="w-full h-1 bg-graybar mt-4">
+                  <div className="w-1/3 h-1 bg-blue-500"></div>
+                </div>
               </div>
             
             </div>

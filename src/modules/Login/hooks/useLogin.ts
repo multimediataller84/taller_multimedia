@@ -17,7 +17,7 @@ const useLogin = () => {
 
   const requestUser = async (data: TLogin) => {
   try {
-    checkInput(data.username, data.password); // ← ahora solo validamos eso
+    checkInput(data.username, data.password); 
     setLoading(true);
     const result = await postLoginUseCase.execute(data);
     const formatted: TUser = createAddapterLogin(result);
