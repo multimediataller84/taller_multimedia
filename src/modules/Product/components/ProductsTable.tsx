@@ -7,7 +7,6 @@ interface ProductsProps  {
   headers: { key: string; label: string }[];
   onEdit: (row: TProductEndpoint) => void;
   onDelete: (row: TProductEndpoint) => void;
-
   categoryNameById?: Record<string | number, string>;
   taxPctById?: Record<string | number, number>;
 };
@@ -39,7 +38,6 @@ export function ProductTable(props: ProductsProps) {
               item.key === "category_id" ? "Categoría" :
               item.key === "tax_id"      ? "Impuesto"  :
               item.label ?? item.key;
-
             return (
               <th
                 key={item.key}
@@ -89,14 +87,14 @@ export function ProductTable(props: ProductsProps) {
                 <div className="flex bg-white absolute -translate-y-1 p-1.5 -translate-x-40 space-x-4 rounded-4xl shadow">
                   <button
                     className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
-                      bg-white border border-gray2 text-gray1 hover:bg-blue-500 hover:text-white"
+                      bg-black border border-black text-white hover:bg-blue-500 hover:border-blue-500"
                     onClick={() => onEdit(row)}
                   >
                     Editar
                   </button>
                   <button
-                    className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] 
-                      hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300"
+                    className="w-[94px] py-2 rounded-3xl bg-black border border-black
+                      hover:bg-[#D32626] hover:border-[#D32626] text-white font-Lato font-bold transition duration-300"
                     onClick={() => onDelete(row)}
                   >
                     Eliminar

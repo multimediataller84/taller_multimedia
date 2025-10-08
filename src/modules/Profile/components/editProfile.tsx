@@ -75,7 +75,8 @@ export default function editClient(props: editProfileProps) {
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
-                    <select className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    <div className="relative">
+                    <select className={`appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                       transition-colors ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       id="role_id"
                       name="role_id"
@@ -91,6 +92,10 @@ export default function editClient(props: editProfileProps) {
                         <option value={1}>Administrador</option>
                         <option value={2}>Empleado</option>
                       </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                          <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                      </svg>
+                      </div>
                     {errors.role_id && (
                       <span className="text-red-500 text-base font-lato">{errors.role_id}</span>
                     )}

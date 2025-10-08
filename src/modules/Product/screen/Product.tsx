@@ -3,7 +3,6 @@ import { useProduct } from "../hooks/useProduct";
 import { ProductFormModal } from "../components/ProductFormModal";
 import { ProductTable } from "../components/ProductsTable";
 import { RootLayout } from "../../../_Layouts/RootLayout";
-
 import { UseCasesController } from "../controllers/useCasesController";
 import { ProductRepository } from "../repositories/productRepository";
 
@@ -97,9 +96,6 @@ export default function Product() {
   loadLookups();
 }, []);
 
-
-
-
   return (
     <RootLayout search={searchProducts} setSearch={setSearchProducts}>
       <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-8 ">
@@ -113,8 +109,9 @@ export default function Product() {
 
           <div className="flex space-x-2">
             {/* (Si usas filtros aquí, puedes dejarlos tal cual) */}
+            <div className="relative">
             <select
-              className="appearance-none w-[220px] border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
+              className="appearance-none w-[220px] border py-2 rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
               id="categoria"
               name="categoria"
             >
@@ -122,6 +119,10 @@ export default function Product() {
               <option>Administrador</option>
               <option>Empleado</option>
             </select>
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                    <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                  </svg>
+            </div>
 
             <button
               onClick={openCreate}
