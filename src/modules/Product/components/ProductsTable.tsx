@@ -30,29 +30,6 @@ export function ProductTable(props: ProductsProps) {
     return categoryNameById[key] ?? categoryNameById[Number(key)] ?? category_id;
   };
 
-  const renderTax = (tax_id: any) => {
-  const keyStr = String(tax_id);
-  const keyNum = Number.isFinite(Number(tax_id)) ? Number(tax_id) : null;
-
-  let pct: any =
-    taxPctById[keyStr as any] ??
-    (keyNum != null ? taxPctById[keyNum as any] : undefined);
-
-  if (pct == null) {
-    // 🔎 Deja este log un momento para verificar qué id llega y qué claves hay en el mapa
-    console.warn("[TABLE] sin porcentaje para tax_id =", tax_id, "keys sample =", Object.keys(taxPctById).slice(0,5));
-    return "—";
-  }
-
-  pct = typeof pct === "number" ? pct : Number(pct);
-  if (!Number.isFinite(pct)) return "—";
-
-  return `${pct.toFixed(2)}%`; // 1 → "1.00%" (si en tu back 1 significa 1%)
-};
-
-
-
-
   return (
     <table className="table-fixed w-full bg-white rounded-2xl">
       <thead className="h-16 w-full bg-white">
@@ -89,7 +66,7 @@ export function ProductTable(props: ProductsProps) {
 
             <td className="text-sm">{renderCategory(row.category_id)}</td>
 
-            <td className="text-sm">{renderTax(row.tax_id)}</td>
+            <td className="text-sm">{row.tax.percentage+"%"}</td>
 
             <td className="text-sm">{fmtMargin(row.profit_margin)}</td>
             <td className="text-sm">{fmtCRC(row.unit_price)}</td>
