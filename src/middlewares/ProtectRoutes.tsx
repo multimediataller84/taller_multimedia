@@ -15,5 +15,6 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/product" replace />;
   }
+
   return <>{children}</>;
 };

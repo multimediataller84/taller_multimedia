@@ -7,7 +7,6 @@ interface ProductsProps  {
   headers: { key: string; label: string }[];
   onEdit: (row: TProductEndpoint) => void;
   onDelete: (row: TProductEndpoint) => void;
-
   categoryNameById?: Record<string | number, string>;
   taxPctById?: Record<string | number, number>;
 };
@@ -30,31 +29,6 @@ export function ProductTable(props: ProductsProps) {
     return categoryNameById[key] ?? categoryNameById[Number(key)] ?? category_id;
   };
 
-  const renderTax = (tax_id: any) => {
-  const keyStr = String(tax_id);
-  const keyNum = Number.isFinite(Number(tax_id)) ? Number(tax_id) : null;
-
-  let pct: any =
-    (taxPctById as any)[keyStr] ??
-    (keyNum != null ? (taxPctById as any)[keyNum] : undefined);
-
-  if (pct == null) {
-    // if (import.meta.env.MODE !== "production") {
-    //   console.warn("[TABLE] sin porcentaje para tax_id =", tax_id, "keys sample =", Object.keys(taxPctById).slice(0,5));
-    // }
-    return "—";
-  }
-
-  pct = typeof pct === "number" ? pct : Number(pct);
-  if (!Number.isFinite(pct)) return "—";
-
-  const shown = Number.isInteger(pct) ? pct.toFixed(0) : pct.toFixed(2);
-  return `${shown}%`;
-};
-
-
-
-
   return (
     <table className="table-fixed w-full bg-white rounded-2xl">
       <thead className="h-16 w-full bg-white">
@@ -64,7 +38,6 @@ export function ProductTable(props: ProductsProps) {
               item.key === "category_id" ? "Categoría" :
               item.key === "tax_id"      ? "Impuesto"  :
               item.label ?? item.key;
-
             return (
               <th
                 key={item.key}
@@ -91,7 +64,7 @@ export function ProductTable(props: ProductsProps) {
 
             <td className="text-sm">{renderCategory(row.category_id)}</td>
 
-            <td className="text-sm">{renderTax(row.tax_id)}</td>
+            <td className="text-sm">{row.tax.percentage+"%"}</td>
 
             <td className="text-sm">{fmtMargin(row.profit_margin)}</td>
             <td className="text-sm">{fmtCRC(row.unit_price)}</td>
@@ -114,14 +87,14 @@ export function ProductTable(props: ProductsProps) {
                 <div className="flex bg-white absolute -translate-y-1 p-1.5 -translate-x-40 space-x-4 rounded-4xl shadow">
                   <button
                     className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
-                      bg-white border border-gray2 text-gray1 hover:bg-blue-500 hover:text-white"
+                      bg-black border border-black text-white hover:bg-blue-500 hover:border-blue-500"
                     onClick={() => onEdit(row)}
                   >
                     Editar
                   </button>
                   <button
-                    className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] 
-                      hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300"
+                    className="w-[94px] py-2 rounded-3xl bg-black border border-black
+                      hover:bg-[#D32626] hover:border-[#D32626] text-white font-Lato font-bold transition duration-300"
                     onClick={() => onDelete(row)}
                   >
                     Eliminar
