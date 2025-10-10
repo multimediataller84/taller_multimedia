@@ -112,7 +112,6 @@ export default function Product() {
           </div>
 
           <div className="flex space-x-2">
-            {/* (Si usas filtros aquí, puedes dejarlos tal cual) */}
             <div className="relative">
             <select
               className="appearance-none w-[220px] border py-2 rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"

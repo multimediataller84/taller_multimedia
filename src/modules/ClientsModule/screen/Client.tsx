@@ -54,7 +54,7 @@ export const Client = () => {
  
   return (
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="w-1/5 bg-[#E9EEF0] flex-col  ">
+      <div className="w-1/5 bg-[#E9EEF0] flex-col ">
         <div className="flex justify-between mt-8 ml-8">
           <h2 className="font-Lato text-2xl">Lista de Clientes</h2>
           <button
