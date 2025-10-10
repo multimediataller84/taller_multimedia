@@ -6,7 +6,7 @@ const navItems = [
   { name: "Dashboard", icon: "", path: "/dashboard", visibility: "admin" },
   { name: "Facturas", icon: "", path: "/invoices", visibility: "all" },
   { name: "Clientes", icon: "", path: "/clients", visibility: "all" },
-  { name: "Inventario", icon: "", path: "/product", visibility: "all" },
+  { name: "Inventario", icon: "", path: "/inventory", visibility: "admin" },
   { name: "Impuestos", icon: "", path: "/taxes", visibility: "admin"},
   { name: "Perfiles", icon: "", path: "/profiles", visibility: "admin"}
 ];

@@ -25,9 +25,9 @@ export const Router = () => {
         }
       />
       <Route
-        path="/product"
+        path="/inventory"
         element={
-          <ProtectedRoute allowedRoles={["employee", "admin"]}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <Product />
           </ProtectedRoute>
         }
