@@ -33,7 +33,7 @@ export class InvoiceService implements IInvoiceService {
     }
   }
 
-  async getAll(): Promise<TInvoiceEndpoint[]> {
+   getAll= async(): Promise<TInvoiceEndpoint[]> => {
     try {
       const response = await apiClient.get<TInvoiceEndpoint[]>("/invoice/all");
       if (response.status !== 200 && response.status !== 201) {
