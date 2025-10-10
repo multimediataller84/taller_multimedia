@@ -142,6 +142,7 @@ export const Invoices = () => {
                 payment_method: method,
                 products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
                 status: statusForMethod,
+                cash_register_id: 1
               } as const;
               console.log('[Invoice Submit] payload', payload);
               await submit(payload);
