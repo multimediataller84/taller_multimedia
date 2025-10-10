@@ -13,7 +13,8 @@ import { InvoiceHistoryTable } from "../components/InvoiceHistoryTable";
 import { InvoiceDetailModal } from "../components/InvoiceDetailModal";
 import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
 import { AlertModal } from "../components/AlertModal";
-import { creditRepository } from "../../Credit/repositories/creditRepository";
+import type { TPaymentMethod } from "../models/types/TPaymentMethod";
+import { useProfile } from "../../Profile/hooks/useProfile";
 
 export const Invoices = () => {
   const [search, setSearch] = useState("");
@@ -38,12 +39,18 @@ export const Invoices = () => {
 
   const [isProductModalOpen, setProductModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TInvoiceTab>("generar");
+  const [isCashRegisterOpen, setIsCashRegisterOpen] = useState(false);
 
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
-  const [initialCreditPayment, setInitialCreditPayment] = useState<string>("");
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
   const { invoices, loading: loadingHistory, error: errorHistory, refetch } = useInvoiceHistory();
+
+  const { profiles, loading: loadingProfiles } = useProfile();
+  const employees = profiles.filter(
+    (p) => p.role?.name?.toLowerCase?.() === "empleado" || p.role?.name?.toLowerCase?.() === "employee" || p.role_id === 2
+  );
+  const [seller, setSeller] = useState<string>("");
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<TInvoiceEndpoint | null>(null);
@@ -51,6 +58,7 @@ export const Invoices = () => {
   const [alertTitle, setAlertTitle] = useState<string>("");
   const [alertMsg, setAlertMsg] = useState<string>("");
   const [alertType, setAlertType] = useState<"success" | "error" | "info">("info");
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const showAlert = (title: string, message: string, type: "success" | "error" | "info" = "info") => {
     setAlertTitle(title);
     setAlertMsg(message);
@@ -58,10 +66,14 @@ export const Invoices = () => {
     setAlertOpen(true);
   };
 
+  const handleToggleCashRegister = () => {
+    setIsCashRegisterOpen(!isCashRegisterOpen);
+    setConfirmationModalOpen(false);
+  };
+
   return (
     <RootLayout search={search} setSearch={setSearch}>
       <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-4">
-        {/* Tabs - justo debajo de la navbar */}
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
 
         {error && (
@@ -74,11 +86,29 @@ export const Invoices = () => {
           <>
         {/* Header acciones de generar */}
         <div className="flex items-center justify-between mt-2">
-          <h2 className="font-Lato text-2xl">Facturas</h2>
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <h2 className="font-Lato text-2xl">Facturas</h2>
+              <div className={`text-sm font-medium ${isCashRegisterOpen ? 'text-green-600' : 'text-red-600'}`}>
+                Caja: {isCashRegisterOpen ? 'Abierta' : 'Cerrada'}
+              </div>
+            </div>
+            <button
+              className={`w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 ${
+                isCashRegisterOpen
+                  ? 'bg-red-500 hover:bg-red-800 text-white'
+                  : 'bg-green-500 hover:bg-green-800 text-white'
+              }`}
+              onClick={() => setConfirmationModalOpen(true)}
+            >
+              {isCashRegisterOpen ? 'Cerrar caja' : 'Abrir caja'}
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <button
-              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white"
+              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setProductModalOpen(true)}
+              disabled={!isCashRegisterOpen}
             >
               Agregar productos
             </button>
@@ -88,77 +118,39 @@ export const Invoices = () => {
                 submitting ||
                 !selectedClient ||
                 items.length === 0 ||
-                (paymentMethod === "Crédito" && (
-                  initialCreditPayment.trim() === "" ||
-                  Number(initialCreditPayment) <= 0 ||
-                  Number.isNaN(Number(initialCreditPayment)) ||
-                  Number(initialCreditPayment) > subtotal
-                ))
+                !isCashRegisterOpen
               }
               onClick={async () => {
-                if (!selectedClient) return;
-                try {
-                  const paymentMap: Record<string, string> = {
-                    Efectivo: "Cash",
-                    Tarjeta: "Card",
-                    Transferencia: "Transfer",
-                    "Crédito": "Credit",
-                  };
-                  if (items.length === 0) {
-                    showAlert("Acción requerida", "Debe agregar al menos un producto", "error");
-                    return;
-                  }
-                  const issueNow = new Date().toISOString();
-                  const isCredit = paymentMethod === "Crédito";
-                  const initialPaid = isCredit ? Number(initialCreditPayment) : 0;
-                  if (isCredit) {
-                    if (initialCreditPayment.trim() === "") {
-                      showAlert("Pago inicial requerido", "Ingrese un monto de pago inicial para usar Crédito.", "error");
-                      return;
-                    }
-                    if (Number.isNaN(initialPaid) || initialPaid <= 0) {
-                      showAlert("Monto inválido", "El pago inicial debe ser un número válido mayor que 0", "error");
-                      return;
-                    }
-                    if (initialPaid > subtotal) {
-                      showAlert("Monto inválido", "El pago inicial no puede ser mayor que el total", "error");
-                      return;
-                    }
-                  }
-                  const payload = {
-                    customer_id: selectedClient.id,
-                    issue_date: issueNow,
-                    payment_method: paymentMap[paymentMethod] ?? paymentMethod,
-                    products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
-                    status: "Issued",
-                  } as const;
-                  console.log('[Invoice Submit] payload', payload);
-                  const created = await submit(payload);
-                  if (isCredit && initialPaid > 0) {
-                    try {
-                      const backCredit = await creditRepository.getCreditByCustomer(selectedClient.id);
-                      if (!backCredit) {
-                        showAlert("Crédito no encontrado", "El cliente no tiene una línea de crédito asignada.", "error");
-                        return;
-                      }
-                      await creditRepository.createPayment({
-                        credit_id: backCredit.id,
-                        amount: initialPaid,
-                        payment_method: "Credit",
-                        invoice_id: created.id,
-                      });
-                    } catch (payErr) {
-                      showAlert("Error", "La factura se creó, pero no se pudo registrar el pago inicial en crédito.", "error");
-                    }
-                  }
-                  showAlert("Factura creada", "La factura fue creada correctamente", "success");
-                  
+            if (!selectedClient) return;
+            try {
+              const paymentMap: Record<string, TPaymentMethod> = {
+                Efectivo: "Cash",
+                Tarjeta: "Debit Card",
+                Transferencia: "Transfer",
+                "Crédito": "Credit",
+              };
+              if (items.length === 0) {
+                showAlert("Acción requerida", "Debe agregar al menos un producto", "error");
+                return;
+              }
+              const issueNow = new Date().toISOString();
+              const method: TPaymentMethod = paymentMap[paymentMethod] ?? "Cash";
+              const statusForMethod = method === "Credit" ? "Pending" : "Issued";
+              const payload = {
+                customer_id: selectedClient.id,
+                issue_date: issueNow,
+                payment_method: method,
+                products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
+                status: statusForMethod,
+              } as const;
+              console.log('[Invoice Submit] payload', payload);
+              await submit(payload);
+              showAlert("Factura creada", "La factura fue creada correctamente", "success");
+
                   setPaymentMethod("Efectivo");
-                  setInitialCreditPayment("");
                   clearItems();
                    
                   setQuery("");
-                  setSelectedClient(null);
                    
                   refetch();
                 } catch (e) {
@@ -179,6 +171,7 @@ export const Invoices = () => {
                 setQuery={setQuery}
                 filteredClients={filteredClients}
                 onSelect={handleSelectClient}
+                disabled={!isCashRegisterOpen}
               />
             </div>
             <div>
@@ -203,9 +196,20 @@ export const Invoices = () => {
 
             <div>
               <label className="block text-sm text-gray-600 mb-1">Vendedor</label>
-              <select className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400">
-                <option>Obed Alvarado</option>
-                <option>Otro</option>
+              <select
+                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 ${!isCashRegisterOpen ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                value={seller}
+                onChange={(e) => setSeller(e.target.value)}
+                disabled={loadingProfiles || !isCashRegisterOpen}
+              >
+                <option value="" disabled>
+                  {loadingProfiles ? "Cargando vendedores…" : "Seleccione vendedor"}
+                </option>
+                {employees.map((u) => (
+                  <option key={u.id} value={u.username}>
+                    {u.username}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -219,30 +223,16 @@ export const Invoices = () => {
             <div>
               <label className="block text-sm text-gray-600 mb-1">Pago</label>
               <select
-                className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 ${!isCashRegisterOpen ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
+                disabled={!isCashRegisterOpen}
               >
                 <option value="Efectivo">Efectivo</option>
                 <option value="Tarjeta">Tarjeta</option>
                 <option value="Transferencia">Transferencia</option>
                 <option value="Crédito">Crédito</option>
               </select>
-              {paymentMethod === "Crédito" && (
-                <div className="mt-2">
-                  <label className="block text-sm text-gray-600 mb-1">Pago inicial (opcional)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={initialCreditPayment}
-                    onChange={(e) => setInitialCreditPayment(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">No puede exceder el total actual.</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -253,6 +243,7 @@ export const Invoices = () => {
           onIncrease={increaseQty}
           onDecrease={decreaseQty}
           onRemove={removeItem}
+          disabled={!isCashRegisterOpen}
         />
 
         {/* Totales */}
@@ -312,6 +303,18 @@ export const Invoices = () => {
         message={alertMsg}
         type={alertType}
         onClose={() => setAlertOpen(false)}
+      />
+
+      {/* Confirmation modal para abrir/cerrar caja */}
+      <AlertModal
+        open={confirmationModalOpen}
+        title={isCashRegisterOpen ? "Cerrar caja" : "Abrir caja"}
+        message={`¿Está seguro que desea ${isCashRegisterOpen ? 'cerrar' : 'abrir'} la caja?`}
+        type="confirmation"
+        onClose={() => setConfirmationModalOpen(false)}
+        onConfirm={handleToggleCashRegister}
+        confirmText={isCashRegisterOpen ? "Cerrar" : "Abrir"}
+        cancelText="Cancelar"
       />
     </RootLayout>
   );
