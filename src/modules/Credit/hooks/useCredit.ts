@@ -8,8 +8,8 @@ type UIPayment = { id: string | number; amount: number; createdAt: string; locke
 type UICredit = {
   id: number;
   customer_id: number;
-  assigned: number;   // approved_credit_amount
-  remaining: number;  // balance
+  assigned: number;
+  remaining: number;
   status: "pending_review" | "approved" | "closed";
   createdAt?: string;
   invoices: UIInvoice[];

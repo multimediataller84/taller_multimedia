@@ -9,7 +9,7 @@ const unwrap = <T,>(res: any): T => {
 };
 
 export type TPaymentMethod = "Cash" | "Credit" | "Debit Card" | "Transfer";
-export type TInvoiceStatus = "Pending" | "Paid" | "Partial" | "Canceled"; // ajusta si tu back usa otros literales
+export type TInvoiceStatus = "Pending" | "Paid" | "Partial" | "Canceled";
 
 export type BackInvoice = {
   id: number;
@@ -40,7 +40,6 @@ export const invoiceRepository = {
     }
   },
 
-  // Eliminar factura en el backend; el back debe ajustar el crédito/balance en cascada
   async deleteInvoice(invoiceId: number): Promise<void> {
     await apiClient.delete(`/invoice/${invoiceId}`);
   },
