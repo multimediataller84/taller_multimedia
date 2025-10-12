@@ -8,6 +8,7 @@ export const useCashRegister = () => {
     const [cashRegister, setCashRegister] = useState<TCashRegisterWithUser[]>([]);
     const [cashRegisterSelect, setCashRegisterSelect] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    
 
     const [edit, setEdit] = useState(false);
     const [visibleEdit, setVisibleEdit] = useState(false);
