@@ -13,27 +13,35 @@ export class InvoiceService implements IInvoiceService {
     return InvoiceService.instance;
   }
 
-  async post(data: TInvoice): Promise<TInvoiceEndpoint> {
-    try {
-      const token = sessionStorage.getItem("authToken");
-      const response = await apiClient.post<TInvoiceEndpoint>(
-        "/invoice",
-        data,
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-          withCredentials: false,
-        }
-      );
-      if (response.status !== 200 && response.status !== 201) {
-        throw new Error("Server error at /invoice");
-      }
-      return response.data;
-    } catch (error) {
-      throw new Error("Invalid Invoice payload");
-    }
-  }
+async post(data: TInvoice): Promise<void> {
+  try {
+    const response = await apiClient.post<{ name: string; base64File: string }>(
+      "/invoice",
+      data,
+    );
 
-   getAll= async(): Promise<TInvoiceEndpoint[]> => {
+    const byteCharacters = atob(response.data.base64File);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "application/pdf" });
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Comprobante_N°${response.data.name}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    throw new Error("Invalid Invoice payload");
+  }
+}
+
+  getAll = async (): Promise<TInvoiceEndpoint[]> => {
     try {
       const response = await apiClient.get<TInvoiceEndpoint[]>("/invoice/all");
       if (response.status !== 200 && response.status !== 201) {
@@ -43,7 +51,7 @@ export class InvoiceService implements IInvoiceService {
     } catch (error) {
       throw new Error("Invalid Get Invoices");
     }
-  }
+  };
 
   async get(id: number): Promise<TInvoiceEndpoint> {
     try {
