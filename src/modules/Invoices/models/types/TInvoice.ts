@@ -12,6 +12,7 @@ export type TInvoice = {
   payment_method: TPaymentMethod;
   products: TInvoiceProduct[];
   status: string;
+  user_id: number;
   cash_register_id: number;
   amount_paid?: number; // optional initial payment (e.g., when using Credit)
 };
