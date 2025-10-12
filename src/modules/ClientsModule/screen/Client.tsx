@@ -54,7 +54,7 @@ export const Client = () => {
  
   return (
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="w-1/5 bg-[#E9EEF0] flex-col ">
+      <div className="w-1/5 h-screen bg-[#E9EEF0] flex-col ">
         <div className="flex justify-between mt-8 ml-8">
           <h2 className="font-Lato text-2xl">Lista de Clientes</h2>
           <button
@@ -89,7 +89,7 @@ export const Client = () => {
           </h3>
         </div>
 
-       <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8">
+       <div className="w-full xl:h-[50%] sm:h-[40%] flex flex-col overflow-y-auto mt-8">
         <div className="space-y-2">
           {loading ? ( 
             [...Array(4)].map((_, index) => (

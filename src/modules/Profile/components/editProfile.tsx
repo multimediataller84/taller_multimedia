@@ -40,7 +40,7 @@ export default function editClient(props: editProfileProps) {
             <div className="w-[70%] flex flex-col ">
             <div className="bg-gray3 w-full  flex flex-col">
               <div className="flex w-full justify-between pt-8">
-                <h2 className="pl-8 font-Lato text-2xl ">Datos del Cliente</h2>
+                <h2 className="pl-8 font-Lato text-2xl ">Datos del Perfil</h2>
                 <div className="flex space-x-8 pr-4">
                   <button className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
                   ${props.editProfile ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
