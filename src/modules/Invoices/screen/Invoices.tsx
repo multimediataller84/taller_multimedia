@@ -246,6 +246,7 @@ export const Invoices = () => {
                         customer_id: selectedClient.id,
                         issue_date: issueNow,
                         payment_method: methodInternal,
+                        cash_register_id: 1,
                         products: mapItemsToPayload(
                           items.map((i) => ({
                             product_id: i.product_id,
