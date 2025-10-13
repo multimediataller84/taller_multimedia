@@ -78,7 +78,7 @@ export const creditRepository = {
       customer_id: customerId,
       approved_credit_amount: Number(amount),
       balance: Number(amount),
-      status: "Pending" as const,
+      status: "Aproved" as const,
     };
 
     const token = sessionStorage.getItem("authToken");
