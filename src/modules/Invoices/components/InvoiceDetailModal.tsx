@@ -1,6 +1,7 @@
 import React from "react";
 import { useInvoiceDetail } from "../hooks/useInvoiceDetail";
 import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
+import { mapPaymentMethodToES, mapStatusToES } from "../utils/displayMappers";
 
 interface Props {
   open: boolean;
@@ -31,11 +32,11 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
               <div>
                 <div><span className="text-gray-600">Factura:</span> <span className="font-medium">{data.invoice_number || data.id}</span></div>
                 <div><span className="text-gray-600">Fecha:</span> <span className="font-medium">{(data.issue_date || data.createdAt || "-") && new Date(data.issue_date || data.createdAt || "").toLocaleString()}</span></div>
-                <div><span className="text-gray-600">Estado:</span> <span className="font-medium">{data.status}</span></div>
+                <div><span className="text-gray-600">Estado:</span> <span className="font-medium">{mapStatusToES(data.status)}</span></div>
               </div>
               <div>
                 <div><span className="text-gray-600">Cliente:</span> <span className="font-medium">{data.customer ? `${data.customer.name} ${data.customer.last_name}` : `#${data.customer_id}`}</span></div>
-                <div><span className="text-gray-600">Método:</span> <span className="font-medium">{data.payment_method}</span></div>
+                <div><span className="text-gray-600">Método:</span> <span className="font-medium">{mapPaymentMethodToES(data.payment_method)}</span></div>
               </div>
             </div>
 
@@ -55,9 +56,9 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
                     <tr key={p.id}>
                       <td className="px-4 py-2">{p.name || `#${p.id}`}</td>
                       <td className="px-4 py-2">{p.sku || '-'}</td>
-                      <td className="px-4 py-2 text-right">{p.quantity}</td>
-                      <td className="px-4 py-2 text-right">{p.unit_price != null ? Number(p.unit_price).toFixed(2) : '-'}</td>
-                      <td className="px-4 py-2 text-right">{p.unit_price != null ? (Number(p.unit_price) * p.quantity).toFixed(2) : '-'}</td>
+                      <td className="px-4 py-2 text-right">{Number(p.quantity ?? 0)}</td>
+                      <td className="px-4 py-2 text-right">{p.unit_price != null ? Number(p.unit_price).toFixed(2) : '0.00'}</td>
+                      <td className="px-4 py-2 text-right">{(Number(p.unit_price ?? 0) * Number(p.quantity ?? 0)).toFixed(2)}</td>
                     </tr>
                   ))}
                   {data.products.length === 0 && (
