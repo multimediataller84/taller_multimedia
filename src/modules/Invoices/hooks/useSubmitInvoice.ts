@@ -2,22 +2,19 @@ import { useState } from "react";
 import type { AxiosError } from "axios";
 import { InvoiceService } from "../services/invoiceService";
 import type { TInvoice, TInvoiceProduct } from "../models/types/TInvoice";
-import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
 
 const service = InvoiceService.getInstance();
 
 export const useSubmitInvoice = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<TInvoiceEndpoint | null>(null);
 
-  const submit = async (payload: TInvoice) => {
+  const submit = async (payload: TInvoice): Promise<void> => {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await service.post(payload);
-      setResult(res);
-      return res;
+      await service.post(payload);
+      return;
     } catch (e: unknown) {
       let message = 'Error al enviar factura';
       let status: number | undefined;
@@ -39,5 +36,5 @@ export const useSubmitInvoice = () => {
   const mapItemsToPayload = (items: { product_id: number; qty: number }[]): TInvoiceProduct[] =>
     items.map((i) => ({ id: i.product_id, quantity: i.qty }));
 
-  return { submitting, error, result, submit, mapItemsToPayload };
+  return { submitting, error, submit, mapItemsToPayload };
 };

@@ -14,7 +14,7 @@ import { InvoiceDetailModal } from "../components/InvoiceDetailModal";
 import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
 import { AlertModal } from "../components/AlertModal";
 import type { TPaymentMethod } from "../models/types/TPaymentMethod";
-import { useProfile } from "../../Profile/hooks/useProfile";
+import { useOpenRegisters } from "../hooks/useOpenRegisters";
 import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { ProductService } from "../../Product/services/productService";
 import { InvoiceService } from "../services/invoiceService";
@@ -43,19 +43,27 @@ export const Invoices = () => {
 
   const [isProductModalOpen, setProductModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TInvoiceTab>("generar");
-  const [isCashRegisterOpen, setIsCashRegisterOpen] = useState(false);
-
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
-  const [initialCreditPayment, setInitialCreditPayment] = useState<string>("");
+  
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
-  const { invoices, loading: loadingHistory, error: errorHistory, refetch } = useInvoiceHistory();
+  const {
+    currentInvoices,
+    totalPages,
+    activePage,
+    setActivePage,
+    pagesDisplay,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    loading: loadingHistory,
+    error: errorHistory,
+    refetch,
+  } = useInvoiceHistory();
 
-  const { profiles, loading: loadingProfiles } = useProfile();
-  const employees = profiles.filter(
-    (p) => p.role?.name?.toLowerCase?.() === "empleado" || p.role?.name?.toLowerCase?.() === "employee" || p.role_id === 2
-  );
-  const [seller, setSeller] = useState<string>("");
+  const { registers, loading: loadingRegisters } = useOpenRegisters();
+  const [seller, setSeller] = useState<string>(""); // value will be "userId:registerId"
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<TInvoiceEndpoint | null>(null);
@@ -63,7 +71,6 @@ export const Invoices = () => {
   const [alertTitle, setAlertTitle] = useState<string>("");
   const [alertMsg, setAlertMsg] = useState<string>("");
   const [alertType, setAlertType] = useState<"success" | "error" | "info">("info");
-  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const showAlert = (title: string, message: string, type: "success" | "error" | "info" = "info") => {
     setAlertTitle(title);
     setAlertMsg(message);
@@ -71,10 +78,6 @@ export const Invoices = () => {
     setAlertOpen(true);
   };
 
-  const handleToggleCashRegister = () => {
-    setIsCashRegisterOpen(!isCashRegisterOpen);
-    setConfirmationModalOpen(false);
-  };
 
   const { loading: aiLoading, recs, error: aiError, generate, setRecs } = useAiRecommendations();
   const [openAiModal, setOpenAiModal] = useState(false);
@@ -193,20 +196,7 @@ export const Invoices = () => {
           <div className="flex items-center gap-4">
             <div className="flex flex-col">
               <h2 className="font-Lato text-2xl">Facturas</h2>
-              <div className={`text-sm font-medium ${isCashRegisterOpen ? 'text-green-600' : 'text-red-600'}`}>
-                Caja: {isCashRegisterOpen ? 'Abierta' : 'Cerrada'}
-              </div>
             </div>
-            <button
-              className={`w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 ${
-                isCashRegisterOpen
-                  ? 'bg-red-500 hover:bg-red-800 text-white'
-                  : 'bg-green-500 hover:bg-green-800 text-white'
-              }`}
-              onClick={() => setConfirmationModalOpen(true)}
-            >
-              {isCashRegisterOpen ? 'Cerrar caja' : 'Abrir caja'}
-            </button>
           </div>
           <div className="flex items-center gap-3">
              <button
@@ -219,7 +209,7 @@ export const Invoices = () => {
             <button
               className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setProductModalOpen(true)}
-              disabled={!isCashRegisterOpen}
+              
             >
               Agregar productos
             </button>
@@ -229,7 +219,7 @@ export const Invoices = () => {
                 submitting ||
                 !selectedClient ||
                 items.length === 0 ||
-                !isCashRegisterOpen
+                !seller
               }
               onClick={async () => {
             if (!selectedClient) return;
@@ -247,14 +237,21 @@ export const Invoices = () => {
               const issueNow = new Date().toISOString();
               const method: TPaymentMethod = paymentMap[paymentMethod] ?? "Cash";
               const statusForMethod = method === "Credit" ? "Pending" : "Issued";
+              const [selUserIdStr, selRegisterIdStr] = String(seller || "").split(":");
+              const selUserId = Number(selUserIdStr);
+              const selRegisterId = Number(selRegisterIdStr);
+              if (!selUserId || !selRegisterId) {
+                showAlert("Acción requerida", "Debe seleccionar un vendedor (usuario y caja abiertos)", "error");
+                return;
+              }
               const payload = {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
                 payment_method: method,
                 products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
                 status: statusForMethod,
-                cash_register_id: 1,
-                user_id: 2
+                cash_register_id: selRegisterId,
+                user_id: selUserId
               } as const;
               console.log('[Invoice Submit] payload', payload);
               await submit(payload);
@@ -264,10 +261,22 @@ export const Invoices = () => {
                   clearItems();
                    
                   setQuery("");
+                  setSelectedClient(null);
                    
                   refetch();
                 } catch (e) {
-                  showAlert("Error", "No se pudo crear la factura", "error");
+                  let message = "No se pudo crear la factura";
+                  const err = e as unknown;
+                  if (typeof err === "string") {
+                    message = err;
+                  } else if (err && typeof err === "object" && "response" in err) {
+                    const resp = (err as { response?: { data?: { message?: string } } }).response;
+                    const msg = resp?.data?.message;
+                    if (typeof msg === "string" && msg.trim().length > 0) message = msg;
+                  } else if (err instanceof Error && err.message) {
+                    message = err.message;
+                  }
+                  showAlert("Error al generar factura", String(message), "error");
                 }
               }}>
               {submitting ? "Guardando…" : "Generar factura"}
@@ -284,7 +293,7 @@ export const Invoices = () => {
                 setQuery={setQuery}
                 filteredClients={filteredClients}
                 onSelect={handleSelectClient}
-                disabled={!isCashRegisterOpen}
+                
               />
             </div>
             <div>
@@ -310,17 +319,17 @@ export const Invoices = () => {
             <div>
               <label className="block text-sm text-gray-600 mb-1">Vendedor</label>
               <select
-                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 ${!isCashRegisterOpen ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400`}
                 value={seller}
                 onChange={(e) => setSeller(e.target.value)}
-                disabled={loadingProfiles || !isCashRegisterOpen}
+                disabled={loadingRegisters}
               >
                 <option value="" disabled>
-                  {loadingProfiles ? "Cargando vendedores…" : "Seleccione vendedor"}
+                  {loadingRegisters ? "Cargando vendedores…" : "Seleccione vendedor"}
                 </option>
-                {employees.map((u) => (
-                  <option key={u.id} value={u.username}>
-                    {u.username}
+                {registers.map((r) => (
+                  <option key={r.id} value={`${r.user_id}:${r.id}`}>
+                    {r.user?.name || r.user?.username || `Usuario ${r.user_id}`} (Caja #{r.id})
                   </option>
                 ))}
               </select>
@@ -336,10 +345,10 @@ export const Invoices = () => {
             <div>
               <label className="block text-sm text-gray-600 mb-1">Pago</label>
               <select
-                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 ${!isCashRegisterOpen ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400`}
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                disabled={!isCashRegisterOpen}
+                
               >
                 <option value="Efectivo">Efectivo</option>
                 <option value="Tarjeta">Tarjeta</option>
@@ -356,7 +365,7 @@ export const Invoices = () => {
           onIncrease={increaseQty}
           onDecrease={decreaseQty}
           onRemove={removeItem}
-          disabled={!isCashRegisterOpen}
+          disabled={false}
         />
 
         {/* Totales */}
@@ -381,13 +390,55 @@ export const Invoices = () => {
             {loadingHistory ? (
               <div className="bg-white rounded-md p-6 shadow-sm">Cargando historial…</div>
             ) : (
-              <InvoiceHistoryTable
-                data={invoices}
-                onSelect={(inv) => {
-                  setSelectedInvoice(inv);
-                  setDetailOpen(true);
-                }}
-              />
+              <>
+                <InvoiceHistoryTable
+                  data={currentInvoices}
+                  onSelect={(inv) => {
+                    setSelectedInvoice(inv);
+                    setDetailOpen(true);
+                  }}
+                />
+
+                {totalPages > 1 && (
+                  <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">
+                    <button
+                      className={`size-[36px] border rounded-full ${
+                        canPrev ? "bg-white border-gray2 text-gray1" : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
+                      }`}
+                      onClick={() => canPrev && goPrev()}
+                      disabled={!canPrev}
+                      aria-label="Anterior"
+                    >
+                      «
+                    </button>
+                    {pagesDisplay.map((p, idx) =>
+                      typeof p === "number" ? (
+                        <button
+                          key={`${p}-${idx}`}
+                          className={`size-[42px] border rounded-full active:outline-0 ${
+                            activePage === p ? "bg-blue-500 text-white" : "bg-white border-gray2 text-gray1"
+                          }`}
+                          onClick={() => setActivePage(p)}
+                        >
+                          {p}
+                        </button>
+                      ) : (
+                        <span key={`dots-${idx}`} className="px-2 text-gray-500">…</span>
+                      )
+                    )}
+                    <button
+                      className={`size-[36px] border rounded-full ${
+                        canNext ? "bg-white border-gray2 text-gray1" : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
+                      }`}
+                      onClick={() => canNext && goNext()}
+                      disabled={!canNext}
+                      aria-label="Siguiente"
+                    >
+                      »
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -417,20 +468,8 @@ export const Invoices = () => {
         type={alertType}
         onClose={() => setAlertOpen(false)}
       />
-
-      {/* Confirmation modal para abrir/cerrar caja */}
-      <AlertModal
-        open={confirmationModalOpen}
-        title={isCashRegisterOpen ? "Cerrar caja" : "Abrir caja"}
-        message={`¿Está seguro que desea ${isCashRegisterOpen ? 'cerrar' : 'abrir'} la caja?`}
-        type="confirmation"
-        onClose={() => setConfirmationModalOpen(false)}
-        onConfirm={handleToggleCashRegister}
-        confirmText={isCashRegisterOpen ? "Cerrar" : "Abrir"}
-        cancelText="Cancelar"
-      />
-
-       {openAiModal && (
+      
+      {openAiModal && (
         <div className="fixed inset-0 grid place-items-center bg-black/40 z-50">
           <div className="bg-white rounded-xl p-6 w-[540px] max-h-[80vh] overflow-y-auto">
             <h3 className="text-xl font-semibold mb-2">Recomendaciones de hoy</h3>
