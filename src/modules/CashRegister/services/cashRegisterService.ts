@@ -64,9 +64,10 @@ export class CashRegisterService implements ICashRegisterService {
         }
 
         return response.data;
-    } catch (error){
-        throw new Error(`Invalid post`);
-    }
+    } catch (error: any) {
+  console.error("❌ Error en POST /cash/register:", error.response?.data || error.message);
+  throw new Error(`Invalid post`);
+}
   }
 
   async delete(id: number): Promise<TCashRegisterWithUser>{

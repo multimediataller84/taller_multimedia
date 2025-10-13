@@ -1,7 +1,7 @@
 export default function confirmationAddClient() {
 
     return(
-        <div className="flex relative w-[70%]  justify-center items-center flex-col">
+        <div className="flex relative w-[70%] justify-center items-center flex-col">
             <div className="bg-white w-auto h-48 -translate-y-20 px-11 items-center rounded-2xl shadow">
             <div className="h-full items-center flex-col flex justify-center w-full">
                 <div className="w-full justify-center flex mb-2">

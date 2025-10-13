@@ -47,6 +47,38 @@ export const useCashRegister = () => {
       fetchCashRegister();
     }, []);
 
+    const handleAddCashRegister = async (newCashRegister: any) => {
+    try {
+      const created = await cashRegisterService.post(newCashRegister);
+      setCashRegister((prev) => [...prev, created]);
+      setVisibleAdd(false);
+      if (add){
+       
+      }
+    } catch (error) {
+      console.error("Error al añadir cliente:", error);
+    }
+  };
+
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+) => {
+  const { name, value } = e.target;
+
+  setCashRegisterSelect((prev: any) => ({
+    ...prev,
+    [name]: name === "amount" || name === "opening_amount" || name === "closing_amount"
+      ? Number(value) || 0   // 👈 convierte a número
+      : value,
+  }));
+
+  if (value.trim() === "") {
+    setAdd(false);
+  } else {
+    setAdd(true);
+  }
+};
+
   return{
     cashRegister,
     setCashRegister,
@@ -66,6 +98,8 @@ export const useCashRegister = () => {
     setActivePage,
     search,
     setSearch,
-    currentCashRegister
+    currentCashRegister,
+    handleAddCashRegister,
+    handleChange
   }
 }

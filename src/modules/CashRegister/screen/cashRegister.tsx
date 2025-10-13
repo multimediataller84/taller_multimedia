@@ -2,6 +2,7 @@ import { RootLayout } from "../../../_Layouts/RootLayout";
 import { useCashRegister } from "../hooks/useCashRegister";
 import ContentLoader from 'react-content-loader'
 import InfoCashRegister from "../components/infoCashRegister";
+import AddCashRegister from "../components/addCashRegister";
 
 export const CashRegister = () => {
     
@@ -24,7 +25,9 @@ export const CashRegister = () => {
         setActivePage,
         search,
         setSearch,
-        currentCashRegister
+        currentCashRegister,
+        handleAddCashRegister,
+        handleChange
     } = useCashRegister();
 
     const CashRegisterLoader = () => (
@@ -39,7 +42,7 @@ export const CashRegister = () => {
 
     return(
          <RootLayout search={search} setSearch={setSearch}>
-        <div className="w-1/5 h-screen bg-[#E9EEF0] flex-col  ">
+        <div className="w-1/5 h-screen bg-[#E9EEF0] flex-col ">
             <div className="flex justify-between mt-8 ml-8">
             <h2 className="font-Lato text-2xl">Lista de Cajas</h2>
             <button
@@ -54,10 +57,11 @@ export const CashRegister = () => {
                 setVisibleEdit(false);
                 setAdd(false);
                 setCashRegisterSelect({
-                    name: "",
-                    username: "",
-                    password: "",
-                    role_id: 0,
+                          amount: 0,
+                          opening_amount: 0,
+                          closing_amount: 0,
+                          status: "closed",
+                          user_id: 0,
                 });
                 }}
             >
@@ -82,7 +86,7 @@ export const CashRegister = () => {
                 ))
             ) : ( 
                 currentCashRegister.map((items) => (
-                <div className="w-full pl-8 pr-18 flex">
+                <div className="w-full pl-8 pr-11 flex">
                     <div
                     className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                                 ${
@@ -98,15 +102,18 @@ export const CashRegister = () => {
                         setEdit(false);
                     }}
                     >
-                    <h2 className="w-full h-auto ml-4 mt-4 font-medium">
+                    <h2 className="w-full h-auto ml-4 mt-4 font-Lato font-bold">
                         Caja {items.id}
                     </h2>
-                    <h3 className="mt-1 ml-4">
+                    <h3 className="mt-1 ml-4 font-Lato">
                           {items.user?.name || "Sin usuario"}
                     </h3>
-                    <h4 className="mt-1 ml-4">
+                    <h4 className="mt-1 ml-4 font-Lato">
                         {items.opening_amount}
                     </h4>
+                    <h5 className="mt-5 justify-end w-full flex pr-4 font-Lato">
+                        {items.status}
+                    </h5>
                     </div>
                 </div>
                 ))
@@ -136,9 +143,19 @@ export const CashRegister = () => {
       </div>        
     
         {visibleEdit && <InfoCashRegister
-          profileSelect = {cashRegisterSelect}
-          setProfileSelect = {setCashRegisterSelect}
+          cashRegisterSelect = {cashRegisterSelect}
+          setCashRegisterSelect = {setCashRegisterSelect}
           setVisibleEditProfile = {setVisibleEdit}
+        />}
+
+        {visibleAdd && <AddCashRegister
+            visibleAdd = {visibleAdd}
+            setVisibleAdd = {setVisibleAdd} 
+            cashRegisterSelect = {cashRegisterSelect}
+            setCashRegisterSelect = {setCashRegisterSelect}
+            add = {add}
+            handleAddCashRegister = {handleAddCashRegister}
+            handleChange = {handleChange}
         />}
                   
         </RootLayout>

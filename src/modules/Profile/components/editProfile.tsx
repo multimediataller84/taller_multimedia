@@ -64,10 +64,16 @@ export default function editClient(props: editProfileProps) {
                 </div>
               </div>
 
-              <div className="w-full flex pt-8 pl-8 pb-4 font-Lato text-base space-x-8">
-                <button className="w-[220px] text-center font-medium">Información General</button>
+              <div className="flex flex-col w-full">
+                <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
+                  <h2 className="w-1/3 text-center text-blue-500">
+                    Información General
+                  </h2>
+                </div>
+                <div className="w-full h-1 bg-graybar mt-4">
+                  <div className="w-1/3 h-1 bg-blue-500"></div>
+                </div>
               </div>
-              <div className="w-full h-1 bg-graybar"></div>
             </div>
 
              <div className="w-auto bg-[#DEE8ED] h-min">
