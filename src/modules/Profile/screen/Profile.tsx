@@ -6,6 +6,7 @@ import ContentLoader from 'react-content-loader'
 import ConfirmationAddProfile from "../components/confirmationAddProfile";
 import ConfirmationDeleteProfile from "../components/confirmationDeleteProfile";
 import ConfirmationEditProfile from "../components/confirmationEditProfile";
+import Pagination from "../../../components/pagination";
 
 export const Profile = () => {
   const {
@@ -35,7 +36,13 @@ export const Profile = () => {
     confirmationEditProfile,
     setConfirmationEditProfile,
     confirmationDeleteProfile,
-    setConfirmationDeleteProfile
+    setConfirmationDeleteProfile,
+    totalPages,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    pagesDisplay
   } = useProfile();
 
   const ProfileLoader = () => (
@@ -50,7 +57,7 @@ export const Profile = () => {
 
   return (
     <RootLayout search={searchProfiles} setSearch={setSearchProfiles}>
-      <div className="w-1/5 bg-[#E9EEF0] flex-col  ">
+      <div className="w-1/5 h-screen bg-[#E9EEF0] flex-col  ">
         <div className="flex justify-between mt-8 ml-8">
           <h2 className="font-Lato text-2xl">Lista de Perfiles</h2>
           <button
@@ -83,7 +90,7 @@ export const Profile = () => {
           </h3>
         </div>
 
-        <div className="w-full xl:h-[60%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
+        <div className="w-full xl:h-[50%] sm:h-[40%] flex flex-col overflow-y-auto mt-8 ">
           <div className="space-y-2">
             {loading ? ( 
             [...Array(4)].map((_, index) => (
@@ -95,7 +102,7 @@ export const Profile = () => {
             currentProfiles.map((items) => (
               <div className="w-full pl-8 pr-18 flex">
                 <div
-                  className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
+                  className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                             ${
                               profileSelect?.id === items.id
                                 ? "bg-blue-500 text-white hover:bg-blue-800"
@@ -126,21 +133,17 @@ export const Profile = () => {
           </div>
         </div>
 
-        <div className="pl-8 pr-18 pt-4 justify-between w-full flex  font-Lato font-medium">
-          {[1, 2, 3, "...", 8].map((num, index) => (
-            <button
-              key={index}
-              className={`size-[42px] border rounded-full active:outline-0 
-                        ${
-                          activePage === num
-                            ? "bg-blue-500 text-white"
-                            : "bg-white border-gray2 text-gray1"
-                        }`}
-              onClick={() => typeof num === "number" && setActivePage(num)}
-            >
-              {num}
-            </button>
-          ))}
+        <div className="w-full pl-8 flex">
+        <Pagination
+        totalPages={totalPages}
+        activePage={activePage}
+        setActivePage={setActivePage}
+        canPrev={canPrev}
+        canNext={canNext}
+        goPrev={goPrev}
+        goNext={goNext}
+        pagesDisplay={pagesDisplay}
+        />
         </div>
         <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
           Mostrando 10 de {profiles.length} resultados...

@@ -9,6 +9,7 @@ import { ProtectedRoute } from "../middlewares/ProtectRoutes";
 import { Dashboard } from "../modules/Dashboard/screen/Dashboard";
 import { Taxes } from "../modules/Taxes/screen/Taxes";
 import { Invoices } from "../modules/Invoices/screen/Invoices";
+import { CashRegister } from "../modules/CashRegister/screen/cashRegister";
 
 export const Router = () => {
   return (
@@ -61,6 +62,15 @@ export const Router = () => {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/cashRegister"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <CashRegister />
           </ProtectedRoute>
         }
       />

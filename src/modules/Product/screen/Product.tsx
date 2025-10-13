@@ -24,6 +24,36 @@ export default function Product() {
     activePage,
   } = useProduct();
 
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+
+  useEffect(() => {
+    // Cargar categorías e impuestos
+    const repo = ProductRepository.getInstance();
+    const useCases = new UseCasesController(repo);
+
+    const loadLookups = async () => {
+      try {
+        const categories = await useCases.getAllCategories.execute();
+        const catMapNumStr: Record<string | number, string> = {};
+        for (const c of categories) {
+          const id = (c as any)?.id;
+          const name = (c as any)?.name ?? String(id);
+          if (id != null) {
+            catMapNumStr[Number(id)] = name;
+            catMapNumStr[String(id)] = name;
+          }
+        }
+        setCategoryNameById(catMapNumStr as Record<number, string>);
+      } catch (err) {
+        console.error("Error al cargar categorías", err);
+      }
+
+      // (el bloque de impuestos lo dejás igual)
+    };
+
+    loadLookups();
+  }, []);
+
   const [categoryNameById, setCategoryNameById] = useState<Record<number, string>>({});
   const [taxPctById, setTaxPctById] = useState<Record<string | number, number>>({});
 
