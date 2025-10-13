@@ -61,13 +61,13 @@ export class CashRegisterService implements ICashRegisterService {
 
         if(response.status !== 200 && response.status !== 201){
             throw new Error(`Server error at /cash/register`);
-        }
+            }
 
-        return response.data;
-    } catch (error: any) {
-  console.error("❌ Error en POST /cash/register:", error.response?.data || error.message);
-  throw new Error(`Invalid post`);
-}
+            return response.data;
+        } catch (error: any) {
+      console.error("Error en POST /cash/register:", error.response?.data || error.message);
+      throw new Error(`Invalid post`);
+    }
   }
 
   async delete(id: number): Promise<TCashRegisterWithUser>{

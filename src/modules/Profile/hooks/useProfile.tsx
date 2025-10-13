@@ -27,6 +27,28 @@ export const useProfile = () => {
     return findProfile.includes(searchProfiles.toLowerCase());
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredProfiles.length / profilesPerPage));
+  const canPrev = activePage > 1;
+  const canNext = activePage < totalPages;
+  const goPrev = () => setActivePage((p) => Math.max(1, p - 1));
+  const goNext = () => setActivePage((p) => Math.min(totalPages, p + 1));
+
+  const pagesDisplay: Array<number | string> = (() => {
+    const out: Array<number | string> = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) out.push(i);
+      return out;
+    }
+    out.push(1);
+    const windowStart = Math.max(2, activePage - 1);
+    const windowEnd = Math.min(totalPages - 1, activePage + 1);
+    if (windowStart > 2) out.push("...");
+    for (let i = windowStart; i <= windowEnd; i++) out.push(i);
+    if (windowEnd < totalPages - 1) out.push("...");
+    out.push(totalPages);
+    return out;
+  })();
+
   const indexOfLastProfile = activePage * profilesPerPage;
   const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
 
@@ -164,6 +186,12 @@ export const useProfile = () => {
     confirmationEditProfile,
     setConfirmationEditProfile,
     confirmationDeleteProfile,
-    setConfirmationDeleteProfile
+    setConfirmationDeleteProfile,
+    totalPages,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    pagesDisplay
   };
 };

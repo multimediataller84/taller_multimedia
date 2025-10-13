@@ -1,9 +1,19 @@
-import { TCashRegisterWithUser } from "../models/interfaces/ICashRegisterService";
+import { TCashRegisterWithUser, TCloseRegister, TOpenRegister } from "../models/interfaces/ICashRegisterService";
+import OpenCashRegister from "./OpenCashRegister";
+import CloseCashRegister from "./CloseCashRegister";
 
 interface editProfileProps {
   cashRegisterSelect: TCashRegisterWithUser | null; 
   setCashRegisterSelect: React.Dispatch<React.SetStateAction<any>>;
-  setVisibleEditProfile: React.Dispatch<React.SetStateAction<boolean>>;  
+  setVisibleInfoCashRegister: React.Dispatch<React.SetStateAction<boolean>>;  
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleOpenCashRegister: (id: number, data: TOpenRegister) => Promise<void>;
+  visibleOpen: boolean;
+  setVisibleOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleCloseCashRegister: (id: number, data: TCloseRegister) => Promise<void>; 
+  visibleClose: boolean;
+  setVisibleClose: React.Dispatch<React.SetStateAction<boolean>>;
+  handleDelete: (id: number) => void;
 }
 
 export default function InfoCashRegister(props: editProfileProps) {
@@ -14,15 +24,26 @@ export default function InfoCashRegister(props: editProfileProps) {
               <div className="flex w-full justify-between pt-8">
                 <h2 className="pl-8 font-Lato text-2xl ">Datos de Caja</h2>
                 <div className="flex space-x-8 pr-4">
-                  <button className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 bg-black text-white">
-                    Cerrar
+                  <button onClick={() => {
+                    if (props.cashRegisterSelect?.status === "closed") {
+                      props.setVisibleOpen(!props.visibleOpen);
+                    } else {
+                      props.setVisibleClose(!props.visibleClose);
+                    }
+                  }}
+                  className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 text-white
+                    ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}`}>
+                  {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
                   </button>
 
-                   <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
-                    onClick={() => {props.setVisibleEditProfile(false)
-                    props.setCashRegisterSelect(null)
-                  }
-                  }
+                  <button className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 bg-black text-white"
+                  onClick={() => props.cashRegisterSelect && props.handleDelete(props.cashRegisterSelect.id)}>
+                    Eliminar
+                  </button>
+
+                  <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
+                    onClick={() => {props.setVisibleInfoCashRegister(false)
+                    props.setCashRegisterSelect(null)}}
                   >Cancelar</button>
                 </div>
               </div>
@@ -45,24 +66,29 @@ export default function InfoCashRegister(props: editProfileProps) {
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="opening_amount" className="text-base text-black font-medium font-Lato ">Monto Inicial</label>
                     <div className="relative">
-                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors"
+                   <input
+                      className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
                       type="text"
                       id="opening_amount"
                       name="opening_amount"
-                      value={props.cashRegisterSelect?.opening_amount|| ""}
-                      placeholder="Monto inicial"/>
+                      value={props.cashRegisterSelect?.opening_amount || ""}
+                      placeholder="Monto inicial"
+                      readOnly
+                    />
                     </div>
                 </div>
 
                 <div className="flex flex-col space-y-4">
                     <label htmlFor="closing_amount" className="text-base text-black font-medium font-Lato ">Monto final</label>
                         <div className="relative">
-                        <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors"
+                        <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
                         type="text"
                         id="closing_amount"
                         name="closing_amount"
                         value={props.cashRegisterSelect?.closing_amount|| ""}
-                        placeholder="Monto inicial"/>
+                        placeholder="Monto Final"
+                        readOnly
+                        />
                         </div>
                     </div>
                 </div>
@@ -71,8 +97,7 @@ export default function InfoCashRegister(props: editProfileProps) {
                     <div className="flex flex-col space-y-4">
                     <label htmlFor="opened_at" className="text-base text-black font-medium font-Lato ">Fecha Caja Abierta</label>
                     <div className="relative">
-                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        transition-colors"
+                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
                         type="text"
                         id="opened_at"
                         name="opened_at"
@@ -82,6 +107,7 @@ export default function InfoCashRegister(props: editProfileProps) {
                             : ""
                         }
                         placeholder="Fecha Caja Abierta" 
+                        readOnly
                     />
                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
                         <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
@@ -90,10 +116,9 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
 
                     <div className="flex flex-col space-y-4">
-                    <label htmlFor="closed_at" className="text-base text-black font-medium font-Lato ">Fecha Caja Cerrada</label>
+                    <label htmlFor="closed_at" className="text-base text-black font-medium font-Lato">Fecha Caja Cerrada</label>
                     <div className="relative">
-                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        transition-colors"
+                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
                         type="text"
                         id="closed_at"
                         name="closed_att"
@@ -102,7 +127,8 @@ export default function InfoCashRegister(props: editProfileProps) {
                             ? new Date(props.cashRegisterSelect.closed_at).toLocaleDateString("es-CR")
                             : ""
                         }
-                        placeholder="Fecha Caja Abierta"
+                        placeholder="Fecha Caja Cerrada"
+                        readOnly
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
                         <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
@@ -127,6 +153,26 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
               </form>
             </div>
+                
+            {props.visibleOpen && <OpenCashRegister
+            visibleOpen = {props.visibleOpen}
+            setVisibleOpen = {props.setVisibleOpen}
+            cashRegisterSelect = {props.cashRegisterSelect}
+            setCashRegisterSelect = {props.setCashRegisterSelect}
+            handleOpenCashRegister = {props.handleOpenCashRegister}
+            handleChange = {props.handleChange}
+            setVisibleInfoCashRegister = {props.setVisibleInfoCashRegister}
+            />}
+
+            {props.visibleClose && <CloseCashRegister
+              visibleClose = {props.visibleClose}
+              setVisibleClose = {props.setVisibleClose}
+              cashRegisterSelect = {props.cashRegisterSelect}
+              setCashRegisterSelect = {props.setCashRegisterSelect}
+              handleCloseCashRegister = {props.handleCloseCashRegister}
+              handleChange = {props.handleChange}
+              setVisibleInfoCashRegister = {props.setVisibleInfoCashRegister}
+            />}
           </div>
     );
 }

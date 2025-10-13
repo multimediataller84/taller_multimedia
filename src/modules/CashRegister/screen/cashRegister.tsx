@@ -3,6 +3,7 @@ import { useCashRegister } from "../hooks/useCashRegister";
 import ContentLoader from 'react-content-loader'
 import InfoCashRegister from "../components/infoCashRegister";
 import AddCashRegister from "../components/addCashRegister";
+import Pagination from "../../../components/pagination";
 
 export const CashRegister = () => {
     
@@ -27,7 +28,20 @@ export const CashRegister = () => {
         setSearch,
         currentCashRegister,
         handleAddCashRegister,
-        handleChange
+        handleChange,
+        handleOpenCashRegister,
+        visibleOpen,
+        setVisibleOpen,
+        handleCloseCashRegister,
+        visibleClose,
+        setVisibleClose,
+        handleDelete,
+        totalPages,
+        canPrev,
+        canNext,
+        goPrev,
+        goNext,
+        pagesDisplay,
     } = useCashRegister();
 
     const CashRegisterLoader = () => (
@@ -88,7 +102,7 @@ export const CashRegister = () => {
                 currentCashRegister.map((items) => (
                 <div className="w-full pl-8 pr-11 flex">
                     <div
-                    className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
+                    className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                                 ${
                                 cashRegisterSelect?.id === items.id
                                     ? "bg-blue-500 text-white hover:bg-blue-800"
@@ -109,10 +123,10 @@ export const CashRegister = () => {
                           {items.user?.name || "Sin usuario"}
                     </h3>
                     <h4 className="mt-1 ml-4 font-Lato">
-                        {items.opening_amount}
+                        {new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(items.opening_amount)}
                     </h4>
-                    <h5 className="mt-5 justify-end w-full flex pr-4 font-Lato">
-                        {items.status}
+                    <h5 className="mt-5 justify-end w-full flex pr-4 font-Lato font-bold">
+                        {items.status === "open" ? "Abierta": "Cerrada"}
                     </h5>
                     </div>
                 </div>
@@ -121,21 +135,17 @@ export const CashRegister = () => {
             </div>
             </div>
 
-            <div className="pl-8 pr-18 pt-4 justify-between w-full flex  font-Lato font-medium">
-            {[1, 2, 3, "...", 8].map((num, index) => (
-                <button
-                key={index}
-                className={`size-[42px] border rounded-full active:outline-0 
-                            ${
-                            activePage === num
-                                ? "bg-blue-500 text-white"
-                                : "bg-white border-gray2 text-gray1"
-                            }`}
-                onClick={() => typeof num === "number" && setActivePage(num)}
-                >
-                {num}
-                </button>
-            ))}
+             <div className="w-full pl-8 flex">
+            <Pagination
+            totalPages={totalPages}
+            activePage={activePage}
+            setActivePage={setActivePage}
+            canPrev={canPrev}
+            canNext={canNext}
+            goPrev={goPrev}
+            goNext={goNext}
+            pagesDisplay={pagesDisplay}
+            />
             </div>
             <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
             Mostrando 10 de {cashRegister.length} resultados...
@@ -145,7 +155,15 @@ export const CashRegister = () => {
         {visibleEdit && <InfoCashRegister
           cashRegisterSelect = {cashRegisterSelect}
           setCashRegisterSelect = {setCashRegisterSelect}
-          setVisibleEditProfile = {setVisibleEdit}
+          setVisibleInfoCashRegister = {setVisibleEdit}
+          handleChange = {handleChange}
+          handleOpenCashRegister = {handleOpenCashRegister}
+          visibleOpen = {visibleOpen}
+          setVisibleOpen = {setVisibleOpen}
+          handleCloseCashRegister = {handleCloseCashRegister}
+          visibleClose = {visibleClose}
+          setVisibleClose = {setVisibleClose}
+          handleDelete = {handleDelete}
         />}
 
         {visibleAdd && <AddCashRegister

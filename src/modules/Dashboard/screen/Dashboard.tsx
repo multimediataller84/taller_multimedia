@@ -2,17 +2,28 @@ import { RootLayout } from "../../../_Layouts/RootLayout";
 import IncomeCard from "../components/IncomeCard";
 import ProductsCard from "../components/ProductsPieChart"
 import { InvoiceHistoryTable } from "../../Invoices/components/InvoiceHistoryTable"
-import { useInvoiceHistory } from "../../Invoices/hooks/useInvoiceHistory";
+import { useInvoiceHistoryDashboard } from "../hooks/useInvoiceHistoryDashboard";
 import { useState } from "react";
 import type { TInvoiceEndpoint } from "../../Invoices/models/types/TInvoiceEndpoint";
 import { InvoiceDetailModal } from "../../Invoices/components/InvoiceDetailModal";
-
+import Pagination from "../../../components/pagination";
 
 export const Dashboard = () => {
 
-  const { invoices, loading: loadingHistory, error: errorHistory, refetch } = useInvoiceHistory();
   const [selectedInvoice, setSelectedInvoice] = useState<TInvoiceEndpoint | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+   const {
+    currentInvoices,
+    totalPages,
+    activePage,
+    setActivePage,
+    pagesDisplay,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+  } = useInvoiceHistoryDashboard();
 
 
 const data = [
@@ -79,13 +90,25 @@ const data = [
         </div>
 
         <InvoiceHistoryTable
-        data={invoices}
+        data={currentInvoices}
         onSelect={(inv) => {
         setSelectedInvoice(inv);
         setDetailOpen(true);
         }}
         />
+
+        <Pagination
+        totalPages={totalPages}
+        activePage={activePage}
+        setActivePage={setActivePage}
+        canPrev={canPrev}
+        canNext={canNext}
+        goPrev={goPrev}
+        goNext={goNext}
+        pagesDisplay={pagesDisplay}
+        />
         </div>
+
         
          <InvoiceDetailModal
             open={detailOpen}

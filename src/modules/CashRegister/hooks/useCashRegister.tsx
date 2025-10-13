@@ -1,5 +1,5 @@
 import { CashRegisterService } from "../services/cashRegisterService"
-import { TCashRegisterWithUser } from "../models/interfaces/ICashRegisterService"
+import { TCashRegisterWithUser, TCloseRegister, TOpenRegister } from "../models/interfaces/ICashRegisterService"
 import { useEffect, useState } from "react";
 
 const cashRegisterService = CashRegisterService.getInstance();
@@ -15,6 +15,9 @@ export const useCashRegister = () => {
     const [add, setAdd] = useState(false);
     const [visibleAdd, setVisibleAdd] = useState(false);
 
+    const [visibleOpen, setVisibleOpen] = useState(false);
+    const [visibleClose, setVisibleClose] = useState(false);
+
     const [activePage, setActivePage] = useState(1);
     const cashRegisterPerPage = 10;
 
@@ -28,56 +31,122 @@ export const useCashRegister = () => {
     return fullName.includes(search.toLowerCase());
     });
 
+      const totalPages = Math.max(1, Math.ceil(filteredCashRegister.length / cashRegisterPerPage));
+      const canPrev = activePage > 1;
+      const canNext = activePage < totalPages;
+      const goPrev = () => setActivePage((p) => Math.max(1, p - 1));
+      const goNext = () => setActivePage((p) => Math.min(totalPages, p + 1));
+
+      const pagesDisplay: Array<number | string> = (() => {
+        const out: Array<number | string> = [];
+        if (totalPages <= 7) {
+          for (let i = 1; i <= totalPages; i++) out.push(i);
+          return out;
+        }
+        out.push(1);
+        const windowStart = Math.max(2, activePage - 1);
+        const windowEnd = Math.min(totalPages - 1, activePage + 1);
+        if (windowStart > 2) out.push("...");
+        for (let i = windowStart; i <= windowEnd; i++) out.push(i);
+        if (windowEnd < totalPages - 1) out.push("...");
+        out.push(totalPages);
+        return out;
+      })();
+
   const currentCashRegister = filteredCashRegister.slice(
     indexOfFirstCashRegister,
     indexOfLastCashRegister
   );
 
-    useEffect(() => {
-      const fetchCashRegister = async () => {
-        try {
-          const data = await cashRegisterService.getAll();
-          setCashRegister(data);
-        } catch (error) {
-          console.error("Error al cargar cajas:", error);
-        }finally {
-          setLoading(false); 
-        }
-      };
-      fetchCashRegister();
-    }, []);
-
-    const handleAddCashRegister = async (newCashRegister: any) => {
+  const fetchCashRegister = async () => {
     try {
-      const created = await cashRegisterService.post(newCashRegister);
-      setCashRegister((prev) => [...prev, created]);
-      setVisibleAdd(false);
-      if (add){
-       
-      }
+      const data = await cashRegisterService.getAll();
+      setCashRegister(data);
     } catch (error) {
-      console.error("Error al añadir cliente:", error);
+      console.error("Error al cargar cajas:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-) => {
-  const { name, value } = e.target;
+  useEffect(() => {
+    fetchCashRegister();
+  }, []);
 
-  setCashRegisterSelect((prev: any) => ({
-    ...prev,
-    [name]: name === "amount" || name === "opening_amount" || name === "closing_amount"
-      ? Number(value) || 0   // 👈 convierte a número
-      : value,
-  }));
+  const handleAddCashRegister = async (newCashRegister: any) => {
+  try {
+    setLoading(true);
+    await cashRegisterService.post(newCashRegister);
 
-  if (value.trim() === "") {
-    setAdd(false);
-  } else {
-    setAdd(true);
+    await fetchCashRegister();
+
+    setVisibleAdd(false);
+    console.log("Caja agregada y lista actualizada correctamente");
+  } catch (error) {
+    console.error("Error al añadir caja:", error);
+  } finally {
+    setLoading(false);
   }
 };
+
+const handleOpenCashRegister = async (id: number, data: TOpenRegister) => {
+  try {
+    setLoading(true);
+    await cashRegisterService.open(id, data);
+    await fetchCashRegister(); 
+    console.log("Caja abierta correctamente y lista actualizada");
+  } catch (error) {
+    console.error("Error al abrir la caja:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleCloseCashRegister = async (id: number, data: TCloseRegister) => {
+  try {
+    setLoading(true);
+    await cashRegisterService.close(id, data);
+    await fetchCashRegister(); 
+    console.log("Caja cerrada correctamente y lista actualizada");
+  } catch (error) {
+    console.error("Error al cerrar la caja:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleDelete = async (id: number) => {
+    try {
+      await cashRegisterService.delete(id);
+      setCashRegister((prev) => prev.filter((c) => c.id !== id));
+      setVisibleEdit(false);
+   
+    } catch (error) {
+      console.error("Error al eliminar cliente:", error);
+    }
+  };
+
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+  const { name, value } = e.target;
+    setCashRegisterSelect((prev: any) => ({
+      ...prev,
+      [name]:
+        name === "amount" || name === "opening_amount" || name === "closing_amount"
+          ? value === "" 
+            ? "" 
+            : Number(value)
+            : value,
+    }));
+
+    if (value.trim() === "") {
+      setAdd(false);
+    } else {
+      setAdd(true);
+    }
+  };
+
 
   return{
     cashRegister,
@@ -100,6 +169,19 @@ export const useCashRegister = () => {
     setSearch,
     currentCashRegister,
     handleAddCashRegister,
-    handleChange
+    handleChange,
+    handleOpenCashRegister,
+    visibleOpen,
+    setVisibleOpen,
+    handleCloseCashRegister,
+    visibleClose,
+    setVisibleClose,
+    handleDelete,
+    totalPages,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    pagesDisplay,
   }
 }

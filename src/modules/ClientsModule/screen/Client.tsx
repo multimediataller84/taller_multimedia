@@ -6,7 +6,7 @@ import ContentLoader from 'react-content-loader'
 import ConfirmationEditClient from "../components/confirmationEditClient";
 import ConfirmationAddClient from "../components/confirmationAddClient";
 import ConfirmationDeleteClient from "../components/confirmationDeleteClient"
-
+import Pagination from "../../../components/pagination";
 
 export const Client = () => {
 
@@ -38,7 +38,13 @@ export const Client = () => {
     confirmationAddClient,
     setConfirmationAddClient,
     confirmationDeleteClient,
-    setConfirmationDeleteClient
+    setConfirmationDeleteClient,
+    totalPages,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    pagesDisplay,
   } = useClient();
 
   const ClientLoader = () => (
@@ -101,7 +107,7 @@ export const Client = () => {
             currentClients.map((items) => (
               <div key={items.id_number} className="w-full pl-8 pr-11 flex">
                 <div
-                  className={`w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
+                  className={`cursor-pointer  w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                     ${
                       clientSelect?.id === items.id
                         ? "bg-blue-500 text-white hover:bg-blue-800"
@@ -128,22 +134,17 @@ export const Client = () => {
         </div>
       </div>
 
-
-        <div className="pl-8 pr-18 pt-4 justify-between w-full flex  font-Lato font-medium">
-          {[1, 2, 3, "...", 8].map((num, index) => (
-            <button
-              key={index}
-              className={` size-[42px] border rounded-full active:outline-0 
-                ${
-                  activePage === num
-                    ? "bg-blue-500 text-white"
-                    : "bg-white border-gray2 text-gray1"
-                }`}
-              onClick={() => typeof num === "number" && setActivePage(num)}
-            >
-              {num}
-            </button>
-          ))}
+        <div className="w-full pl-8 flex">
+        <Pagination
+        totalPages={totalPages}
+        activePage={activePage}
+        setActivePage={setActivePage}
+        canPrev={canPrev}
+        canNext={canNext}
+        goPrev={goPrev}
+        goNext={goNext}
+        pagesDisplay={pagesDisplay}
+        />
         </div>
         <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
           Mostrando {clientsPerPage} de {clients.length} resultados...
