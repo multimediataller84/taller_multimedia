@@ -9,7 +9,6 @@ export const useCashRegister = () => {
     const [cashRegisterSelect, setCashRegisterSelect] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     
-
     const [edit, setEdit] = useState(false);
     const [visibleEdit, setVisibleEdit] = useState(false);
 
@@ -23,12 +22,13 @@ export const useCashRegister = () => {
     const indexOfFirstCashRegister = indexOfLastCashRegister - cashRegisterPerPage;
     
     const [search, setSearch] = useState("");
-    const filteredClients = cashRegister.filter((c) => {
-    const fullName = `${c.user.name} ${c.id}`.toLowerCase();
+    const filteredCashRegister = cashRegister.filter((c) => {
+    const userName = c.user?.name || ""; 
+    const fullName = `${userName} ${c.id}`.toLowerCase();
     return fullName.includes(search.toLowerCase());
-  });
+    });
 
-  const currentCashRegister = filteredClients.slice(
+  const currentCashRegister = filteredCashRegister.slice(
     indexOfFirstCashRegister,
     indexOfLastCashRegister
   );

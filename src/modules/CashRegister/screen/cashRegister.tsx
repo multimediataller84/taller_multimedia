@@ -1,6 +1,7 @@
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { useCashRegister } from "../hooks/useCashRegister";
 import ContentLoader from 'react-content-loader'
+import InfoCashRegister from "../components/infoCashRegister";
 
 export const CashRegister = () => {
     
@@ -40,7 +41,7 @@ export const CashRegister = () => {
          <RootLayout search={search} setSearch={setSearch}>
         <div className="w-1/5 h-screen bg-[#E9EEF0] flex-col  ">
             <div className="flex justify-between mt-8 ml-8">
-            <h2 className="font-Lato text-2xl">Lista de Perfiles</h2>
+            <h2 className="font-Lato text-2xl">Lista de Cajas</h2>
             <button
                 className={`w-[94px] border rounded-3xl py-2 font-Lato text-base mr-4 transition duration-300 
                         ${
@@ -66,7 +67,7 @@ export const CashRegister = () => {
 
             <div className="w-full h-auto pl-8">
             <h3 className="font-Lato font-medium text-base text-gray1">
-                Todos los perfiles registrados <br />
+                Todas las cajas registradas <br />
                 en sistema
             </h3>
             </div>
@@ -94,7 +95,6 @@ export const CashRegister = () => {
                         setCashRegisterSelect(items);
                         setVisibleEdit(true);
                         setVisibleAdd(false);
-
                         setEdit(false);
                     }}
                     >
@@ -102,7 +102,7 @@ export const CashRegister = () => {
                         Caja {items.id}
                     </h2>
                     <h3 className="mt-1 ml-4">
-                        {items.user.name}
+                          {items.user?.name || "Sin usuario"}
                     </h3>
                     <h4 className="mt-1 ml-4">
                         {items.opening_amount}
@@ -134,7 +134,12 @@ export const CashRegister = () => {
             Mostrando 10 de {cashRegister.length} resultados...
             </h2>
       </div>        
-
+    
+        {visibleEdit && <InfoCashRegister
+          profileSelect = {cashRegisterSelect}
+          setProfileSelect = {setCashRegisterSelect}
+          setVisibleEditProfile = {setVisibleEdit}
+        />}
                   
         </RootLayout>
     );

@@ -40,7 +40,7 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
                   onClick={() => onSelect?.(inv)}
                   className={onSelect ? "cursor-pointer hover:bg-gray-50" : undefined}
                 >
-                  <td className="px-6 py-3">{inv.invoice_number || inv.id}</td>
+                  <td className="px-6 py-3">{inv.id}</td>
                   <td className="px-6 py-3">{formatted}</td>
                   <td className="px-6 py-3">{customer}</td>
                   <td className="px-6 py-3">{inv.payment_method}</td>
