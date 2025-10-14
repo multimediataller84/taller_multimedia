@@ -1,5 +1,3 @@
-import React from "react";
-
 type Status = "success" | "error";
 
 type Props = {

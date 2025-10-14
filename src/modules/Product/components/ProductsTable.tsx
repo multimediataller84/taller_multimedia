@@ -8,14 +8,12 @@ interface ProductsProps  {
   onEdit: (row: TProductEndpoint) => void;
   onDelete: (row: TProductEndpoint) => void;
   categoryNameById?: Record<string | number, string>;
-  taxPctById?: Record<string | number, number>;
 };
 
 export function ProductTable(props: ProductsProps) {
   const {
     products, headers, onEdit, onDelete,
     categoryNameById = {},
-    taxPctById = {},
   } = props;
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
@@ -64,7 +62,8 @@ export function ProductTable(props: ProductsProps) {
 
             <td className="text-sm">{renderCategory(row.category_id)}</td>
 
-            <td className="text-sm">{row.tax.percentage+"%"}</td>
+            {/* porcentaje viene del endpoint embebido en row.tax */}
+            <td className="text-sm">{row.tax.percentage + "%"}</td>
 
             <td className="text-sm">{fmtMargin(row.profit_margin)}</td>
             <td className="text-sm">{fmtCRC(row.unit_price)}</td>
@@ -79,7 +78,7 @@ export function ProductTable(props: ProductsProps) {
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                   className={`size-5 ${openMenuId === row.id ? "fill-white" : "fill-gray"}`}>
-                  <path d="M6 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+                  <path d="M6 10a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a 2 2 0 1 1 0-4 2 2 0 0 1 0 4zm6 0a 2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
                 </svg>
               </button>
 

@@ -46,13 +46,14 @@ export class ProductRepository implements IProductRepository {
   };
 
   getAllTaxes = async (options: TGetAllOptions): Promise<TGetAllPaginationTaxes> => {
-    try {
-      const response = await this.productService.getAllTaxes(options);
-      return response;
-    } catch (error) {
-      throw new Error(`error: ${error}" `);
-    }
-  };
+  try {
+    const response = await this.productService.getAllTaxes(options);
+    return response;
+  } catch (error) {
+    throw new Error(`error: ${error}" `);
+  }
+};
+
 
   async post(data: TProduct): Promise<TProductEndpoint> {
     try {
