@@ -24,7 +24,7 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
           <h1 className="text-2xl font-lato font-medium">Cerrar Caja</h1>
           <div className="space-x-4">
           <button
-            className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white"
+            className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
             onClick={async () => {
               await props.handleCloseCashRegister(
                 props.cashRegisterSelect?.id,
@@ -40,7 +40,7 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
             Cerrar
           </button>
             <button
-              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white"
+              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white border-black hover:border-gray-700 hover:bg-gray-700"
               onClick={() => props.setVisibleClose(false)}
             >
               Cancelar

@@ -36,7 +36,7 @@ export default function InfoCashRegister(props: editProfileProps) {
                   {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
                   </button>
 
-                  <button className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 bg-black text-white"
+                  <button className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 bg-black hover:bg-[#D32626] text-white"
                   onClick={() => props.cashRegisterSelect && props.handleDelete(props.cashRegisterSelect.id)}>
                     Eliminar
                   </button>
