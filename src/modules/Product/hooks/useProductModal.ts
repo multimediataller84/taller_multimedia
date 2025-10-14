@@ -80,7 +80,7 @@ export function useProductForm(
         cost: inferredCost || "",
       });
 
-      // ✅ Inyecta de inmediato la opción del impuesto seleccionado para evitar parpadeos si la API falla
+      // Inyecta de inmediato la opción del impuesto seleccionado para evitar parpadeos si la API falla
       if (initialData.tax_id != null) {
         const injected: TTaxEndpoint = {
           id: Number(initialData.tax_id),
