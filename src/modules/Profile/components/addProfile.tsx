@@ -112,20 +112,22 @@ export default function addProfile (props: addClientProps){
 
                   <div className="flex flex-col space-y-4">
                     <label htmlFor="username">Nombre de Usuario</label>
-                    <input className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                      transition-colors ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
-                      type="text"
-                      id="username"
-                      name="username"
-                      value={props.profileSelect?.username || ""}
-                      onChange={(e) => {
-                      props.handleChange(e); 
+                    <input
+                    className={`lowercase w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                    transition-colors ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={props.profileSelect?.username || ""}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.toLowerCase();
+                      props.handleChange(e);
                       if (errors.username) {
-                        setErrors((prev) => ({ ...prev, username: "" })); 
+                        setErrors((prev) => ({ ...prev, username: "" }));
                       }
                     }}
-                      placeholder="Nombre de usuario"
-                    />
+                    placeholder="Nombre de usuario"
+                  />
                     {errors.username && (
                     <span className="text-red-500 text-base font-lato">{errors.username}</span>
                   )}

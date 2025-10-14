@@ -143,11 +143,14 @@ export default function InfoCashRegister(props: editProfileProps) {
                         className="w-full h-auto rounded-xl pb-4 font-lato text-base shadow transition duration-150 delay-75 bg-blue-500 text-white hover:bg-blue-800"
                             >
                         <h2 className="w-full h-auto ml-4 mt-4 font-medium">
-                            {props.cashRegisterSelect?.user.name}
+                          {props.cashRegisterSelect?.user?.name || "No hay empleado"}
                         </h2>
                         <h3 className="mt-1 ml-4">
-                            {" "}
-                            {props.cashRegisterSelect?.user.role_id === 1 ? "Administrador" : "Empleado"}
+                          {props.cashRegisterSelect?.user
+                            ? props.cashRegisterSelect.user.role_id === 1
+                              ? "Administrador"
+                              : "Empleado"
+                            : "No asignado"}
                         </h3>
                     </div>
                     </div>
