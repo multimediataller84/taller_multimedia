@@ -100,7 +100,7 @@ export const CashRegister = () => {
                 ))
             ) : ( 
                 currentCashRegister.map((items) => (
-                <div className="w-full pl-8 pr-11 flex">
+                <div key={items.id} className="w-full pl-8 pr-11 flex">
                     <div
                     className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                                 ${
@@ -120,7 +120,7 @@ export const CashRegister = () => {
                         Caja {items.id}
                     </h2>
                     <h3 className="mt-1 ml-4 font-Lato">
-                          {items.user?.name || "Sin usuario"}
+                          {items.user?.name || "Sin empleado"}
                     </h3>
                     <h4 className="mt-1 ml-4 font-Lato">
                         {new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(items.opening_amount)}

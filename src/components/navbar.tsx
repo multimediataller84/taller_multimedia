@@ -79,7 +79,7 @@ export const Navbar = (props: SerachProps) => {
           <div className="flex space-x-4">
             <div className="flex flex-col w-auto ">
               <h2 className="text-base">{getUsernameAuth()}</h2>
-              <h3 className="text-sm">{getRoleAuth()}</h3>
+              <h3 className="text-sm">{getRoleAuth() === "admin" ? "Administrador" : "Empleado"}</h3>
             </div>
 
             <button className={`rounded-full w-13 h-12 border  group active:outline-hidden

@@ -1,5 +1,8 @@
 import { TUserEndpoint } from "../models/types/TUserEndpoint";
 import { useState } from "react";
+import { getRoleAuth } from "../../../utils/getRoleAuth";
+import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+
 
 interface editProfileProps {
   profileSelect: TUserEndpoint | null; 
@@ -83,9 +86,13 @@ export default function editClient(props: editProfileProps) {
                     <label htmlFor="role_id" className="text-base text-black font-medium">Rol</label>
                     <div className="relative">
                     <select className={`appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                      transition-colors ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                      transition-colors ${errors.role_id ? "border-red-500" : "border-gray2"}  disabled:bg-gray2 focus:outline-2 focus:outline-blue-500`} 
                       id="role_id"
                       name="role_id"
+                      disabled={
+                          getRoleAuth() === "admin" &&
+                          props.profileSelect?.username === getUsernameAuth()
+                      }
                       value={props.profileSelect?.role_id || ""}
                       onChange={(e) => {
                         props.handleChange(e); 
@@ -116,11 +123,12 @@ export default function editClient(props: editProfileProps) {
                       name="username"
                       value={props.profileSelect?.username || ""}
                       onChange={(e) => {
-                        props.handleChange(e); 
-                        if (errors.username) {
-                          setErrors((prev) => ({ ...prev, username: "" })); 
-                        }
-                      }}
+                      e.target.value = e.target.value.toLowerCase();
+                      props.handleChange(e);
+                      if (errors.username) {
+                        setErrors((prev) => ({ ...prev, username: "" }));
+                      }
+                    }}
                       placeholder="Nombre de usuario"
                     />
                     {errors.username && (
