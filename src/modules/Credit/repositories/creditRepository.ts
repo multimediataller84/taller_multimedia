@@ -37,20 +37,16 @@ export const creditRepository = {
   const fetchAll = async () => {
     const res = await apiClient.get(`/credit/all`);
     const rows = unwrap<any[]>(res) ?? [];
-    // ✅ FILTRA ESTRICTO POR customer_id
     const found = rows.find((x: any) => Number(x?.customer_id) === Number(customerId)) ?? null;
     return found as BackCredit | null;
   };
 
   try {
-    // Hacemos UNA sola llamada a /credit/all y filtramos
     const found = await fetchAll();
     if (found) return found;
 
-    // Si no se encontró, no retornes la primera fila: simplemente null
     return null;
   } catch (e1: any) {
-    // Si hay rate limit (429), reintenta UNA vez tras 250ms
     if (e1?.response?.status === 429) {
       await sleep(250);
       try {
@@ -61,10 +57,8 @@ export const creditRepository = {
       }
     }
 
-    // Si el backend devuelve 404 en /credit/all, significa que no hay filas
     if (e1?.response?.status === 404) return null;
 
-    // Otros errores: devuelve null para que la UI no herede estado
     return null;
   }
 },
@@ -74,7 +68,7 @@ export const creditRepository = {
       const res = await apiClient.get(`/credit/payment/${creditId}/all`);
       return unwrap<BackPayment[]>(res) ?? [];
     } catch (e: any) {
-      if (e?.response?.status === 404) return []; // sin pagos
+      if (e?.response?.status === 404) return [];
       throw e;
     }
   },
@@ -94,7 +88,7 @@ export const creditRepository = {
 
     const res = await apiClient.post(`/credit`, body, {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      withCredentials: false, // evita CSRF por cookie si aplica
+      withCredentials: false,
     });
 
     return unwrap<BackCredit>(res);
@@ -112,7 +106,6 @@ export const creditRepository = {
     await apiClient.delete(`/credit/${creditId}`);
   },
 
-  // ✅ Firma nueva: un solo payload con invoice_id y payment_method opcionales
   async createPayment(payload: {
     credit_id: number;
     amount: number;

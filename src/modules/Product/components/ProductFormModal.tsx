@@ -22,24 +22,17 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
     formattedTaxesOptions,
     skuStatus,
     setSkuStatus,
-    autoGenerateSku,
     submit,
     isEditing,
   } = useProductForm(initialData, isOpen);
 
   if (!isOpen) return null;
 
-  const onSubmit = async (data: ProductFormInputs & { cost?: string }) => {
+  const onSubmit = async (data: ProductFormInputs & { cost: string }) => {
     await submit(data);
     await onChange();
     onClose();
   };
-
-  const stateOptions = [
-    { value: "Active", label: "Activo" },
-    { value: "Inactive", label: "Inactivo" },
-    { value: "Discontinued", label: "Descontinuado" },
-  ];
 
   return (
     <div className="fixed inset-0 grid place-items-center bg-black/50 z-50">
@@ -50,7 +43,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           {/* Nombre */}
-          <label className="block text-sm text-gray-700 font-medium">Nombre *</label>
+          <label className="block text-sm text-gray-700 font-medium">Nombre</label>
           <input
             {...register("product_name", { required: true })}
             placeholder="Ej. Lápiz HB"
@@ -58,7 +51,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           />
 
           {/* SKU */}
-          <label className="block text-sm text-gray-700 font-medium">SKU *</label>
+          <label className="block text-sm text-gray-700 font-medium">SKU</label>
           <div className="flex gap-2">
             <input
               {...register("sku", {
@@ -69,7 +62,6 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               placeholder="Ej. LPZ-HB-01"
               className="flex-1 border p-2 rounded"
             />
-            {/* <button type="button" onClick={autoGenerateSku} className="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200">Auto</button> */}
           </div>
 
           {/* Categoría (bloqueada al editar) */}
@@ -116,54 +108,34 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             )}
           />
 
-          {/* Estado */}
-          <label className="block text-sm text-gray-700 font-medium">Estado</label>
-          <Controller
-            name="state"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={["Active","Inactive","Discontinued"].map(v => ({ value: v, label: v === "Active" ? "Activo" : v === "Inactive" ? "Inactivo" : "Descontinuado" }))}
-                placeholder="Seleccione estado"
-                onChange={(opt) => field.onChange((opt as any)?.value)}
-                value={
-                  ["Active","Inactive","Discontinued"].map(v => ({ value: v, label: v === "Active" ? "Activo" : v === "Inactive" ? "Inactivo" : "Descontinuado" }))
-                    .find((option) => option.value === field.value) || null
-                }
-              />
-            )}
-          />
-
-          {/* Utilidad (MARKUP) como ENTERO % */}
+          {/* Utilidad */}
           <label className="block text-sm text-gray-700 font-medium">
-            Utilidad (markup) — (Precio − Costo) / Costo
+            Utilidad
           </label>
           <input
             type="number"
             step="1"
-            {...register("profit_margin")}
+            {...register("profit_margin", { required: true })}
             placeholder="0"
-            className="w-full border p-2 rounded bg-gray-100 text-gray-600"
-            readOnly
-          />
-
-          {/* Precio unitario */}
-          <label className="block text-sm text-gray-700 font-medium">Precio unitario (₡)</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register("unit_price", { required: true })}
-            placeholder="0.00"
             className="w-full border p-2 rounded"
           />
 
-          {/* 💰 Costo (solo interno; no va al backend) */}
+          {/*  Costo  */}
           <label className="block text-sm text-gray-700 font-medium">Costo</label>
           <input
             type="number"
             step="0.01"
-            {...register("cost" as any)}
+            {...register("cost", { required: true })}
+            placeholder="0.00"
+            className="w-full border p-2 rounded"
+          />
+
+          {/* Precio unitario */}
+          <label className="block text-sm text-gray-700 font-medium">Precio unitario</label>
+          <input
+            type="number"
+            step="0.01"
+            {...register("unit_price", { required: true })}
             placeholder="0.00"
             className="w-full border p-2 rounded"
           />
