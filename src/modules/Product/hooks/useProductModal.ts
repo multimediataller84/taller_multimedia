@@ -58,6 +58,7 @@ export function useProductForm(
   const [taxes, setTaxes] = useState<TTaxEndpoint[]>([]);
   const [skuStatus, setSkuStatus] = useState<"idle" | "checking" | "ok" | "dup">("idle");
 
+  // Reset + precarga de categorías e inyección inmediata del impuesto seleccionado
   useEffect(() => {
     if (!isOpen) return;
 
@@ -71,15 +72,32 @@ export function useProductForm(
         product_name: initialData.product_name ?? "",
         sku: initialData.sku ?? "",
         category_id: String(initialData.category_id ?? ""),
-        tax_id: String(initialData.tax_id ?? ""),
+        tax_id: String(initialData.tax_id ?? ""), // usamos SIEMPRE el id oficial
         profit_margin: String(initialData.profit_margin ?? ""),
         unit_price: String(initialData.unit_price ?? ""),
         stock: String(initialData.stock ?? ""),
         state: initialData.state ?? "Active",
         cost: inferredCost || "",
       });
-    } else {
 
+      // ✅ Inyecta de inmediato la opción del impuesto seleccionado para evitar parpadeos si la API falla
+      if (initialData.tax_id != null) {
+        const injected: TTaxEndpoint = {
+          id: Number(initialData.tax_id),
+          description: initialData.tax?.description ?? `Impuesto ${initialData.tax_id}`,
+          name: initialData.tax?.name ?? "",
+          percentage: initialData.tax?.percentage ?? 0,
+        } as TTaxEndpoint;
+
+        setTaxes((prev) => {
+          const already = prev.some(t => String(t.id) === String(injected.id));
+          return already ? prev : [injected, ...prev];
+        });
+
+        // nos aseguramos que el form tenga seteado ese tax_id
+        setValue("tax_id", String(initialData.tax_id), { shouldValidate: false });
+      }
+    } else {
       reset({
         product_name: "",
         sku: "",
@@ -91,6 +109,7 @@ export function useProductForm(
         state: "Active",
         cost: "",
       });
+      setTaxes([]); // creación: lista limpia y luego se cargan según categoría
     }
 
     const loadCategories = async () => {
@@ -104,10 +123,13 @@ export function useProductForm(
 
     loadCategories();
     setSkuStatus("idle");
-  }, [isOpen, initialData, reset]);
+  }, [isOpen, initialData, reset, setValue]);
 
+  // Cargar impuestos (filtrados por categoría) con tolerancia a fallos y sin borrar el seleccionado
   useEffect(() => {
     if (!isOpen) return;
+
+    let cancelled = false;
 
     const loadTaxes = async () => {
       try {
@@ -117,16 +139,42 @@ export function useProductForm(
           offset: 0,
           orderDirection: "ASC",
         });
-        setTaxes(taxesResponse.data);
+
+        if (cancelled) return;
+
+        let list = taxesResponse?.data ?? [];
+
+        // Asegura que el impuesto seleccionado (si estamos editando) esté en la lista
+        const selectedTaxId = initialData?.tax_id;
+        if (selectedTaxId != null) {
+          const hasSelected = list.some(t => String(t.id) === String(selectedTaxId));
+          if (!hasSelected) {
+            const injected: TTaxEndpoint = {
+              id: Number(selectedTaxId),
+              description: initialData?.tax?.description ?? `Impuesto ${selectedTaxId}`,
+              name: initialData?.tax?.name ?? "",
+              percentage: initialData?.tax?.percentage ?? 0,
+            } as TTaxEndpoint;
+            list = [injected, ...list];
+          }
+        }
+
+        setTaxes(list);
       } catch (err) {
         console.error("Error al cargar impuestos", err);
-        setTaxes([]);
+
+        // Si falla, NO vaciamos la lista cuando estamos editando y ya inyectamos la opción seleccionada.
+        if (!isEditing) {
+          setTaxes([]); // en creación, podemos dejar vacío
+        }
       }
     };
 
     loadTaxes();
-  }, [categoryId, isOpen]);
+    return () => { cancelled = true; };
+  }, [categoryId, isOpen, isEditing, initialData]);
 
+  // Calcula utilidad (markup) a partir de costo + precio unitario
   useEffect(() => {
     const price = Number(unitPrice);
     const c = Number(costStr);

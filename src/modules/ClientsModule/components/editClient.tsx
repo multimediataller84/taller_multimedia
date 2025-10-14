@@ -124,7 +124,7 @@ export default function editClient(props: editClientProps) {
           <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
             <div className="flex space-x-8">
               <div className="flex flex-col space-y-4">
-                <label htmlFor="cedula" className="text-base text-black font-medium">
+                <label htmlFor="cedula" className="font-lato text-base text-black font-medium">
                     Cédula
                   </label>
                   <input
@@ -177,7 +177,7 @@ export default function editClient(props: editClientProps) {
             </div>
 
             <div className="flex flex-col space-y-4">
-              <label htmlFor="nombre" className="text-base text-black font-medium">Nombre</label>
+              <label htmlFor="nombre" className="font-lato text-base text-black font-medium">Nombre</label>
               <input
                 className="w-[472px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 focus:outline-blue-500 focus:outline-2"
@@ -199,7 +199,7 @@ export default function editClient(props: editClientProps) {
             </div>
 
             <div className="flex flex-col space-y-4">
-              <label htmlFor="apellidos">Apellidos</label>
+              <label htmlFor="apellidos" className="font-lato text-base text-black font-medium">Apellidos</label>
               <input
                 className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 transition-colors ${errors.last_name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
@@ -221,7 +221,7 @@ export default function editClient(props: editClientProps) {
             </div>
 
             <div className="flex flex-col space-y-4">
-               <label htmlFor="correoElectronico">Correo Electrónico</label>
+               <label htmlFor="correoElectronico" className="font-lato text-base text-black font-medium">Correo Electrónico</label>
                 <input
                   className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                   transition-colors ${errors.email ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
@@ -243,7 +243,7 @@ export default function editClient(props: editClientProps) {
             </div>
 
             <div className="flex flex-col space-y-4">
-              <label htmlFor="direccion">Dirección</label>
+              <label htmlFor="direccion" className="font-lato text-base text-black font-medium">Dirección</label>
               <textarea
                 className={`pt-1 w-[472px] min-h-30 max-h-40 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 transition-colors ${errors.address ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}

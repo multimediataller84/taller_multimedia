@@ -22,7 +22,6 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
     formattedTaxesOptions,
     skuStatus,
     setSkuStatus,
-    autoGenerateSku,
     submit,
     isEditing,
   } = useProductForm(initialData, isOpen);
@@ -121,7 +120,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             className="w-full border p-2 rounded"
           />
 
-            {/*  Costo  */}
+          {/*  Costo  */}
           <label className="block text-sm text-gray-700 font-medium">Costo</label>
           <input
             type="number"

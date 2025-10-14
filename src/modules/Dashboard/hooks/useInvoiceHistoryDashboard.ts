@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { InvoiceService } from "../services/invoiceService";
-import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
+import { InvoiceService } from "../../../modules/Invoices/services/invoiceService";
+import type { TInvoiceEndpoint } from "../../../modules/Invoices/models/types/TInvoiceEndpoint";
 
 const service = InvoiceService.getInstance();
 
-export const useInvoiceHistory = () => {
+export const useInvoiceHistoryDashboard = () => {
   const [invoices, setInvoices] = useState<TInvoiceEndpoint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // Client-side pagination state
+
   const [activePage, setActivePage] = useState<number>(1);
-  const pageSize = 12;
+  const pageSize = 5;
 
   const fetchAll = async () => {
     setLoading(true);

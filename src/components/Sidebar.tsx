@@ -8,7 +8,8 @@ const navItems = [
   { name: "Clientes", icon: "", path: "/clients", visibility: "all" },
   { name: "Inventario", icon: "", path: "/inventory", visibility: "admin" },
   { name: "Impuestos", icon: "", path: "/taxes", visibility: "admin"},
-  { name: "Perfiles", icon: "", path: "/profiles", visibility: "admin"}
+  { name: "Perfiles", icon: "", path: "/profiles", visibility: "admin"},
+   { name: "Cajas", icon: "", path: "/cashRegister", visibility: "admin"}
 ];
 
 export const Sidebar = () => {

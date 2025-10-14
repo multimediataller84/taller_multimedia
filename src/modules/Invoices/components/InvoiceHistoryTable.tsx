@@ -1,5 +1,6 @@
 import React from "react";
 import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
+import { mapPaymentMethodToES, mapStatusToES } from "../utils/displayMappers";
 
 interface Props {
   data: TInvoiceEndpoint[];
@@ -40,15 +41,15 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
                   onClick={() => onSelect?.(inv)}
                   className={onSelect ? "cursor-pointer hover:bg-gray-50" : undefined}
                 >
-                  <td className="px-6 py-3">{inv.invoice_number || inv.id}</td>
+                  <td className="px-6 py-3">{inv.id}</td>
                   <td className="px-6 py-3">{formatted}</td>
                   <td className="px-6 py-3">{customer}</td>
-                  <td className="px-6 py-3">{inv.payment_method}</td>
+                  <td className="px-6 py-3">{mapPaymentMethodToES(inv.payment_method)}</td>
                   <td className="px-6 py-3 text-right">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
                   <td className="px-6 py-3 text-right">{total !== undefined ? total.toFixed(2) : "-"}</td>
                   <td className="px-6 py-3 text-right">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
                   <td className="px-6 py-3 text-right">{due !== undefined ? due.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3">{inv.status}</td>
+                  <td className="px-6 py-3">{mapStatusToES(inv.status)}</td>
                 </tr>
               );
             })}
