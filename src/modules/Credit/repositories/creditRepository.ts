@@ -71,7 +71,7 @@ export const creditRepository = {
 
   async getPayments(creditId: number): Promise<BackPayment[]> {
     try {
-      const res = await apiClient.get(`/credit/payment/all`, { params: { credit_id: creditId } });
+      const res = await apiClient.get(`/credit/payment/${creditId}/all`);
       return unwrap<BackPayment[]>(res) ?? [];
     } catch (e: any) {
       if (e?.response?.status === 404) return []; // sin pagos
