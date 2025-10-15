@@ -6,6 +6,7 @@ import { TGetAllPagination } from "../models/types/TGetAllPagination";
 import type { TProduct } from "../models/types/TProduct";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { TGetAllPaginationTaxes } from "../models/types/TGetAllPaginationTaxes";
+import type { TUnitMeasure } from "../models/types/TUnitMeasure";
 
 type AnyResp = any;
 
@@ -32,7 +33,7 @@ export class ProductService implements IProductService {
       const response = await apiClient.get<TProductEndpoint>(`/product/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
@@ -41,7 +42,7 @@ export class ProductService implements IProductService {
       const response = await apiClient.post<TGetAllPagination>(`/product/all`, options);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
@@ -50,18 +51,27 @@ export class ProductService implements IProductService {
       const response = await apiClient.get<TCategoryEndpoint[]>(`/category/all`);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
+  //  Unidades de medida
+  getAllMeasure = async (): Promise<TUnitMeasure[]> => {
+    try {
+      const res = await apiClient.get(`/product/measure/all`);
+      return unwrap<TUnitMeasure[]>(res);
+    } catch (error) {
+      throw new Error(`error: ${error}`);
+    }
+  };
+
+  //  Impuestos (con tolerancia a distintas rutas / formatos del back)
   getAllTaxes = async (options: TGetAllOptions): Promise<TGetAllPaginationTaxes> => {
     const trySeq = [
       async () => apiClient.post(`/tax/all`, options),
-      async () =>
-        apiClient.get(`/tax/all`, { params: options as Record<string, any> }),
+      async () => apiClient.get(`/tax/all`, { params: options as Record<string, any> }),
       async () => apiClient.post(`/product/tax/all`, options),
-      async () =>
-        apiClient.get(`/product/tax/all`, { params: options as Record<string, any> }),
+      async () => apiClient.get(`/product/tax/all`, { params: options as Record<string, any> }),
     ];
 
     let lastErr: any = null;
@@ -82,7 +92,6 @@ export class ProductService implements IProductService {
         if (raw?.data && typeof raw.total === "number") {
           return { data: raw.data, total: raw.total };
         }
-
         if (Array.isArray(raw?.rows)) {
           return { data: raw.rows, total: Number(raw.count ?? raw.rows.length) };
         }
@@ -90,7 +99,6 @@ export class ProductService implements IProductService {
         return { data: [], total: 0 };
       } catch (err: any) {
         lastErr = err;
-
         if (import.meta.env.MODE !== "production") {
           console.warn(`[getAllTaxes] intento ${i + 1} falló`, err?.response?.status, err?.message);
         }
@@ -105,7 +113,7 @@ export class ProductService implements IProductService {
       const response = await apiClient.post<TProductEndpoint>(`/product`, data);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
@@ -114,7 +122,7 @@ export class ProductService implements IProductService {
       const response = await apiClient.patch<TProductEndpoint>(`/product/${id}`, data);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
@@ -123,7 +131,7 @@ export class ProductService implements IProductService {
       const response = await apiClient.delete<TProductEndpoint>(`/product/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 }

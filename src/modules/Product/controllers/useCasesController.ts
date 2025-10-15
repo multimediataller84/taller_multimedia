@@ -7,12 +7,14 @@ import { GetUseCase } from "../models/useCases/getUseCase";
 import { PatchUseCase } from "../models/useCases/patchUseCase";
 import { PostUseCase } from "../models/useCases/postUseCase";
 import { ProductRepository } from "../repositories/productRepository";
+import { GetAllMeasureUseCase } from "../models/useCases/getAllMeasureUseCase";
 
 export class UseCasesController implements TUseCasesController {
   get: GetUseCase;
   getAll: GetAllUseCase;
-  getAllCategories: GetAllCategoriesUseCase
-  getAllTaxes: GetAllTaxesUseCase
+  getAllCategories: GetAllCategoriesUseCase;
+  getAllTaxes: GetAllTaxesUseCase;
+  getAllMeasure: GetAllMeasureUseCase;
   post: PostUseCase;
   patch: PatchUseCase;
   delete: DeleteUseCase;
@@ -22,6 +24,7 @@ export class UseCasesController implements TUseCasesController {
     this.getAll = new GetAllUseCase(this.repository);
     this.getAllCategories = new GetAllCategoriesUseCase(this.repository);
     this.getAllTaxes = new GetAllTaxesUseCase(this.repository);
+    this.getAllMeasure = new GetAllMeasureUseCase(this.repository);
     this.post = new PostUseCase(this.repository);
     this.patch = new PatchUseCase(this.repository);
     this.delete = new DeleteUseCase(this.repository);
