@@ -94,18 +94,37 @@ export const Reports = () => {
     });
   }, [invoices, from, to, search]);
 
+  const creditPaymentsInRange = useMemo(() => {
+    return payments.filter((p) =>
+      inRange(
+        parseDateLoose(p.createdAt) ?? parseDateLoose(p.payment_date),
+        from,
+        to
+      )
+    );
+  }, [payments, from, to]);
+
   const kpisSales = useMemo(() => {
     const total = filteredInvoices.reduce((s, r) => s + Number(r.total || 0), 0);
-    const paid = filteredInvoices.reduce((s, r) => s + Number(r.amount_paid || 0), 0);
-    const pending = total - paid;
-    const count = filteredInvoices.length;
+
     const byMethod = filteredInvoices.reduce<Record<string, number>>((acc, r) => {
       const k = r.payment_method || "N/A";
       acc[k] = (acc[k] || 0) + Number(r.total || 0);
       return acc;
     }, {});
+
+    const nonCreditPaid = filteredInvoices
+      .filter(r => String(r.payment_method).toLowerCase() !== "credit")
+      .reduce((s, r) => s + Number(r.total || 0), 0);
+
+    const creditAbonosInRange = creditPaymentsInRange.reduce((s, p) => s + Number(p.amount || 0), 0);
+
+    const paid = nonCreditPaid + creditAbonosInRange;
+    const pending = Math.max(0, total - paid);
+    const count = filteredInvoices.length;
+
     return { total, paid, pending, count, byMethod };
-  }, [filteredInvoices]);
+  }, [filteredInvoices, creditPaymentsInRange]);
 
   const allCreditInvoices = useMemo(
     () => invoices.filter(r => String(r.payment_method).toLowerCase() === "credit"),
@@ -125,20 +144,11 @@ export const Reports = () => {
     () => Math.max(0, creditInvoicesTotalAll - creditPaymentsTotalAll),
     [creditInvoicesTotalAll, creditPaymentsTotalAll]
   );
-  const creditPaymentsInRange = useMemo(() => {
-    return payments.filter((p) =>
-      inRange(
-        parseDateLoose(p.createdAt) ?? parseDateLoose(p.payment_date),
-        from,
-        to
-      )
-    );
-  }, [payments, from, to]);
 
   const kpisCredits = useMemo(() => {
-    const total = creditInvoicesTotalAll;           
+    const total = creditInvoicesTotalAll;
     const paid = creditPaymentsInRange.reduce((s, p) => s + Number(p.amount || 0), 0);
-    const pending = creditOutstandingGlobal; 
+    const pending = creditOutstandingGlobal;
     const count = creditPaymentsInRange.length;
     const byMethod = { Credit: total };
     return { total, paid, pending, count, byMethod };
@@ -214,8 +224,6 @@ export const Reports = () => {
   const productsPageData = paginate(productRanking, pageProducts, pageSize);
   const customersPageData = paginate(customerRanking, pageCustomers, pageSize);
 
-  const currentKpis = activeTab === "credits" ? kpisCredits : kpisSales;
-
   return (
     <RootLayout search={search} setSearch={setSearch}>
       <div className="flex-1 p-6 w-[90%]">
@@ -261,10 +269,35 @@ export const Reports = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-4 mb-4">
-          <KpiCard title={activeTab === "credits" ? "Crédito (total)" : "Ventas"} value={crc(currentKpis.total)} />
-          <KpiCard title="Pagado" value={crc(currentKpis.paid)} />
-          <KpiCard title="Pendiente" value={crc(currentKpis.pending)} />
-          <KpiCard title={activeTab === "credits" ? "Abonos" : "Facturas"} value={currentKpis.count} />
+          {activeTab === "sales" && (
+            <>
+              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+              <KpiCard title="Pagado" value={crc(kpisSales.paid)} />
+              <KpiCard title="Facturas" value={kpisSales.count} />
+            </>
+          )}
+
+          {activeTab === "credits" && (
+            <>
+              <KpiCard title="Crédito (total)" value={crc(kpisCredits.total)} />
+              <KpiCard title="Pagado" value={crc(kpisCredits.paid)} />
+              <KpiCard title="Pendiente" value={crc(kpisCredits.pending)} />
+              <KpiCard title="Abonos" value={kpisCredits.count} />
+            </>
+          )}
+
+          {activeTab === "products" && (
+            <>
+              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+            </>
+          )}
+
+          {activeTab === "customers" && (
+            <>
+              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+              <KpiCard title="Facturas" value={kpisSales.count} />
+            </>
+          )}
         </div>
 
         <div className="flex gap-2 mb-3">
