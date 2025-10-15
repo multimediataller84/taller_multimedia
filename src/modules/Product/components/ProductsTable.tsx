@@ -1,4 +1,4 @@
-import { fmtCRC, fmtMargin } from "../utils/formatters";
+import { fmtCRC } from "../utils/formatters";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { useState } from "react";
 
