@@ -31,7 +31,7 @@ export const useProductCatalog = () => {
     if (!query.trim()) return productsInStock;
     const q = query.toLowerCase();
     return productsInStock.filter((p) =>
-      `${p.product_name} ${p.sku} ${p.tax_id}`.toLowerCase().includes(q)
+      `${p.product_name} ${p.sku} ${p.tax?.percentage ?? ''}%`.toLowerCase().includes(q)
     );
   }, [productsInStock, query]);
 

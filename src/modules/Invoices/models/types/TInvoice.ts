@@ -15,4 +15,5 @@ export type TInvoice = {
   user_id: number;
   cash_register_id: number;
   amount_paid?: number; // optional initial payment (e.g., when using Credit)
+  payment_receipt?: string;
 };

@@ -13,33 +13,34 @@ export class InvoiceService implements IInvoiceService {
     return InvoiceService.instance;
   }
 
-async post(data: TInvoice): Promise<void> {
-  try {
-    const response = await apiClient.post<{ name: string; base64File: string }>(
-      "/invoice",
-      data,
-    );
+  async post(data: TInvoice): Promise<void> {
+    try {
+      const response = await apiClient.post<{ name: string; base64File: string }>(
+        "/invoice",
+        data,
+      );
 
-    const byteCharacters = atob(response.data.base64File);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+      const byteCharacters = atob(response.data.base64File);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Comprobante_N°${response.data.name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // Propagate the original error so callers can surface specific API messages
+      throw error as unknown as Error;
     }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: "application/pdf" });
-
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Comprobante_N°${response.data.name}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    throw new Error("Invalid Invoice payload");
   }
-}
 
   getAll = async (): Promise<TInvoiceEndpoint[]> => {
     try {

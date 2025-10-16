@@ -45,7 +45,8 @@ export const Invoices = () => {
   const [activeTab, setActiveTab] = useState<TInvoiceTab>("generar");
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
-  
+  const [paymentReceipt, setPaymentReceipt] = useState<string>("");
+
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
   const {
     currentInvoices,
@@ -199,29 +200,29 @@ export const Invoices = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-             <button
-                  className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleAdviceClick}
-                  disabled={aiLoading}
-                >
-                  {aiLoading ? "Analizando…" : "Consejo de ventas IA"}
-                </button>
-            <button
+           <button
               className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => setProductModalOpen(true)}
-              
+              onClick={handleAdviceClick}
+              disabled={aiLoading}
             >
-              Agregar productos
+              {aiLoading ? "Analizando…" : "Consejo de ventas IA"}
             </button>
-            <button
-              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base bg-white border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={
-                submitting ||
-                !selectedClient ||
-                items.length === 0 ||
-                !seller
-              }
-              onClick={async () => {
+          <button
+            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setProductModalOpen(true)}
+            
+          >
+            Agregar productos
+          </button>
+          <button
+            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base bg-white border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={
+              submitting ||
+              !selectedClient ||
+              items.length === 0 ||
+              !seller
+            }
+            onClick={async () => {
             if (!selectedClient) return;
             try {
               const paymentMap: Record<string, TPaymentMethod> = {
@@ -244,6 +245,10 @@ export const Invoices = () => {
                 showAlert("Acción requerida", "Debe seleccionar un vendedor (usuario y caja abiertos)", "error");
                 return;
               }
+              if ((method === "Debit Card" || method === "Transfer") && (!paymentReceipt || paymentReceipt.trim().length === 0)) {
+                showAlert("Acción requerida", "Debe ingresar el comprobante de pago para pagos con tarjeta o transferencia", "error");
+                return;
+              }
               const payload = {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
@@ -251,41 +256,43 @@ export const Invoices = () => {
                 products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
                 status: statusForMethod,
                 cash_register_id: selRegisterId,
-                user_id: selUserId
+                user_id: selUserId,
+                payment_receipt: (method === "Debit Card" || method === "Transfer") && paymentReceipt ? paymentReceipt.trim() : undefined
               } as const;
               console.log('[Invoice Submit] payload', payload);
               await submit(payload);
               showAlert("Factura creada", "La factura fue creada correctamente", "success");
 
-                  setPaymentMethod("Efectivo");
-                  clearItems();
-                   
-                  setQuery("");
-                  setSelectedClient(null);
-                   
-                  refetch();
-                } catch (e) {
-                  let message = "No se pudo crear la factura";
-                  const err = e as unknown;
-                  if (typeof err === "string") {
-                    message = err;
-                  } else if (err && typeof err === "object" && "response" in err) {
-                    const resp = (err as { response?: { data?: { message?: string } } }).response;
-                    const msg = resp?.data?.message;
-                    if (typeof msg === "string" && msg.trim().length > 0) message = msg;
-                  } else if (err instanceof Error && err.message) {
-                    message = err.message;
-                  }
-                  showAlert("Error al generar factura", String(message), "error");
+                setPaymentMethod("Efectivo");
+                clearItems();
+                 
+                setQuery("");
+                setSelectedClient(null);
+                setPaymentReceipt("");
+                 
+                refetch();
+              } catch (e) {
+                let message = "No se pudo crear la factura";
+                const err = e as unknown;
+                if (typeof err === "string") {
+                  message = err;
+                } else if (err && typeof err === "object" && "response" in err) {
+                  const resp = (err as { response?: { data?: { message?: string } } }).response;
+                  const msg = resp?.data?.message;
+                  if (typeof msg === "string" && msg.trim().length > 0) message = msg;
+                } else if (err instanceof Error && err.message) {
+                  message = err.message;
                 }
-              }}>
-              {submitting ? "Guardando…" : "Generar factura"}
-            </button>
-          </div>
+                showAlert("Error al generar factura", String(message), "error");
+              }
+            }}>
+            {submitting ? "Guardando…" : "Generar factura"}
+          </button>
         </div>
-        {/* Customer / Invoice Details */}
-        <div className="bg-white rounded-md p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      </div>
+      {/* Customer / Invoice Details */}
+      <div className="bg-white rounded-md p-6 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Cliente</label>
               <ClientSelector
@@ -310,7 +317,7 @@ export const Invoices = () => {
               <input
                 type="email"
                 className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="jose@test.com"
+                placeholder="jose@correo.com"
                 value={selectedClient?.email ?? ""}
                 readOnly
               />
@@ -347,15 +354,32 @@ export const Invoices = () => {
               <select
                 className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400`}
                 value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPaymentMethod(val);
+                  if (val !== "Tarjeta" && val !== "Transferencia") {
+                    setPaymentReceipt("");
+                  }
+                }}
                 
               >
                 <option value="Efectivo">Efectivo</option>
                 <option value="Tarjeta">Tarjeta</option>
-                <option value="Transferencia">Transferencia</option>
+                <option value="Transferencia">Transferencia/SINPE</option>
                 <option value="Crédito">Crédito</option>
               </select>
             </div>
+            {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Comprobante de pago</label>
+                <input
+                  className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="Digite número o referencia del comprobante"
+                  value={paymentReceipt}
+                  onChange={(e) => setPaymentReceipt(e.target.value)}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -372,7 +396,7 @@ export const Invoices = () => {
         <div className="bg-white rounded-md shadow-sm p-6">
           <div className="w-full md:w-80 ml-auto space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">TOTAL, $</span>
+              <span className="text-gray-600">TOTAL, ₡</span>
               <span className="font-semibold">{subtotal.toFixed(2)}</span>
             </div>
           </div>
