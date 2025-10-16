@@ -5,6 +5,7 @@ import { ProductTable } from "../components/ProductsTable";
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { UseCasesController } from "../controllers/useCasesController";
 import { ProductRepository } from "../repositories/productRepository";
+import { ProductsTableSkeleton } from "../components/ProductsTableSkeleton";
 
 export default function Product() {
   const {
@@ -23,8 +24,6 @@ export default function Product() {
     setIsModalOpen,
     activePage,
   } = useProduct();
-
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
   useEffect(() => {
     // Cargar categorías e impuestos
@@ -47,15 +46,12 @@ export default function Product() {
       } catch (err) {
         console.error("Error al cargar categorías", err);
       }
-
-      // (el bloque de impuestos lo dejás igual)
     };
 
     loadLookups();
   }, []);
 
   const [categoryNameById, setCategoryNameById] = useState<Record<number, string>>({});
-  const [taxPctById, setTaxPctById] = useState<Record<string | number, number>>({});
 
  useEffect(() => {
   // Cargamos categorías e impuestos con paginación
@@ -63,7 +59,7 @@ export default function Product() {
   const useCases = new UseCasesController(repo);
 
   const loadLookups = async () => {
-    // --- Categorías (sin cambios) ---
+    // --- Categorías ---
     try {
       const categories = await useCases.getAllCategories.execute();
       const catMapNumStr: Record<string | number, string> = {};
@@ -100,15 +96,13 @@ export default function Product() {
 
         for (const t of items) {
           const id = t?.id;
-          let pct = t?.percentage;       // tu back usa 'percentage'
+          let pct = t?.percentage;
           if (id != null && pct != null) {
             pct = typeof pct === "number" ? pct : Number(pct);
-            // Si tu back diera 0.13 en lugar de 13, descomenta la línea siguiente:
-            // if (pct > 0 && pct <= 1) pct = pct * 100;
             pct = Math.round(pct * 100) / 100;
 
             taxMapNumStr[Number(id)] = pct;
-            taxMapNumStr[String(id)] = pct; // clave espejo string
+            taxMapNumStr[String(id)] = pct;
           }
         }
 
@@ -117,7 +111,6 @@ export default function Product() {
       }
 
       console.log("[LOOKUP] impuestos totales:", Object.keys(taxMapNumStr).length);
-      setTaxPctById(taxMapNumStr); // 👈 recuerda tipar el estado como Record<string|number, number>
     } catch (err) {
       console.error("Error al cargar impuestos", err);
     }
@@ -166,16 +159,16 @@ export default function Product() {
         {/* {<TaxExcelUploader />} */}
 
         {loading ? (
-          <div className="p-6">Cargando…</div>
+          <div className="p-6">
+            <ProductsTableSkeleton headers={headers} rows={8} />
+          </div>
         ) : (
           <ProductTable
             products={currentProducts}
             headers={headers}
             onEdit={openEdit}
             onDelete={handleDelete}
-            /** 👇 Pasamos los lookups para que la tabla no muestre IDs */
             categoryNameById={categoryNameById}
-            taxPctById={taxPctById}
           />
         )}
 

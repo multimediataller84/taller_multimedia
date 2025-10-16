@@ -8,19 +8,25 @@ import { TCategoryEndpoint } from "../models/types/TCategoryEndpoint";
 import { generateSku } from "../utils/generateSku";
 import { ProductFormInputs } from "../models/types/TProductsForm";
 import { TTaxEndpoint } from "../models/types/TTaxEndpoint";
+import type { TUnitMeasure } from "../models/types/TUnitMeasure";
 
 const repository = ProductRepository.getInstance();
 const useCases = new UseCasesController(repository);
 
-type ProductFormInputsWithCost = ProductFormInputs & { cost: string };
+// Enviamos COSTO en unit_price
+const SEND_COST_INSTEAD_OF_PRICE = true;
 
-function inferCostFromPriceAndMarkup(unitPrice?: number, markupPct?: number) {
-  const price = Number(unitPrice);
-  const pct = Number(markupPct);
-  if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(pct)) return "";
-  const cost = price / (1 + pct / 100);
-  return cost > 0 ? cost.toFixed(2) : "";
+// Redondear SIEMPRE hacia arriba al múltiplo de 50 más cercano
+function roundUpToNearest50(n: number) {
+  if (!Number.isFinite(n)) return 0;
+  const step = 50;
+  return Math.ceil(n / step) * step;
 }
+
+type ProductFormInputsWithCost = ProductFormInputs & {
+  cost: string;
+  unit_measure_id?: string;
+};
 
 export function useProductForm(
   initialData: TProductEndpoint | null,
@@ -40,47 +46,61 @@ export function useProductForm(
       category_id: "",
       tax_id: "",
       profit_margin: "",
-      unit_price: "",
+      unit_price: "",   // aquí MOSTRAMOS el precio final (no se envía)
       stock: "",
       state: "Active",
-      cost: "",
+      cost: "",         // costo que SÍ enviamos al back en unit_price
+      unit_measure_id: "",
     },
   });
 
   const isEditing = !!initialData?.id;
 
-  const productName = watch("product_name");
-  const categoryId  = watch("category_id");
-  const unitPrice   = watch("unit_price");
-  const costStr     = watch("cost");
+  const productName     = watch("product_name");
+  const categoryId      = watch("category_id");
+  const costStr         = watch("cost");
+  const profitPctStr    = watch("profit_margin");
 
   const [categories, setCategories] = useState<TCategoryEndpoint[]>([]);
   const [taxes, setTaxes] = useState<TTaxEndpoint[]>([]);
+  const [unitMeasures, setUnitMeasures] = useState<TUnitMeasure[]>([]);
   const [skuStatus, setSkuStatus] = useState<"idle" | "checking" | "ok" | "dup">("idle");
 
-  // Reset + precarga de categorías e inyección inmediata del impuesto seleccionado
   useEffect(() => {
     if (!isOpen) return;
 
     if (initialData) {
-      const inferredCost = inferCostFromPriceAndMarkup(
-        initialData.unit_price as any,
-        initialData.profit_margin as any
-      );
+      // Asumimos que unit_price en el back ES el costo (según cambio reciente).
+      const costFromBack = Number((initialData as any)?.unit_price ?? 0);
+      const marginCRC    = Number((initialData as any)?.profit_margin ?? 0);
+      // Convertimos utilidad en colones a porcentaje para mostrar en el front.
+      const inferredPct  = (Number.isFinite(costFromBack) && costFromBack > 0)
+        ? Math.round((marginCRC / costFromBack) * 100)
+        : Number(initialData.profit_margin ?? 0); // fallback si hubiera datos viejos
+
+      // Calculamos el precio final redondeado para mostrar en el input de "Precio unitario"
+      const priceUnrounded = Number.isFinite(costFromBack)
+        ? costFromBack * (1 + (inferredPct || 0) / 100)
+        : 0;
+      const priceRounded = roundUpToNearest50(priceUnrounded);
 
       reset({
         product_name: initialData.product_name ?? "",
         sku: initialData.sku ?? "",
         category_id: String(initialData.category_id ?? ""),
-        tax_id: String(initialData.tax_id ?? ""), // usamos SIEMPRE el id oficial
-        profit_margin: String(initialData.profit_margin ?? ""),
-        unit_price: String(initialData.unit_price ?? ""),
+        tax_id: String(initialData.tax_id ?? ""),
+        profit_margin: String(inferredPct || 0),     // % visible
+        unit_price: String(priceRounded || ""),      // precio mostrado (no se envía)
         stock: String(initialData.stock ?? ""),
         state: initialData.state ?? "Active",
-        cost: inferredCost || "",
+        cost: Number.isFinite(costFromBack) ? String(costFromBack) : "",
+        unit_measure_id:
+          (initialData as any)?.unit_measure_id != null
+            ? String((initialData as any).unit_measure_id)
+            : "",
       });
 
-      // Inyecta de inmediato la opción del impuesto seleccionado para evitar parpadeos si la API falla
+      // Inyecta la opción del impuesto seleccionado
       if (initialData.tax_id != null) {
         const injected: TTaxEndpoint = {
           id: Number(initialData.tax_id),
@@ -89,12 +109,10 @@ export function useProductForm(
           percentage: initialData.tax?.percentage ?? 0,
         } as TTaxEndpoint;
 
-        setTaxes((prev) => {
+        setTaxes(prev => {
           const already = prev.some(t => String(t.id) === String(injected.id));
           return already ? prev : [injected, ...prev];
         });
-
-        // nos aseguramos que el form tenga seteado ese tax_id
         setValue("tax_id", String(initialData.tax_id), { shouldValidate: false });
       }
     } else {
@@ -108,27 +126,34 @@ export function useProductForm(
         stock: "",
         state: "Active",
         cost: "",
+        unit_measure_id: "",
       });
-      setTaxes([]); // creación: lista limpia y luego se cargan según categoría
+      setTaxes([]);
     }
 
-    const loadCategories = async () => {
+    const loadBasics = async () => {
       try {
         const cats = await useCases.getAllCategories.execute();
         setCategories(cats);
       } catch (err) {
         console.error("Error al cargar categorías", err);
       }
+      try {
+        const units = await useCases.getAllMeasure.execute();
+        setUnitMeasures(units ?? []);
+      } catch (err) {
+        console.error("Error al cargar unidades de medida", err);
+        setUnitMeasures([]);
+      }
     };
 
-    loadCategories();
+    loadBasics();
     setSkuStatus("idle");
   }, [isOpen, initialData, reset, setValue]);
 
-  // Cargar impuestos (filtrados por categoría) con tolerancia a fallos y sin borrar el seleccionado
+  // Impuestos por categoría (y aseguramos la opción seleccionada)
   useEffect(() => {
     if (!isOpen) return;
-
     let cancelled = false;
 
     const loadTaxes = async () => {
@@ -139,12 +164,10 @@ export function useProductForm(
           offset: 0,
           orderDirection: "ASC",
         });
-
         if (cancelled) return;
 
         let list = taxesResponse?.data ?? [];
 
-        // Asegura que el impuesto seleccionado (si estamos editando) esté en la lista
         const selectedTaxId = initialData?.tax_id;
         if (selectedTaxId != null) {
           const hasSelected = list.some(t => String(t.id) === String(selectedTaxId));
@@ -162,11 +185,7 @@ export function useProductForm(
         setTaxes(list);
       } catch (err) {
         console.error("Error al cargar impuestos", err);
-
-        // Si falla, NO vaciamos la lista cuando estamos editando y ya inyectamos la opción seleccionada.
-        if (!isEditing) {
-          setTaxes([]); // en creación, podemos dejar vacío
-        }
+        if (!isEditing) setTaxes([]);
       }
     };
 
@@ -174,15 +193,16 @@ export function useProductForm(
     return () => { cancelled = true; };
   }, [categoryId, isOpen, isEditing, initialData]);
 
-  // Calcula utilidad (markup) a partir de costo + precio unitario
+  // Recalcular PRECIO mostrado (unit_price) desde COSTO + % de utilidad, con redondeo ↑ a múltiplo de 50
   useEffect(() => {
-    const price = Number(unitPrice);
-    const c = Number(costStr);
-    if (Number.isFinite(price) && price > 0 && Number.isFinite(c) && c > 0) {
-      const pct = ((price - c) / c) * 100;
-      setValue("profit_margin", String(Math.round(pct)), { shouldValidate: false });
+    const cost = Number(costStr);
+    const p    = Number(profitPctStr);
+    if (Number.isFinite(cost) && cost > 0 && Number.isFinite(p)) {
+      const priceUnrounded = cost * (1 + p / 100);
+      const priceRounded   = roundUpToNearest50(priceUnrounded);
+      setValue("unit_price", priceRounded.toFixed(0), { shouldValidate: false });
     }
-  }, [unitPrice, costStr, setValue]);
+  }, [costStr, profitPctStr, setValue]);
 
   const autoGenerateSku = () => {
     const generated = generateSku({
@@ -203,29 +223,40 @@ export function useProductForm(
     label: item.description,
   }));
 
-  const submit = async (data: ProductFormInputsWithCost) => {
-    const price = Number(data.unit_price);
-    const c = Number(data.cost);
-    let profit = Number(data.profit_margin);
-    if (Number.isFinite(price) && price > 0 && Number.isFinite(c) && c > 0) {
-      profit = Math.round(((price - c) / c) * 100);
-    }
+  const formattedUnitOptions = (unitMeasures ?? []).map((u) => ({
+    value: String(u.id),
+    label: u.description ? `${u.description}${u.symbol ? ` (${u.symbol})` : ""}` : String(u.id),
+  }));
 
-    const payload: TProduct = {
+  const submit = async (data: ProductFormInputsWithCost) => {
+    const cost = Number(data.cost) || 0;
+    const pct  = Number(data.profit_margin) || 0;
+    // Precio final redondeado (el que se muestra)
+    const priceRounded = roundUpToNearest50(cost * (1 + pct / 100));
+    // Utilidad en colones para enviar
+    const profitCRC = Math.max(priceRounded - cost, 0);
+
+    const payload: any = {
       product_name: data.product_name,
       sku: data.sku,
       category_id: Number(data.category_id),
       tax_id: Number(data.tax_id),
-      profit_margin: profit,
-      unit_price: parseFloat(String(price)),
+      // 👇 Guardamos utilidad en colones en profit_margin (petición del cambio)
+      profit_margin: profitCRC,
+      // 👇 Enviamos COSTO en unit_price
+      unit_price: SEND_COST_INSTEAD_OF_PRICE ? cost : priceRounded,
       stock: parseInt(data.stock, 10),
       state: data.state,
-    } as unknown as TProduct;
+    };
+
+    if (data.unit_measure_id) {
+      payload.unit_measure_id = Number(data.unit_measure_id);
+    }
 
     if (initialData?.id) {
-      await useCases.patch.execute(initialData.id, payload);
+      await useCases.patch.execute(initialData.id, payload as TProduct);
     } else {
-      await useCases.post.execute(payload);
+      await useCases.post.execute(payload as TProduct);
     }
   };
 
@@ -235,6 +266,7 @@ export function useProductForm(
     control,
     formattedCategoryOptions,
     formattedTaxesOptions,
+    formattedUnitOptions,
     skuStatus,
     setSkuStatus,
     autoGenerateSku,

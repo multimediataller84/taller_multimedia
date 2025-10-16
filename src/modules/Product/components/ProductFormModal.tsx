@@ -20,6 +20,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
     control,
     formattedCategoryOptions,
     formattedTaxesOptions,
+    formattedUnitOptions,
     skuStatus,
     setSkuStatus,
     submit,
@@ -66,7 +67,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
 
           {/* Categoría (bloqueada al editar) */}
           <label className="block text-sm text-gray-700 font-medium">
-            Categoría {isEditing && <span className="text-xs text-gray-500">(no editable)</span>}
+            Categoría {isEditing && <span className="text-xs text-gray-500"></span>}
           </label>
           <Controller
             name="category_id"
@@ -82,13 +83,15 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
                   formattedCategoryOptions.find((option) => option.value === field.value) || null
                 }
                 isDisabled={isEditing}
+                isClearable
+                classNamePrefix="select"
               />
             )}
           />
 
           {/* Impuesto (bloqueado al editar) */}
           <label className="block text-sm text-gray-700 font-medium">
-            Impuesto {isEditing && <span className="text-xs text-gray-500">(no editable)</span>}
+            Impuesto {isEditing && <span className="text-xs text-gray-500"></span>}
           </label>
           <Controller
             name="tax_id"
@@ -104,13 +107,35 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
                   formattedTaxesOptions.find((option) => option.value === field.value) || null
                 }
                 isDisabled={isEditing}
+                isClearable
+                classNamePrefix="select"
+              />
+            )}
+          />
+
+          {/* Unidad de medida */}
+          <label className="block text-sm text-gray-700 font-medium">Unidad de medida</label>
+          <Controller
+            name="unit_measure_id"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={formattedUnitOptions}
+                placeholder="Seleccione unidad"
+                onChange={(opt) => field.onChange((opt as any)?.value ?? "")}
+                value={
+                  formattedUnitOptions.find((option) => option.value === field.value) || null
+                }
+                isClearable
+                classNamePrefix="select"
               />
             )}
           />
 
           {/* Utilidad */}
           <label className="block text-sm text-gray-700 font-medium">
-            Utilidad
+            Utilidad <span className="text-xs text-gray-500">(en %)</span>
           </label>
           <input
             type="number"
@@ -120,7 +145,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             className="w-full border p-2 rounded"
           />
 
-          {/*  Costo  */}
+          {/* Costo (editable) */}
           <label className="block text-sm text-gray-700 font-medium">Costo</label>
           <input
             type="number"
@@ -129,16 +154,21 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             placeholder="0.00"
             className="w-full border p-2 rounded"
           />
+          <p className="text-xs text-gray-500 -mt-2"></p>
 
-          {/* Precio unitario */}
-          <label className="block text-sm text-gray-700 font-medium">Precio unitario</label>
+          {/* Precio final (calculado) */}
+          <label className="block text-sm text-gray-700 font-medium">
+            Precio final (calculado)
+          </label>
           <input
             type="number"
             step="0.01"
             {...register("unit_price", { required: true })}
             placeholder="0.00"
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded bg-gray-100"
+            readOnly
           />
+          <p className="text-xs text-gray-500 -mt-2"></p>
 
           {/* Stock */}
           <label className="block text-sm text-gray-700 font-medium">Stock</label>
