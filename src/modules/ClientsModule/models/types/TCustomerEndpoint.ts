@@ -3,6 +3,7 @@ export type TCustomerEndpoint = {
   name: string,
   last_name: string,
   address: string,
+  identification_type: string, 
   id_number: string,
   email: string,
   phone: number,
@@ -10,5 +11,8 @@ export type TCustomerEndpoint = {
   credit_unlimited: boolean,
   credit_limit: number | null,
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
+  province_id: number,
+  canton_id: number,
+  district_id: number,
 }
