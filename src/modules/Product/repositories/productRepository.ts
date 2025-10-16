@@ -6,6 +6,7 @@ import { TGetAllPaginationTaxes } from "../models/types/TGetAllPaginationTaxes";
 import type { TProduct } from "../models/types/TProduct";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { ProductService } from "../services/productService";
+import { TUnitMeasure } from "../models/types/TUnitMeasure";
 
 export class ProductRepository implements IProductRepository {
   public static instance: ProductRepository;
@@ -23,7 +24,7 @@ export class ProductRepository implements IProductRepository {
       const response = await this.productService.get(id);
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   }
 
@@ -32,35 +33,48 @@ export class ProductRepository implements IProductRepository {
       const response = await this.productService.getAll(options);
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   }
 
+  // Categorías
   getAllCategories = async (): Promise<TCategoryEndpoint[]> => {
     try {
       const response = await this.productService.getAllCategories();
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   };
 
-  getAllTaxes = async (options: TGetAllOptions): Promise<TGetAllPaginationTaxes> => {
-  try {
-    const response = await this.productService.getAllTaxes(options);
-    return response;
-  } catch (error) {
-    throw new Error(`error: ${error}" `);
-  }
-};
+  // Impuestos
+  getAllTaxes = async (
+    options: TGetAllOptions
+  ): Promise<TGetAllPaginationTaxes> => {
+    try {
+      const response = await this.productService.getAllTaxes(options);
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}`);
+    }
+  };
 
+  // Unidades de medida
+  getAllMeasure = async (): Promise<TUnitMeasure[]> => {
+    try {
+      const response = await this.productService.getAllMeasure();
+      return response;
+    } catch (error) {
+      throw new Error(`error: ${error}`);
+    }
+  };
 
   async post(data: TProduct): Promise<TProductEndpoint> {
     try {
       const response = await this.productService.post(data);
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   }
 
@@ -69,7 +83,7 @@ export class ProductRepository implements IProductRepository {
       const response = await this.productService.patch(id, data);
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   }
 
@@ -78,7 +92,7 @@ export class ProductRepository implements IProductRepository {
       const response = await this.productService.delete(id);
       return response;
     } catch (error) {
-      throw new Error(`error: ${error}" `);
+      throw new Error(`error: ${error}`);
     }
   }
 }

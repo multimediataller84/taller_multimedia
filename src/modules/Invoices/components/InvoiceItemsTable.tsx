@@ -18,7 +18,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
             <tr className="text-left">
               <th className="px-6 py-3">Producto</th>
               <th className="px-6 py-3">Cant.</th>
-              <th className="px-6 py-3">Impuesto ID</th>
+              <th className="px-6 py-3">Impuesto</th>
               <th className="px-6 py-3 text-right">Precio Unit.</th>
               <th className="px-6 py-3 text-right">Precio Total</th>
               <th className="px-6 py-3 text-right">Acciones</th>
@@ -47,7 +47,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                     </button>
                   </div>
                 </td>
-                <td className="px-6 py-3">{i.tax_id}</td>
+                <td className="px-6 py-3">{typeof i.tax_percentage === 'number' ? `${i.tax_percentage}%` : i.tax_id}</td>
                 <td className="px-6 py-3 text-right">{Number(i.unit_price).toFixed(2)}</td>
                 <td className="px-6 py-3 text-right">{(Number(i.unit_price) * i.qty).toFixed(2)}</td>
                 <td className="px-6 py-3 text-right">

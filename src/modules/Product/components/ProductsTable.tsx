@@ -1,4 +1,4 @@
-import { fmtCRC, fmtMargin } from "../utils/formatters";
+import { fmtCRC } from "../utils/formatters";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { useState } from "react";
 
@@ -65,7 +65,16 @@ export function ProductTable(props: ProductsProps) {
             {/* porcentaje viene del endpoint embebido en row.tax */}
             <td className="text-sm">{row.tax.percentage + "%"}</td>
 
-            <td className="text-sm">{fmtMargin(row.profit_margin)}</td>
+            {/* Utilidad: costo (unit_price) y utilidad en ₡ → mostrar % redondeado */}
+            <td className="text-sm">
+              {(() => {
+                const cost = Number(row.unit_price || 0);                 // ahora es COSTO
+                const marginCRC = Number((row as any).profit_margin || 0); // utilidad en colones
+                if (!Number.isFinite(cost) || cost <= 0) return "0%";
+                const pct = (marginCRC / cost) * 100;
+                return `${Math.round(pct)}%`;
+              })()}
+            </td>
             <td className="text-sm">{fmtCRC(row.unit_price)}</td>
             <td className="text-sm">{row.stock}</td>
             <td className="text-sm">{row.state}</td>

@@ -10,6 +10,22 @@ export const useInvoiceDetail = (invoice: TInvoiceEndpoint | null) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  type LineCandidate = {
+    id?: number;
+    product_id?: number;
+    productId?: number;
+    product?: { id?: number };
+    Product?: { id?: number };
+    quantity?: number;
+    qty?: number;
+    unit_price?: number | string;
+    unitPrice?: number | string;
+    price?: number | string;
+    InvoiceProducts?: { quantity?: number; unit_price?: number | string };
+    invoice_products?: { quantity?: number; unit_price?: number | string };
+    ProductsInvoices?: { quantity?: number; unit_price?: number | string };
+  };
+
   useEffect(() => {
     let aborted = false;
     const run = async () => {
@@ -23,21 +39,59 @@ export const useInvoiceDetail = (invoice: TInvoiceEndpoint | null) => {
       setError(null);
       try {
         const base = invoice;
-        const products = base.products ?? [];
+        const products = (base.products ?? []) as Array<LineCandidate>;
         const enriched: TInvoiceDetailProduct[] = await Promise.all(
           products.map(async (p) => {
+            // Normalizar ID
+            const pid: number | undefined =
+              (typeof p.id === "number" && p.id) ||
+              (typeof p.product_id === "number" && p.product_id) ||
+              (typeof p.productId === "number" && p.productId) ||
+              (typeof p.product?.id === "number" && p.product.id) ||
+              (typeof p.Product?.id === "number" && p.Product.id) ||
+              undefined;
+
+            // Normalizar cantidad
+            const qty: number =
+              (typeof p.quantity === "number" && p.quantity) ||
+              (typeof p.qty === "number" && p.qty) ||
+              (typeof p.InvoiceProducts?.quantity === "number" && p.InvoiceProducts.quantity) ||
+              (typeof p.invoice_products?.quantity === "number" && p.invoice_products.quantity) ||
+              (typeof p.ProductsInvoices?.quantity === "number" && p.ProductsInvoices.quantity) ||
+              0;
+
+            // Precio unitario tomado de la línea si existe; si no, del catálogo
+            let unitPriceFromLine: number | undefined = undefined;
+            const tryNum = (v: unknown): number | undefined => {
+              const n = Number(v);
+              return isFinite(n) && !isNaN(n) ? n : undefined;
+            };
+            unitPriceFromLine =
+              tryNum(p.unit_price) ??
+              tryNum(p.price) ??
+              tryNum(p.unitPrice) ??
+              tryNum(p.InvoiceProducts?.unit_price) ??
+              tryNum(p.invoice_products?.unit_price) ??
+              tryNum(p.ProductsInvoices?.unit_price);
+
             try {
-              const prod = await productService.get(p.id);
-              return {
-                id: p.id,
-                quantity: p.quantity,
-                name: prod.product_name,
-                sku: prod.sku,
-                unit_price: Number(prod.unit_price),
-                tax_id: prod.tax_id,
-              } as TInvoiceDetailProduct;
+              const prod = pid ? await productService.get(pid) : undefined;
+              const result: TInvoiceDetailProduct = {
+                id: pid ?? (p.id as number),
+                quantity: qty,
+                name: prod?.product_name,
+                sku: prod?.sku,
+                unit_price: unitPriceFromLine ?? (prod ? Number(prod.unit_price) : undefined),
+                tax_id: prod?.tax_id,
+              };
+              return result;
             } catch {
-              return { id: p.id, quantity: p.quantity } as TInvoiceDetailProduct;
+              const result: TInvoiceDetailProduct = {
+                id: pid ?? (p.id as number),
+                quantity: qty,
+                unit_price: unitPriceFromLine,
+              };
+              return result;
             }
           })
         );
