@@ -31,7 +31,17 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div><span className="text-gray-600">Factura:</span> <span className="font-medium">{data.invoice_number || data.id}</span></div>
-                <div><span className="text-gray-600">Fecha:</span> <span className="font-medium">{(data.issue_date || data.createdAt || "-") && new Date(data.issue_date || data.createdAt || "").toLocaleString()}</span></div>
+                <div><span className="text-gray-600">Fecha:</span> <span className="font-medium">{
+                  (() => {
+                    const issue: string | undefined = data.issue_date ?? undefined;
+                    const created: string | undefined = data.createdAt ?? undefined;
+                    const isDateOnly = typeof issue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(issue);
+                    const source: string | undefined = (isDateOnly || !issue) ? (created ?? issue) : (issue ?? created);
+                    if (!source) return "-";
+                    const dt = new Date(source);
+                    return isNaN(dt.getTime()) ? "-" : dt.toLocaleString();
+                  })()
+                }</span></div>
                 <div><span className="text-gray-600">Estado:</span> <span className="font-medium">{mapStatusToES(data.status)}</span></div>
               </div>
               <div>
@@ -40,7 +50,7 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
               </div>
             </div>
 
-            <div className="overflow-x-auto border rounded">
+            <div className="overflow-x-auto border rounded max-h-80 overflow-y-auto">
               <table className="min-w-full text-sm">
                 <thead className="bg-gray-50 text-gray-600">
                   <tr className="text-left">
@@ -85,3 +95,4 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
     </div>
   );
 };
+
