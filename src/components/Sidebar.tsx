@@ -50,7 +50,7 @@ export const Sidebar = () => {
 
   return (
 
-    <div className="w-[10%] bg-white flex flex-col justify-between h-screen pr-6" >
+    <div className="w-[10%] bg-white flex flex-col justify-between h-full pr-6" >
 
       <div>
         <div className="ml-4">

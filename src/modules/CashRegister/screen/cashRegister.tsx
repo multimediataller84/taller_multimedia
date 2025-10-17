@@ -9,13 +9,9 @@ export const CashRegister = () => {
     
     const {
         cashRegister,
-        setCashRegister,
         cashRegisterSelect,
         setCashRegisterSelect,
         loading,
-        setLoading,
-        edit,
-        setEdit,
         visibleEdit,
         setVisibleEdit,
         add,
@@ -113,7 +109,6 @@ export const CashRegister = () => {
                         setCashRegisterSelect(items);
                         setVisibleEdit(true);
                         setVisibleAdd(false);
-                        setEdit(false);
                     }}
                     >
                     <h2 className="w-full h-auto ml-4 mt-4 font-Lato font-bold">

@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link } from 'react-router-dom';
 import { getRoleAuth } from "../utils/getRoleAuth";
 import { getUsernameAuth } from "../utils/getUsernameAuth";
-export interface SerachProps {
+export interface SearchProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const Navbar = (props: SerachProps) => {
+export const Navbar = (props: SearchProps) => {
 
   const [optionsMenu, setOptionsMenu] = useState(false);
 
