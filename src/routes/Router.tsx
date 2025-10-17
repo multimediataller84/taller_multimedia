@@ -10,7 +10,6 @@ import { Dashboard } from "../modules/Dashboard/screen/Dashboard";
 import { Taxes } from "../modules/Taxes/screen/Taxes";
 import { Invoices } from "../modules/Invoices/screen/Invoices";
 import { CashRegister } from "../modules/CashRegister/screen/cashRegister";
-import { Reports } from "../modules/Reports/screen/Reports";
 
 export const Router = () => {
   return (
@@ -81,15 +80,6 @@ export const Router = () => {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/reports"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <Reports />
           </ProtectedRoute>
         }
       />

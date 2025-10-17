@@ -1,9 +1,9 @@
-import { TEndpointLogin } from "../models/types/TEndpointLogin";
 import { TUser } from "../../../models/types/TUser";
+import { TPayload } from "../models/types/TPayload";
 
-export const createAddapterLogin = (user: TEndpointLogin): TUser => {
+export const createAddapterLogin = (user: TPayload): TUser => {
   return {
-    id: user.id,
-    username: user.username,
+    id: user.user.id,
+    username: user.user.username,
   };
 };
