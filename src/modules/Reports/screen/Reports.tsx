@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { RootLayout } from "../../../_Layouts/RootLayout";
 import { reportsRepository, InvoiceRow, CreditPaymentRow } from "../repositories/reportsRepository";
 import {
   crc,
@@ -16,7 +15,7 @@ type TabKey = "sales" | "products" | "customers" | "credits";
 
 const PAGE_SIZE_DEFAULT = 10;
 
-export const Reports = () => {
+export const Reports = ({search}: {search : string}) => {
   const [rangeKey, setRangeKey] = useState<DateRangeKey>("today");
   const [from, setFrom] = useState<Date>(() => startOfDay(new Date()));
   const [to, setTo] = useState<Date>(() => endOfDay(new Date()));
@@ -24,7 +23,6 @@ export const Reports = () => {
   const [invoices, setInvoices] = useState<InvoiceRow[]>([]);
   const [payments, setPayments] = useState<CreditPaymentRow[]>([]);
   const [activeTab, setActiveTab] = useState<TabKey>("sales");
-  const [search, setSearch] = useState("");
 
   const [pageSales, setPageSales] = useState(1);
   const [pageCredits, setPageCredits] = useState(1);

@@ -1,6 +1,5 @@
 // src/modules/Login/services/loginService.ts
 import { ILogin } from "../models/interfaces/ILogin";
-import { TEndpointLogin } from "../models/types/TEndpointLogin";
 import { TLogin } from "../models/types/TLogin";
 import { TPayload } from "../models/types/TPayload";
 import apiClient from "../interceptors/apiClient";

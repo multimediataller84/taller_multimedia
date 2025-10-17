@@ -1,23 +1,22 @@
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import IncomeCard from "../components/IncomeCard";
 import ProductsCard from "../components/ProductsPieChart"
-import Pagination from "../../../components/pagination";
 import { Reports } from "../../Reports/screen/Reports";
+import { useState } from "react";
 
 export const Dashboard = () => {
 
+  const data = [
+    { name: "Agp", value: 15000000 },
+    { name: "Sep", value: 18000000 },
+    { name: "Oct", value: 23123000 },
+  ];
 
-
-const data = [
-  { name: "Agp", value: 15000000 },
-  { name: "Sep", value: 18000000 },
-  { name: "Oct", value: 23123000 },
-];
-
+  const [search, setSearch] = useState<string>("");
+    
   return (
 
-    
-    <RootLayout search="" setSearch={()=>{}}>
+    <RootLayout search={search} setSearch={setSearch}>
       <div className="w-[90%] bg-gray3 flex-col">
 
         <div className="flex w-full h-auto space-x-4 justify-center px-8 mt-8">
@@ -41,12 +40,12 @@ const data = [
               </div>
             </div>
           </div>
-
         </div>
 
-       
-
-          <Reports></Reports>
+        
+          <Reports
+          search={search}
+          />
         
       </div>
     </RootLayout>

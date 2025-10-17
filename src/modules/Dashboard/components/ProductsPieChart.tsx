@@ -68,7 +68,7 @@ const ProductsCard: React.FC<ProductsCardProps> = ({ active, inactive }) => {
                 outerRadius={70}
                 label
               >
-                {data.map((entry, index) => (
+                {data.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
