@@ -37,7 +37,8 @@ export const ClientSelector: React.FC<Props> = ({ query, setQuery, filteredClien
   return (
     <div className="relative">
       <input
-        className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 ${disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+        className={` w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                      focus:outline-2 focus:outline-blue-500 font-Lato " ${disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
         placeholder="Buscar cliente"
         value={query}
         onFocus={handleFocus}

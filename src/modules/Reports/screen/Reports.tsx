@@ -13,7 +13,7 @@ import {
 
 type TabKey = "sales" | "products" | "customers" | "credits";
 
-const PAGE_SIZE_DEFAULT = 10;
+const PAGE_SIZE_DEFAULT = 3;
 
 export const Reports = ({search}: {search : string}) => {
   const [rangeKey, setRangeKey] = useState<DateRangeKey>("today");
@@ -30,6 +30,14 @@ export const Reports = ({search}: {search : string}) => {
   const [pageCustomers, setPageCustomers] = useState(1);
 
   const [pageSize] = useState(PAGE_SIZE_DEFAULT);
+
+  const methodNames: Record<string, string> = {
+  cash: "Efectivo",
+  "debit card": "Débito",
+  transfer: "Transferencia",
+  credit: "Crédito",
+  "n/a": "Desconocido",
+};
 
   useEffect(() => {
     setPageSales(1);
@@ -106,7 +114,7 @@ export const Reports = ({search}: {search : string}) => {
     const total = filteredInvoices.reduce((s, r) => s + Number(r.total || 0), 0);
 
     const byMethod = filteredInvoices.reduce<Record<string, number>>((acc, r) => {
-      const k = r.payment_method || "N/A";
+      const k = (r.payment_method || "N/A").trim().toLowerCase();
       acc[k] = (acc[k] || 0) + Number(r.total || 0);
       return acc;
     }, {});
@@ -224,87 +232,96 @@ export const Reports = ({search}: {search : string}) => {
 
   return (
     
-      <div className="flex-1 p-6 w-full">
-        <h1 className="text-2xl font-semibold mb-4">Reportes</h1>
+      <div className="flex-1 p-8 w-full space-y-2">
+        <h1 className="text-2xl font-semibold ">Reportes</h1>
 
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4 flex flex-wrap gap-3 items-center">
-          <div className="flex gap-2">
-            <label className="text-sm">Rango:</label>
-            <select
-              className="h-9 rounded-xl border border-gray2 px-3"
-              value={rangeKey}
-              onChange={(e) => setRangeKey(e.target.value as DateRangeKey)}
-            >
-              <option value="today">Hoy</option>
-              <option value="yesterday">Ayer</option>
-              <option value="last7">Últimos 7 días</option>
-              <option value="month">Este mes</option>
-              <option value="custom">Personalizado</option>
-            </select>
+        <div className="flex flex-col bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
+          <div className="flex">
+            <div className="flex w-1/2 space-x-4 items-center">
+            <div className="flex flex-col gap-2 font-lato  items-center">
+              <label className="text-base font-medium w-full">Rango</label>
+              <div className="relative">
+              <select className=" cursor-pointer appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                transition-color  disabled:bg-gray2 focus:outline-2 focus:outline-blue-500"
+                value={rangeKey}
+                onChange={(e) => setRangeKey(e.target.value as DateRangeKey)}>
+                <option value="today">Hoy</option>
+                <option value="yesterday">Ayer</option>
+                <option value="last7">Últimos 7 días</option>
+                <option value="month">Este mes</option>
+                <option value="custom">Personalizado</option>
+              </select>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                  <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 font-lato  items-center">
+              <label className="text-base font-medium w-full">Desde</label>
+              <input
+                type="date"
+                className="appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white  text-base
+                transition-color focus:outline-2 focus:outline-blue-500"
+                disabled={rangeKey !== "custom"}
+                value={from.toISOString().slice(0, 10)}
+                onChange={(e) => setFrom(startOfDay(new Date(e.target.value)))}
+              />
+            </div>
+
+            <div className="flex flex-col  gap-2 font-lato  items-center">
+              <label className="text-base font-medium w-full">Hasta</label>
+              <input
+                type="date"
+                className="appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-base
+                transition-color focus:outline-2 focus:outline-blue-500"
+                disabled={rangeKey !== "custom"}
+                value={to.toISOString().slice(0, 10)}
+                onChange={(e) => setTo(endOfDay(new Date(e.target.value)))}
+              />
+            </div>
+            </div>
+
+            <div className="flex w-1/2 justify-end space-x-4">
+            {activeTab === "sales" && (
+              <>
+                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+                <KpiCard title="Pagado" value={crc(kpisSales.paid)} />
+                <KpiCard title="Facturas" value={kpisSales.count} />
+              </>
+            )}
+
+            {activeTab === "credits" && (
+              <>
+                <KpiCard title="Crédito (total)" value={crc(kpisCredits.total)} />
+                <KpiCard title="Pagado" value={crc(kpisCredits.paid)} />
+                <KpiCard title="Pendiente" value={crc(kpisCredits.pending)} />
+                <KpiCard title="Abonos" value={kpisCredits.count} />
+              </>
+            )}
+
+            {activeTab === "products" && (
+              <>
+                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+              </>
+            )}
+
+            {activeTab === "customers" && (
+              <>
+                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+                <KpiCard title="Facturas" value={kpisSales.count} />
+              </>
+            )}
+            </div>
           </div>
 
-          <div className="flex gap-2 items-center">
-            <label className="text-sm">Desde:</label>
-            <input
-              type="date"
-              className="h-9 rounded-xl border border-gray2 px-3"
-              disabled={rangeKey !== "custom"}
-              value={from.toISOString().slice(0, 10)}
-              onChange={(e) => setFrom(startOfDay(new Date(e.target.value)))}
-            />
-          </div>
-
-          <div className="flex gap-2 items-center">
-            <label className="text-sm">Hasta:</label>
-            <input
-              type="date"
-              className="h-9 rounded-xl border border-gray2 px-3"
-              disabled={rangeKey !== "custom"}
-              value={to.toISOString().slice(0, 10)}
-              onChange={(e) => setTo(endOfDay(new Date(e.target.value)))}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-4 mb-4">
-          {activeTab === "sales" && (
-            <>
-              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-              <KpiCard title="Pagado" value={crc(kpisSales.paid)} />
-              <KpiCard title="Facturas" value={kpisSales.count} />
-            </>
-          )}
-
-          {activeTab === "credits" && (
-            <>
-              <KpiCard title="Crédito (total)" value={crc(kpisCredits.total)} />
-              <KpiCard title="Pagado" value={crc(kpisCredits.paid)} />
-              <KpiCard title="Pendiente" value={crc(kpisCredits.pending)} />
-              <KpiCard title="Abonos" value={kpisCredits.count} />
-            </>
-          )}
-
-          {activeTab === "products" && (
-            <>
-              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-            </>
-          )}
-
-          {activeTab === "customers" && (
-            <>
-              <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-              <KpiCard title="Facturas" value={kpisSales.count} />
-            </>
-          )}
-        </div>
-
-        <div className="flex gap-2 mb-3">
+          <div className="flex space-x-4">
           {(["sales", "credits", "products", "customers"] as TabKey[]).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
-              className={`px-4 py-2 rounded-3xl border ${
-                t === activeTab ? "bg-blue-500 text-white border-blue-500" : "bg-black text-white"
+              className={`w-[94px] py-2 rounded-3xl border cursor-pointer ${
+                t === activeTab ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-800" : "bg-black text-white hover:bg-gray-700"
               }`}
             >
               {{
@@ -316,21 +333,25 @@ export const Reports = ({search}: {search : string}) => {
             </button>
           ))}
         </div>
+        </div>
+
 
         {activeTab === "sales" && (
           <>
-            <div className="flex gap-3 mb-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap">
               {Object.entries(kpisSales.byMethod).map(([m, v]) => (
-                <div key={m} className="px-4 py-1.5 rounded-3xl bg-white border border-gray-200">
-                  <span className="text-sm font-medium">{m}:</span>{" "}
-                  <span className="font-semibold">{crc(v)}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="rounded-lg border border-gray-200 overflow-hidden">
+                  <div key={m} className="px-4 py-2 rounded-3xl bg-white border border-gray-200">
+                    <span className="text-base font-medium">
+                      {methodNames[m] || m}:
+                    </span>{" "}
+                    <span className="font-semibold">{crc(v)}</span>
+                  </div>
+                ))}
+              </div>
+         
+            <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-white border-b border-gray-200">
+                <thead className="bg-white border-b border-gray-200 ">
                   <tr className="text-left">
                     <Th>#</Th>
                     <Th>Fecha</Th>
@@ -529,17 +550,17 @@ export const Reports = ({search}: {search : string}) => {
 };
 
 function Th({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-600">{children}</th>;
+  return <th className="px-4 py-3  text-xs font-semibold uppercase tracking-wide text-gray-600">{children}</th>;
 }
 function Td({ children }: { children: React.ReactNode }) {
-  return <td className="px-4 py-3">{children}</td>;
+  return <td className="px-4 py-3 ">{children}</td>;
 }
 
 function KpiCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-      <div className="text-sm text-gray-500">{title}</div>
-      <div className="text-xl font-semibold mt-1">{value}</div>
+    <div className="flex flex-col font-Lato bg-white w-auto rounded-2xl p-4 border border-gray-200 shadow">
+      <div className="text-base font-medium text-black">{title}</div>
+      <div className="text-2xl font-semibold ">{value}</div>
     </div>
   );
 }
@@ -558,38 +579,85 @@ function Pagination({
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const pages = buildPageList(page, totalPages);
 
-  const btnBase =
-    "w-8 h-8 rounded-full flex items-center justify-center border text-sm";
-  const btnActive = "bg-blue-500 text-white border-blue-500";
-  const btnMuted = "bg-white border-gray-300 hover:bg-gray-50";
-
   const go = (p: number) => {
     if (p < 1 || p > totalPages) return;
     onPageChange(p);
   };
 
+  if (totalPages <= 1) return null;
+
   return (
-    <div className="flex items-center gap-2 mt-4">
-      <button className={`${btnBase} ${btnMuted}`} onClick={() => go(page - 1)}>
-        ‹
+    <div className="w-auto space-x-2 flex items-center font-lato ">
+      <button
+        className={`cursor-pointer size-[36px] border rounded-full transition ${
+          page > 1
+            ? "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            : "opacity-40 cursor-not-allowed bg-white border-gray-300 text-gray-700"
+        }`}
+        onClick={() => page > 1 && go(page - 1)}
+        disabled={page <= 1}
+        aria-label="Anterior"
+      >
+        <div className="w-full justify-center flex">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="size-4 -translate-x-[1px]"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
       </button>
+
       {pages.map((p, idx) =>
         typeof p === "number" ? (
           <button
             key={`${p}-${idx}`}
             onClick={() => go(p)}
-            className={`${btnBase} ${p === page ? btnActive : btnMuted}`}
+            className={`cursor-pointer size-[42px] border rounded-full active:outline-0 ${
+              p === page
+                ? "bg-blue-500 text-white border-blue-500"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
           >
             {p}
           </button>
         ) : (
-          <span key={`dots-${idx}`} className="px-2">
+          <span key={`dots-${idx}`} className="px-2 text-gray-500">
             …
           </span>
         )
       )}
-      <button className={`${btnBase} ${btnMuted}`} onClick={() => go(page + 1)}>
-        ›
+
+      <button
+        className={`cursor-pointer size-[36px] border rounded-full transition ${
+          page < totalPages
+            ? "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+            : "opacity-40 cursor-not-allowed bg-white border-gray-300 text-gray-700"
+        }`}
+        onClick={() => page < totalPages && go(page + 1)}
+        disabled={page >= totalPages}
+        aria-label="Siguiente"
+      >
+        <div className="w-full justify-center flex">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="size-4 translate-x-[1px]"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
       </button>
     </div>
   );

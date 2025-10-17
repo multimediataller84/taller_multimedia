@@ -17,7 +17,7 @@ export const Dashboard = () => {
   return (
 
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="w-[90%] bg-gray3 flex-col">
+      <div className="w-[90%] h-screen bg-gray3 flex-col">
 
         <div className="flex w-full h-auto space-x-4 justify-center px-8 mt-8">
 
@@ -41,12 +41,9 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        
           <Reports
           search={search}
           />
-        
       </div>
     </RootLayout>
   );

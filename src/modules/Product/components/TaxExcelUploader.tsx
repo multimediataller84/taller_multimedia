@@ -4,7 +4,8 @@ export default function TaxExcelUploader() {
   const { inputRef, file, busy, msg, handleSelect, handleUpload } = useUploader();
 
   return (
-    <div className="flex items-center space-x-4">
+
+    <div className="flex  items-center space-x-4">
       <input
         ref={inputRef}
         type="file"
@@ -16,7 +17,7 @@ export default function TaxExcelUploader() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 border bg-white text-gray1 border-gray2 hover:bg-gray2 hover:border-gray2"
+        className="rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 border bg-black text-white border-black hover:bg-gray-700 hover:border-gray-700"
       >
         Seleccionar archivo
       </button>

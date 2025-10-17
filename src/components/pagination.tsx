@@ -24,7 +24,7 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">
       <button
-        className={`size-[36px] border rounded-full transition ${
+        className={`cursor-pointer size-[36px] border rounded-full transition ${
           canPrev
             ? "bg-white border-gray2 text-gray1"
             : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
@@ -33,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={!canPrev}
         aria-label="Anterior"
       >
-        <div className="w-full justify-center flex">
+        <div className="cursor-pointer w-full justify-center flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({
         typeof p === "number" ? (
           <button
             key={`${p}-${idx}`}
-            className={`size-[42px] border rounded-full active:outline-0 ${
+            className={`cursor-pointer size-[42px] border rounded-full active:outline-0 ${
               activePage === p
                 ? "bg-blue-500 text-white"
                 : "bg-white border-gray2 text-gray1"
@@ -70,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
       )}
 
       <button
-        className={`size-[36px] border rounded-full transition ${
+        className={`cursor-pointer size-[36px] border rounded-full transition ${
           canNext
             ? "bg-white border-gray2 text-gray1"
             : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
@@ -79,7 +79,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={!canNext}
         aria-label="Siguiente"
       >
-        <div className="w-full justify-center flex">
+        <div className="cursor-pointer w-full justify-center flex">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
