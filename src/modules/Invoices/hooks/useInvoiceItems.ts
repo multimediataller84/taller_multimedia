@@ -35,10 +35,17 @@ export const useInvoiceItems = () => {
     );
   };
 
-  const subtotal = useMemo(
-    () => items.reduce((acc, i) => acc + i.unit_price * i.qty, 0),
-    [items]
-  );
+  const pricePerMargin = (item: TInvoiceItem) => {
+    return item.unit_price + item.profit_margin;
+  };
+
+  const subtotal = useMemo(() => {
+    return items.reduce((acc, i) => {
+      const base = pricePerMargin(i) * i.qty;
+      const tax = base * (i.tax_percentage / 100);
+      return acc + base + tax;
+    }, 0);
+  }, [items]);
 
   return {
     items,

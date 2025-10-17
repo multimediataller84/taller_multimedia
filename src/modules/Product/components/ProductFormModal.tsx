@@ -37,40 +37,16 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
 
   return (
     <div className="fixed inset-0 grid place-items-center bg-black/50 z-50">
-      <div className="bg-white p-6 rounded-lg w-[520px] space-y-4">
-
-        <div className="flex w-full items-center justify-between">
-          {/* Título */}
-          <h2 className="text-xl font-semibold">
-            {initialData ? "Editar producto" : "Nuevo producto"}
-          </h2>
-
-          {/* Botones alineados a la derecha */}
-          <div className="flex items-center space-x-3">
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-3xl bg-blue-500 text-white font-medium hover:bg-blue-800 
-              transition duration-300 disabled:opacity-50"
-              disabled={skuStatus === "dup" || skuStatus === "checking"}
-            >
-              {isEditing ? "Guardar cambios" : "Crear producto"}
-            </button>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2 rounded-3xl bg-black text-white font-medium 
-              border border-black hover:bg-gray-700 hover:border-gray-700 transition duration-300"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
+      <div className="bg-white p-6 rounded-lg w-[520px]">
+        <h2 className="text-xl font-semibold mb-4">
+          {initialData ? "Editar producto" : "Nuevo producto"}
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           {/* Nombre */}
           <label className="block text-sm text-gray-700 font-medium">Nombre</label>
           <input
+          required
             {...register("product_name", { required: true })}
             placeholder="Ej. Lápiz HB"
             className="w-full border p-2 rounded"
@@ -80,6 +56,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           <label className="block text-sm text-gray-700 font-medium">SKU</label>
           <div className="flex gap-2">
             <input
+            required
               {...register("sku", {
                 required: true,
                 pattern: /^[A-Z0-9-]+$/,
@@ -87,6 +64,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               onChange={() => setSkuStatus("idle")}
               placeholder="Ej. LPZ-HB-01"
               className="flex-1 border p-2 rounded"
+              maxLength={6}
             />
           </div>
 
@@ -101,6 +79,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
+                required
                 options={formattedCategoryOptions}
                 placeholder="Seleccione categoría"
                 onChange={(opt) => field.onChange((opt as any)?.value)}
@@ -125,6 +104,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
+                required
                 options={formattedTaxesOptions}
                 placeholder="Seleccione impuesto"
                 onChange={(opt) => field.onChange((opt as any)?.value)}
@@ -146,6 +126,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
+                required
                 options={formattedUnitOptions}
                 placeholder="Seleccione unidad"
                 onChange={(opt) => field.onChange((opt as any)?.value ?? "")}
@@ -163,6 +144,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             Utilidad <span className="text-xs text-gray-500">(en %)</span>
           </label>
           <input
+            required
             type="number"
             step="1"
             {...register("profit_margin", { required: true })}
@@ -173,6 +155,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           {/* Costo (editable) */}
           <label className="block text-sm text-gray-700 font-medium">Costo</label>
           <input
+            required
             type="number"
             step="0.01"
             {...register("cost", { required: true })}
@@ -186,6 +169,7 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             Precio final (calculado)
           </label>
           <input
+            required
             type="number"
             step="0.01"
             {...register("unit_price", { required: true })}
@@ -198,12 +182,25 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           {/* Stock */}
           <label className="block text-sm text-gray-700 font-medium">Stock</label>
           <input
+            required
             type="number"
             {...register("stock", { required: true })}
             placeholder="0"
             className="w-full border p-2 rounded"
           />
-          
+
+          <div className="flex justify-end gap-2 pt-3">
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded border">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+              disabled={skuStatus === "dup" || skuStatus === "checking"}
+            >
+              {isEditing ? "Guardar cambios" : "Crear producto"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

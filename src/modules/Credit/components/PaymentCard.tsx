@@ -12,7 +12,7 @@ export default function PaymentCard({ amount, createdAt, onDelete, disabled }: P
 
   const delClasses = disabled
     ? "w-[94px] py-2 rounded-3xl bg-white border border-gray2 text-gray1 font-Lato font-bold transition duration-300 cursor-not-allowed"
-    : "w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300";
+    : "w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-red-800 hover:border-red-800 text-white font-Lato font-bold transition duration-300";
 
   return (
     <div className="bg-white border border-gray2 rounded-2xl p-4 flex items-center justify-between">

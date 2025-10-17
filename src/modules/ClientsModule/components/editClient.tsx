@@ -142,30 +142,25 @@ export default function editClient(props: editClientProps) {
         <div className="flex flex-col w-full">
           <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
             <h2
-              className={`w-1/3 text-center ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
+              className={`w-1/2 text-center ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(0)}
             >
               Información General
             </h2>
-            <h3
-              className={`w-1/3 text-center ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
+
+            <h4
+              className={`w-1/2 text-center ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(1)}
             >
-              Facturas
-            </h3>
-            <h4
-              className={`w-1/3 text-center ${moveBar === 2 ? "text-blue-500" : "text-gray1"}`}
-              onClick={() => setmMoveBar(2)}
-            >
-              Créditos
+              Facturas y Créditos
             </h4>
           </div>
           <div className="w-full h-1 bg-graybar relative">
             <div
-              className={`h-1 w-1/3 bg-blue-500 transition-transform duration-150 ease-in-out
+              className={`h-1 w-1/2 bg-blue-500 transition-transform duration-150 ease-in-out
                 ${moveBar === 0 ? "translate-x-0" : ""} 
                 ${moveBar === 1 ? "translate-x-full" : ""} 
-                ${moveBar === 2 ? "translate-x-[200%]" : ""}`}
+                `}
             />
           </div>
         </div>
@@ -447,20 +442,11 @@ export default function editClient(props: editClientProps) {
           </form>
         )}
 
-        {/*Facturas*/}
-        {moveBar === 1 && (
-          <div className="p-8 font-Lato">
-            {/*Aquí se agregan facturas, digo yo*/}
-            Sección de Facturas (pendiente de implementar)
-          </div>
-        )}
-
-        {/*Créditos*/}
-        {moveBar === 2 && props.clientSelect?.id && (
+        {moveBar === 1 && props.clientSelect?.id && (
           <Credit
             clientId={props.clientSelect.id}
             clientName={`${props.clientSelect.name} ${props.clientSelect.last_name}`}
-            key={props.clientSelect.id}   // fuerza remount limpio al cambiar de cliente
+            key={props.clientSelect.id}  
           />
         )}
       </div>

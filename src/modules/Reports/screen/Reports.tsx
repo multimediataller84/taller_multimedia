@@ -230,6 +230,39 @@ export const Reports = ({search}: {search : string}) => {
   const productsPageData = paginate(productRanking, pageProducts, pageSize);
   const customersPageData = paginate(customerRanking, pageCustomers, pageSize);
 
+  const mapStatusToES = (status?: string) => {
+  if (!status) return "-";
+  const key = status.toLowerCase();
+  const dict: Record<string, string> = {
+    "paid": "Pagada",
+    "unpaid": "No pagada",
+    "pending": "Pendiente",
+    "overdue": "Vencida",
+    "cancelled": "Cancelada",
+    "canceled": "Cancelada",
+    "draft": "Borrador",
+    "partially paid": "Parcialmente pagada",
+    "refunded": "Reembolsada",
+    "issued": "Emitida",
+  };
+  return dict[key] ?? status;
+};
+
+ const mapPaymentMethodToES = (method?: string) => {
+  if (!method) return "-";
+  const key = method.toLowerCase();
+  const dict: Record<string, string> = {
+    "cash": "Efectivo",
+    "credit": "Crédito",
+    "credit card": "Tarjeta de crédito",
+    "debit": "Débito",
+    "debit card": "Tarjeta de débito",
+    "transfer": "Transferencia",
+    "bank transfer": "Transferencia bancaria",
+  };
+  return dict[key] ?? method;
+};
+
   return (
     
       <div className="flex-1 p-8 w-full space-y-2">
@@ -393,12 +426,12 @@ export const Reports = ({search}: {search : string}) => {
                           <Td>{r.id}</Td>
                           <Td>{whenTxt}</Td>
                           <Td>{cust}</Td>
-                          <Td>{r.payment_method}</Td>
+                          <Td>{mapPaymentMethodToES(r.payment_method)}</Td>
                           <Td>{crc(Number(r.subtotal || 0))}</Td>
                           <Td>{crc(Number(r.total || 0))}</Td>
                           <Td>{crc(Number(r.amount_paid || 0))}</Td>
                           <Td>{crc(pending)}</Td>
-                          <Td>{r.status}</Td>
+                          <Td>{mapStatusToES(r.status)}</Td>
                         </tr>
                       );
                     })}
@@ -447,7 +480,7 @@ export const Reports = ({search}: {search : string}) => {
                         <Td>{whenTxt}</Td>
                         <Td>{p.invoice_id}</Td>
                         <Td>{crc(p.amount)}</Td>
-                        <Td>{p.payment_method}</Td>
+                        <Td>{mapPaymentMethodToES(p.payment_method)}</Td>
                       </tr>
                     );
                   })}
