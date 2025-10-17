@@ -2,14 +2,10 @@ import { ICustomerService } from "../models/interfaces/ICostumerService";
 import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
 import { TCustomer } from "../models/types/TCustomer";
 import apiClient from "../../Login/interceptors/apiClient";
+import { TProvince } from "../models/types/TProvince";
+import { TCanton } from "../models/types/TCanton";
+import { TDistrict } from "../models/types/TDistrict";
 
-type CreditSummary = {
-  enabled: boolean;
-  unlimited: boolean;
-  limit: number | null;
-  used: number;
-  available: number | "infinite";
-};
 
 export class CustomerService implements ICustomerService {
   private static instance: CustomerService;
@@ -19,31 +15,6 @@ export class CustomerService implements ICustomerService {
       CustomerService.instance = new CustomerService();
     }
     return CustomerService.instance;
-  }
-
-  private toDto(data: TCustomer) {
-    const anyData = data as any;
-    const hasNested = anyData.credit != null;
-
-    const enabled = hasNested ? !!anyData.credit.enabled : !!anyData.credit_enabled;
-    const unlimited = hasNested ? !!anyData.credit.unlimited : !!anyData.credit_unlimited;
-    const limit = unlimited
-      ? null
-      : (hasNested
-          ? (anyData.credit.limit ?? 0)
-          : (anyData.credit_limit ?? 0));
-
-    return {
-      id_number: anyData.id_number ?? null,
-      phone: anyData.phone ?? null,
-      name: anyData.name,
-      last_name: anyData.last_name ?? null,
-      email: anyData.email ?? null,
-      address: anyData.address ?? null,
-      credit_enabled: enabled,
-      credit_unlimited: unlimited,
-      credit_limit: limit,
-    };
   }
 
   async post(data: TCustomer): Promise<TCustomerEndpoint> {
@@ -115,5 +86,49 @@ export class CustomerService implements ICustomerService {
       throw new Error(`Invalid get all customer`);
     }
   }
+
+  async getAllProvinces(): Promise<TProvince[]> {
+    try {
+      const response = await apiClient.get<any[]>("/customer/province/all");
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Server error at get all province`);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Invalid get all province`);
+    }
+  }
+
+   async getAllCantons(): Promise<TCanton[]> {
+    try {
+      const response = await apiClient.get<any[]>("/customer/canton/all");
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Server error at get all canton`);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Invalid get all canton`);
+    }
+  }
+
+  async getAllDistricts(): Promise<TDistrict[]> {
+    try {
+      const response = await apiClient.get<any[]>("/customer/district/all");
+
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error(`Server error at get all district`);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Invalid get all district`);
+    }
+  }
+
+
 
 }

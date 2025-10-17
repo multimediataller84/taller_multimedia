@@ -76,6 +76,7 @@ export function useProduct() {
       { key: "tax_id", label: "Impuesto ID" },
       { key: "profit_margin", label: "Margen" },
       { key: "unit_price", label: "Precio" },
+      { key: "sell_price", label: "Precio de venta" },
       { key: "stock", label: "Stock" },
       { key: "state", label: "Estado" },
     ],

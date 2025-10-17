@@ -100,7 +100,7 @@ export const Profile = () => {
             ))
           ) : ( 
             currentProfiles.map((items) => (
-              <div className="w-full pl-8 pr-18 flex">
+              <div key={items.id} className="w-full pl-8 pr-18 flex">
                 <div
                   className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
                             ${

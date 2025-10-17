@@ -225,8 +225,8 @@ export const Reports = () => {
   const customersPageData = paginate(customerRanking, pageCustomers, pageSize);
 
   return (
-    <RootLayout search={search} setSearch={setSearch}>
-      <div className="flex-1 p-6 w-[90%]">
+    
+      <div className="flex-1 p-6 w-full">
         <h1 className="text-2xl font-semibold mb-4">Reportes</h1>
 
         <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4 flex flex-wrap gap-3 items-center">
@@ -527,7 +527,6 @@ export const Reports = () => {
           </>
         )}
       </div>
-    </RootLayout>
   );
 };
 
@@ -597,3 +596,8 @@ function Pagination({
     </div>
   );
 }
+
+/*
+
+<RootLayout search={search} setSearch={setSearch}>
+*/

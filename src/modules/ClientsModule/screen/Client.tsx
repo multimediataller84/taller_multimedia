@@ -45,6 +45,10 @@ export const Client = () => {
     goPrev,
     goNext,
     pagesDisplay,
+    provinces,
+    cantons,
+    districts,
+    loadingLocations,
   } = useClient();
 
   const ClientLoader = () => (
@@ -75,12 +79,16 @@ export const Client = () => {
                 setVisibleEdit(false);
                 setAdd(false);
                 setClientSelect({
+                  identification_type: "", 
                   id_number: "",
                   phone: "",
                   name: "",
                   last_name: "",
                   email: "",
                   address: "",
+                  province_id: "",
+                  canton_id: "",
+                  district_id: "",
                 });
               }}
           >
@@ -160,6 +168,10 @@ export const Client = () => {
           handleSave={handleSave}
           handleChange={handleChange}
           handleDelete={handleDelete}
+          provinces={provinces}
+          cantons={cantons}
+          districts={districts}
+          loadingLocations={loadingLocations}
         />
       )}
 
@@ -181,6 +193,10 @@ export const Client = () => {
           add={add}
           handleAddClient={handleAddClient}
           handleChange={handleChange}
+          provinces={provinces}
+          cantons={cantons}
+          districts={districts}
+          loadingLocations={loadingLocations}
         />
       )}
 

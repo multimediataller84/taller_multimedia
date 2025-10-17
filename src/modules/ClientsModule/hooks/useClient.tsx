@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { CustomerService } from "../services/customerService";
 import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
+import { TProvince } from "../models/types/TProvince";
+import { TCanton } from "../models/types/TCanton";
+import { TDistrict } from "../models/types/TDistrict";
 
 const customerService = CustomerService.getInstance();
 
@@ -8,6 +11,11 @@ export const useClient = () => {
   const [clients, setClients] = useState<TCustomerEndpoint[]>([]);
   const [clientSelect, setClientSelect] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const [provinces, setProvinces] = useState<TProvince[]>([]);
+  const [cantons, setCantons] = useState<TCanton[]>([]);
+  const [districts, setDistricts] = useState<TDistrict[]>([]);
+  const [loadingLocations, setLoadingLocations] = useState(true);
 
   const [edit, setEdit] = useState(false);
   const [visibleEdit, setVisibleEdit] = useState(false);
@@ -71,6 +79,31 @@ export const useClient = () => {
     };
     fetchClients();
   }, []);
+
+    useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const [provincesData, cantonsData, districtsData] = await Promise.all([
+          customerService.getAllProvinces(),
+          customerService.getAllCantons(),
+          customerService.getAllDistricts(),
+        ]);
+
+        setProvinces(provincesData);
+        setCantons(cantonsData);
+        setDistricts(districtsData);
+      } catch (error) {
+        console.error("Error al cargar datos de ubicación:", error);
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+  
+
+
 
   const handleSave = async () => {
     if (!clientSelect) return;
@@ -185,5 +218,9 @@ export const useClient = () => {
     goPrev,
     goNext,
     pagesDisplay,
+    provinces,
+    cantons,
+    districts,
+    loadingLocations,
   };
 };

@@ -76,6 +76,7 @@ export function ProductTable(props: ProductsProps) {
               })()}
             </td>
             <td className="text-sm">{fmtCRC(row.unit_price)}</td>
+            <td className="text-sm">{fmtCRC(Number(row.unit_price) + Number(row.profit_margin) + ((Number(row.unit_price) + Number(row.profit_margin)) * (Number(row.tax.percentage) / 100 )))}</td>
             <td className="text-sm">{row.stock}</td>
             <td className="text-sm">{row.state}</td>
             <td className="flex w-full justify-center pt-2">
