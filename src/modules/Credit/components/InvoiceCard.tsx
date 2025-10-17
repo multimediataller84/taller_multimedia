@@ -62,7 +62,7 @@ export default function InvoiceCard({
         </span>
         <span className="font-Lato text-base">{when}</span>
         <span className="font-Lato text-sm text-gray-700 mt-1">
-          Saldo de factura: <b>{formatCRC(dueRemaining)}</b> de <b>{formatCRC(amount)}</b>
+          Pendiente de la factura: <b>{formatCRC(dueRemaining)}</b> de <b>{formatCRC(amount)}</b>
         </span>
       </div>
 

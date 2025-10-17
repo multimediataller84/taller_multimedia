@@ -42,7 +42,7 @@ export const ProductPickerModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) 
                   )}
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="text-sm">₡{Number(p.unit_price).toFixed(2)}</div>
+                  <div className="text-sm">₡{(Number(p.unit_price) + Number(p.profit_margin)).toFixed(2)}</div>
                   <button
                     className="border rounded-3xl py-1 px-4 bg-blue-500 text-white hover:bg-blue-800 transition"
                     onClick={() => {
