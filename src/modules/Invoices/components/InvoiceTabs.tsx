@@ -8,19 +8,19 @@ interface Props {
 
 export const InvoiceTabs: React.FC<Props> = ({ active, onChange }) => {
   return (
-    <div className="flex flex-col w-full mb-8">
-      <div className="flex w-full mt-2 font-Lato font-medium">
+    <div className="flex flex-col w-full ">
+      <div className="flex w-full space-y-4 font-lato font-medium">
         <h2
           className={`w-1/2 text-center ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("generar")}
         >
-          Generar factura
+          Factura
         </h2>
         <h3
           className={`w-1/2 text-center ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("historial")}
         >
-          Historial de facturación
+          Historial de Facturas
         </h3>
       </div>
       <div className="w-full h-1 bg-graybar relative">

@@ -30,6 +30,44 @@ export function useProduct() {
     indexOfLastProduct
   );
 
+  // 🔹 Cálculo total de páginas
+const totalPages = Math.ceil(filteredProducts.length / productosPerPage);
+
+// 🔹 Control de botones
+const canPrev = activePage > 1;
+const canNext = activePage < totalPages;
+
+// 🔹 Funciones de navegación
+const goPrev = () => {
+  if (canPrev) setActivePage(activePage - 1);
+};
+
+const goNext = () => {
+  if (canNext) setActivePage(activePage + 1);
+};
+
+// 🔹 Generador de páginas a mostrar (dinámico con "...")
+const getPagesDisplay = () => {
+  const pages: (number | string)[] = [];
+
+  if (totalPages <= 6) {
+    // Si hay pocas páginas, las muestra todas
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    if (activePage <= 3) {
+      pages.push(1, 2, 3, "...", totalPages);
+    } else if (activePage >= totalPages - 2) {
+      pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, "...", activePage - 1, activePage, activePage + 1, "...", totalPages);
+    }
+  }
+
+  return pages;
+};
+
+const pagesDisplay = getPagesDisplay();
+
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -100,5 +138,11 @@ export function useProduct() {
     openCreate,
     setIsModalOpen,
     activePage,
+    totalPages,
+  canPrev,
+  canNext,
+  goPrev,
+  goNext,
+  pagesDisplay,
   };
 }

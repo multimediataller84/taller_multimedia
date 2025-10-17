@@ -16,11 +16,15 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Detalle de factura</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800">✕</button>
+           <button
+              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white border-black hover:border-gray-700 hover:bg-gray-700"
+              onClick={onClose}>
+              Cancelar
+            </button>
         </div>
 
         {loading && <div className="p-4">Cargando…</div>}

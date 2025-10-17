@@ -12,16 +12,16 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
     <div className="bg-white rounded-md shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+          <thead className="bg-white border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600 rounded-2xl">
             <tr className="text-left">
               <th className="px-6 py-3">#</th>
               <th className="px-6 py-3">Fecha</th>
               <th className="px-6 py-3">Cliente</th>
               <th className="px-6 py-3">Método</th>
-              <th className="px-6 py-3 text-right">Subtotal</th>
-              <th className="px-6 py-3 text-right">Total</th>
-              <th className="px-6 py-3 text-right">Pagado</th>
-              <th className="px-6 py-3 text-right">Pendiente</th>
+              <th className="px-6 py-3 ">Subtotal</th>
+              <th className="px-6 py-3 ">Total</th>
+              <th className="px-6 py-3 ">Pagado</th>
+              <th className="px-6 py-3 ">Pendiente</th>
               <th className="px-6 py-3">Estado</th>
             </tr>
           </thead>
@@ -45,10 +45,10 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
                   <td className="px-6 py-3">{formatted}</td>
                   <td className="px-6 py-3">{customer}</td>
                   <td className="px-6 py-3">{mapPaymentMethodToES(inv.payment_method)}</td>
-                  <td className="px-6 py-3 text-right">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 text-right">{total !== undefined ? total.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 text-right">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 text-right">{due !== undefined ? due.toFixed(2) : "-"}</td>
+                  <td className="px-6 py-3 ">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
+                  <td className="px-6 py-3 ">{total !== undefined ? total.toFixed(2) : "-"}</td>
+                  <td className="px-6 py-3 ">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
+                  <td className="px-6 py-3 ">{due !== undefined ? due.toFixed(2) : "-"}</td>
                   <td className="px-6 py-3">{mapStatusToES(inv.status)}</td>
                 </tr>
               );

@@ -11,10 +11,10 @@ interface Props {
 
 export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrease, onRemove, disabled = false }) => {
   return (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl shadow overflow-hidden">
       <div className="overflow-x-auto max-h-96 overflow-y-auto">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+          <thead className="bg-white border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600 rounded-2xl">
             <tr className="text-left">
               <th className="px-6 py-3">Producto</th>
               <th className="px-6 py-3">Cant.</th>
@@ -39,7 +39,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                     </button>
                     <span className="px-4 select-none">{i.qty}</span>
                     <button
-                      className={`px-3 py-1 ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : 'hover:bg-gray-100'}`}
+                      className={`px-3 py-2 ${disabled ? 'cursor-not-allowed bg-gray-100 text-gray-400' : 'hover:bg-gray-100'}`}
                       onClick={() => !disabled && onIncrease(i.product_id)}
                       disabled={disabled}
                     >
@@ -52,7 +52,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                 <td className="px-6 py-3 text-right">{((((i.unit_price + i.profit_margin) * i.qty)) + ((i.unit_price + i.profit_margin) * (i.tax_percentage) / 100 )).toFixed(2)}</td>
                 <td className="px-6 py-3 text-right">
                   <button
-                    className={`text-red-600 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:text-red-800'}`}
+                    className={`text-red-600 text-base font-Lato ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:text-red-800'}`}
                     onClick={() => !disabled && onRemove(i.product_id)}
                     disabled={disabled}
                   >

@@ -181,9 +181,9 @@ export const Invoices = () => {
 
   return (
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-4">
+      <div className="flex-1 bg-gray3 w-full h-screen p-8 space-y-4">
+        <h2 className="font-Lato text-2xl">Facturas</h2>
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
-
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
@@ -194,19 +194,17 @@ export const Invoices = () => {
           <>
         {/* Header acciones de generar */}
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <h2 className="font-Lato text-2xl">Facturas</h2>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
+
+          <div className="flex justify-end w-full items-center gap-3">
+
            <button
-              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAdviceClick}
               disabled={aiLoading}
             >
               {aiLoading ? "Analizando…" : "Consejo de ventas IA"}
             </button>
+
           <button
             className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setProductModalOpen(true)}
@@ -289,12 +287,13 @@ export const Invoices = () => {
             {submitting ? "Guardando…" : "Generar factura"}
           </button>
         </div>
+        
       </div>
       {/* Customer / Invoice Details */}
-      <div className="bg-white rounded-md p-6 shadow-sm">
+      <div className="bg-white rounded-2xl p-6 shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Cliente</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Cliente</label>
               <ClientSelector
                 query={query}
                 setQuery={setQuery}
@@ -303,30 +302,34 @@ export const Invoices = () => {
                 
               />
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Teléfono</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Teléfono</label>
               <input
-                className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="502 7075-7888"
+                className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                focus:outline-2 focus:outline-blue-500 font-Lato"
+                placeholder="0000-0000"
                 value={selectedClient?.phone ?? ""}
                 readOnly
               />
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Email</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Email</label>
               <input
                 type="email"
-                className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="jose@correo.com"
+                className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                focus:outline-2 focus:outline-blue-500 font-Lato"
+                placeholder="correo@example.com"
                 value={selectedClient?.email ?? ""}
                 readOnly
               />
             </div>
 
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Vendedor</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Vendedor</label>
+              <div className="relative"> 
               <select
-                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400`}
+                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={seller}
                 onChange={(e) => setSeller(e.target.value)}
                 disabled={loadingRegisters}
@@ -340,19 +343,26 @@ export const Invoices = () => {
                   </option>
                 ))}
               </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                    </svg>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Fecha de emisión</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Fecha de emisión</label>
               <input
-                className="w-full border rounded-md px-3 py-2 bg-gray-50 text-gray-600"
+                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={new Date().toLocaleString()}
                 readOnly
               />
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Pago</label>
+            <div className="space-y-4 flex flex-col">
+              <label className="text-base text-black font-medium font-lato">Pago</label>
+              <div className="relative">
               <select
-                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400`}
+                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
+                focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={paymentMethod}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -368,6 +378,10 @@ export const Invoices = () => {
                 <option value="Transferencia">Transferencia/SINPE</option>
                 <option value="Crédito">Crédito</option>
               </select>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                    </svg>
+              </div>
             </div>
             {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
               <div>
@@ -393,10 +407,10 @@ export const Invoices = () => {
         />
 
         {/* Totales */}
-        <div className="bg-white rounded-md shadow-sm p-6">
+        <div className="bg-white rounded-2xl text-base font-medium  shadow-sm p-6 font-Lato">
           <div className="w-full md:w-80 ml-auto space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">TOTAL, ₡</span>
+              <span className="text-black">TOTAL ₡</span>
               <span className="font-semibold">{subtotal.toFixed(2)}</span>
             </div>
           </div>
@@ -530,7 +544,7 @@ export const Invoices = () => {
 
             <div className="flex justify-end gap-2 mt-4">
               <button
-                className="px-4 py-2 rounded-3xl bg-white border border-gray2 text-gray1"
+                className="px-4 py-2 rounded-3xl bg-black border-black border text-white"
                 onClick={() => { setOpenAiModal(false); setRecs([]); }}
               >
                 Cerrar

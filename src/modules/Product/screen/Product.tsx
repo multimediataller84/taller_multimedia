@@ -6,6 +6,7 @@ import { RootLayout } from "../../../_Layouts/RootLayout";
 import { UseCasesController } from "../controllers/useCasesController";
 import { ProductRepository } from "../repositories/productRepository";
 import { ProductsTableSkeleton } from "../components/ProductsTableSkeleton";
+import Pagination from "../../../components/pagination";
 
 export default function Product() {
   const {
@@ -23,6 +24,12 @@ export default function Product() {
     openCreate,
     setIsModalOpen,
     activePage,
+    totalPages,
+    canPrev,
+    canNext,
+    goPrev,
+    goNext,
+    pagesDisplay,
   } = useProduct();
 
   useEffect(() => {
@@ -121,7 +128,7 @@ export default function Product() {
 
   return (
     <RootLayout search={searchProducts} setSearch={setSearchProducts}>
-      <div className="flex-1 bg-[#DEE8ED] w-full h-screen p-8 space-y-8 ">
+      <div className="flex-1 bg-gray3 w-full h-screen p-8 space-y-8 ">
         <div className="flex items-center justify-between">
           <div className="flex flex-col space-y-2.5">
             <h2 className="font-Lato text-2xl">Inventario</h2>
@@ -172,22 +179,16 @@ export default function Product() {
           />
         )}
 
-        <div className="mt-6 mb-8 pr-19 w-auto space-x-4 justify-between font-Lato font-medium">
-          {[1, 2, 3, "...", 8].map((num, index) => (
-            <button
-              key={index}
-              className={`size-[42px] border rounded-full active:outline-0 
-                ${
-                  activePage === num
-                    ? "bg-blue-500 text-white"
-                    : "bg-white border-gray2 text-gray1"
-                }`}
-              onClick={() => typeof num === "number" && setActivePage(num)}
-            >
-              {num}
-            </button>
-          ))}
-        </div>
+        <Pagination
+        totalPages={totalPages}
+        activePage={activePage}
+        setActivePage={setActivePage}
+        canPrev={canPrev}
+        canNext={canNext}
+        goPrev={goPrev}
+        goNext={goNext}
+        pagesDisplay={pagesDisplay}
+      />
       </div>
 
       <ProductFormModal
