@@ -30,15 +30,15 @@ export default function InvoiceCard({
 
   const payBtn = locked
     ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-[#3abd3c] border border-[#3abd3c] hover:bg-[#157d16] text-white font-Lato font-bold transition duration-300";
+    : "w-[94px] py-2 rounded-3xl bg-blue-500 border border-blue-500 hover:bg-blue-800 text-white font-Lato font-bold transition duration-300";
 
   const cancelBtn = locked
     ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-blue-500 border border-blue-500 text-white font-Lato font-bold transition duration-300 hover:bg-blue-800 hover:border-blue-800";
+    : "w-[94px] py-2 rounded-3xl bg-black border border-black text-white font-Lato font-bold transition duration-300 hover:bg-gray-700 hover:border-gray-700";
 
   const delBtn = locked
     ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300";
+    : "w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-red-800 hover:border-red-800 text-white font-Lato font-bold transition duration-300";
 
   return (
     <div

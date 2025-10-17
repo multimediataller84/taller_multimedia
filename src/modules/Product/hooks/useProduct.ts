@@ -73,7 +73,7 @@ const pagesDisplay = getPagesDisplay();
     setLoading(true);
     try {
       const list = await useCases.getAll.execute({
-        limit: 50,
+        limit: 250,
         offset: 0,
         orderDirection: "ASC",
       });

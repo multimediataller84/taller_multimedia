@@ -9,7 +9,7 @@ export default function CreditActions({ onDelete }: Props) {
       <button
         type="button"
         onClick={onDelete}
-        className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300"
+        className="w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-red-800 hover:border-red-800 text-white font-Lato font-bold transition duration-300"
       >
         Eliminar
       </button>

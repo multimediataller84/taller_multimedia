@@ -6,7 +6,7 @@ export const Taxes = () => {
     <RootLayout search="" setSearch={()=>{}}>
       <div className="flex w-[90%] p-8 h-screen bg-gray3 flex-col space-y-8">
 
-        <h2 className="font-Lato text-2xl">Taxes</h2>
+        <h2 className="font-Lato text-2xl">Impuestos</h2>
         <div>
         <TaxExcelUploader/>
         </div>

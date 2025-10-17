@@ -9,10 +9,10 @@ interface Props {
 
 export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
   return (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
-          <thead className="bg-white border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600 rounded-2xl">
+          <thead className="bg-white border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600 ">
             <tr className="text-left">
               <th className="px-6 py-3">#</th>
               <th className="px-6 py-3">Fecha</th>

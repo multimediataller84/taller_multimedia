@@ -134,7 +134,7 @@ export const Client = () => {
                   <h2 className="w-full ml-4 mt-4 font-medium">{items.name}</h2>
                   <h3 className="w-full ml-4 font-medium">{items.last_name}</h3>
                   <h4 className="mt-1 ml-4">{items.id_number}</h4>
-                  <h5 className="mt-5 justify-end w-full flex pr-4">Facturas:</h5>
+                  <h5 className="mt-5 justify-end w-full flex pr-4">Facturas: {items.invoices.length}</h5>
                 </div>
               </div>
             ))
