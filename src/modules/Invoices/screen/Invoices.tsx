@@ -46,6 +46,7 @@ export const Invoices = () => {
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
   const [paymentReceipt, setPaymentReceipt] = useState<string>("");
+  const [cashAmount, setCashAmount] = useState<string>("");
 
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
   const {
@@ -243,10 +244,26 @@ export const Invoices = () => {
                 showAlert("Acción requerida", "Debe seleccionar un vendedor (usuario y caja abiertos)", "error");
                 return;
               }
+              if (method === "Cash") {
+                const cashVal = Number(cashAmount);
+                if (!isFinite(cashVal)) {
+                  showAlert("Acción requerida", "Debe ingresar el monto entregado en efectivo", "error");
+                  return;
+                }
+                if (cashVal < subtotal) {
+                  showAlert(
+                    "Monto insuficiente",
+                    "El monto en efectivo no puede ser inferior al total de la factura",
+                    "error"
+                  );
+                  return;
+                }
+              }
               if ((method === "Debit Card" || method === "Transfer") && (!paymentReceipt || paymentReceipt.trim().length === 0)) {
                 showAlert("Acción requerida", "Debe ingresar el comprobante de pago para pagos con tarjeta o transferencia", "error");
                 return;
               }
+              const changeDue = method === "Cash" ? Math.max(0, Number(cashAmount) - subtotal) : 0;
               const payload = {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
@@ -258,8 +275,15 @@ export const Invoices = () => {
                 payment_receipt: (method === "Debit Card" || method === "Transfer") && paymentReceipt ? paymentReceipt.trim() : undefined
               } as const;
               console.log('[Invoice Submit] payload', payload);
+              if (method === "Cash") {
+                console.log('[Invoice Submit] cash_amount', Number(cashAmount), 'subtotal', subtotal, 'change_due', changeDue);
+              }
               await submit(payload);
-              showAlert("Factura creada", "La factura fue creada correctamente", "success");
+              const successMsg =
+                method === "Cash" && changeDue > 0
+                  ? `La factura fue creada correctamente. Vuelto: ₡${changeDue.toFixed(2)}`
+                  : "La factura fue creada correctamente";
+              showAlert("Factura creada", successMsg, "success");
 
                 setPaymentMethod("Efectivo");
                 clearItems();
@@ -267,6 +291,7 @@ export const Invoices = () => {
                 setQuery("");
                 setSelectedClient(null);
                 setPaymentReceipt("");
+                setCashAmount("");
                  
                 refetch();
               } catch (e) {
@@ -370,6 +395,9 @@ export const Invoices = () => {
                   if (val !== "Tarjeta" && val !== "Transferencia") {
                     setPaymentReceipt("");
                   }
+                  if (val !== "Efectivo") {
+                    setCashAmount("");
+                  }
                 }}
                 
               >
@@ -383,6 +411,20 @@ export const Invoices = () => {
                     </svg>
               </div>
             </div>
+            {paymentMethod === "Efectivo" && (
+              <div className="space-y-4 flex flex-col">
+                <label className="text-base text-black font-medium font-lato">Monto entregado</label>
+                <input
+                  type="number"
+                  min={subtotal}
+                  step="0.01"
+                  className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+                  placeholder="0.00"
+                  value={cashAmount}
+                  onChange={(e) => setCashAmount(e.target.value)}
+                />
+              </div>
+            )}
             {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Comprobante de pago</label>

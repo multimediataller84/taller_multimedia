@@ -1,5 +1,6 @@
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { useProductStats } from "../hooks/useProductStats";
 
 interface PieData {
   name: string;
@@ -7,10 +8,7 @@ interface PieData {
   [key: string]: string | number;
 }
 
-interface ProductsCardProps {
-  active: number;
-  inactive: number;
-}
+// Datos vienen del hook useProductStats
 
 const COLORS: string[] = ["#2B7FFF", "#193cb8"]; 
 
@@ -43,15 +41,16 @@ const renderLegend = (props: any) => {
     );
   };
 
-const ProductsCard: React.FC<ProductsCardProps> = ({ active, inactive }) => {
+const ProductsCard: React.FC = () => {
+  const { active, inactive } = useProductStats();
   const data: PieData[] = [
     { name: "Productos activos", value: active },
     { name: "Productos inactivos", value: inactive },
   ];
 
   return (
-    <div className="flex flex-col w-1/4 space-y-6">
-      <h1 className="font-Lato text-2xl">Productos</h1>
+    <div className="flex flex-col w-full space-y-6">
+      <h1 className="font-Lato text-2xl">Stock de productos</h1>
 
       <div className="w-full bg-white rounded-2xl shadow-sm flex flex-col h-70">
         {/* Título */}
