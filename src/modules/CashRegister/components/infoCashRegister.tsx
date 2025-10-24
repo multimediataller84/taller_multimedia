@@ -19,7 +19,7 @@ interface editProfileProps {
 export default function InfoCashRegister(props: editProfileProps) {
 
     return (
-            <div className="w-[70%] flex flex-col ">
+            <div className="w-[70%]  flex flex-col ">
             <div className="bg-gray3 w-full  flex flex-col">
               <div className="flex w-full justify-between pt-8">
                 <h2 className="pl-8 font-Lato text-2xl ">Datos de Caja</h2>
@@ -60,7 +60,7 @@ export default function InfoCashRegister(props: editProfileProps) {
               </div>
             </div>
 
-             <div className="w-auto bg-[#DEE8ED] h-min">
+             <div className=" bg-[#DEE8ED] size-full ">
               <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">

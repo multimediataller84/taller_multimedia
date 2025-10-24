@@ -79,7 +79,7 @@ export default function editClient(props: editProfileProps) {
               </div>
             </div>
 
-             <div className="w-auto bg-[#DEE8ED] h-min">
+             <div className="bg-[#DEE8ED] size-full">
               <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
