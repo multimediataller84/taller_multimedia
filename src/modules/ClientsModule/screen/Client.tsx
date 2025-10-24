@@ -21,7 +21,6 @@ export const Client = () => {
     clientSelect,
     activePage,
     setActivePage,
-    clientsPerPage,
     visibleEdit,
     clients,
     edit,
