@@ -142,9 +142,6 @@ export const CashRegister = () => {
             pagesDisplay={pagesDisplay}
             />
             </div>
-            <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
-            Mostrando 10 de {cashRegister.length} resultados...
-            </h2>
       </div>        
     
         {visibleEdit && <InfoCashRegister

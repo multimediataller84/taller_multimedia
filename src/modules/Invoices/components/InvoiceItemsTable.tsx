@@ -52,7 +52,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                 <td className="px-6 py-3 text-right">{((((i.unit_price + i.profit_margin) * i.qty)) + ((i.unit_price + i.profit_margin) * (i.tax_percentage) / 100 )).toFixed(2)}</td>
                 <td className="px-6 py-3 text-right">
                   <button
-                    className={`text-red-600 text-base font-Lato ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:text-red-800'}`}
+                    className={`text-white bg-black py-2 rounded-3xl w-[94px] text-base font-Lato ${disabled ? ' cursor-not-allowed' : 'hover:bg-red-800 cursor-pointer '}`}
                     onClick={() => !disabled && onRemove(i.product_id)}
                     disabled={disabled}
                   >

@@ -72,10 +72,16 @@ export const useCashRegister = () => {
     fetchCashRegister();
   }, []);
 
-  const handleAddCashRegister = async (newCashRegister: any) => {
+const handleAddCashRegister = async (newCashRegister: any) => {
   try {
     setLoading(true);
-    await cashRegisterService.post(newCashRegister);
+
+    const dataToSend = {
+      ...newCashRegister,
+      opening_amount: newCashRegister.amount,
+    };
+
+    await cashRegisterService.post(dataToSend);
 
     await fetchCashRegister();
 

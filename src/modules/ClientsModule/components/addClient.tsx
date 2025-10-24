@@ -115,7 +115,7 @@ export default function addProfile (props: addProfileProps){
                     className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300  ${
                       props.add ? "bg-blue-500 text-white border border-blue-500 hover:bg-blue-800 hover:border-blue-800" 
                       : 
-                      "bg-gray3 border border-gray2 text-gray1 "
+                      "bg-gray3 border border-gray2 text-gray1  "
                     }`}
                     onClick={(e) => {
                     e.preventDefault();

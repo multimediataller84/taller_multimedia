@@ -155,7 +155,7 @@ export const Client = () => {
         />
         </div>
         <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
-          Mostrando {clientsPerPage} de {clients.length} resultados...
+          Hay {clients.length} clientes registrados...
         </h2>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { reportsRepository, InvoiceRow, CreditPaymentRow } from "../repositories/reportsRepository";
+import { RootLayout } from "../../../_Layouts/RootLayout";
 import {
   crc,
   DateRangeKey,
@@ -13,9 +14,10 @@ import {
 
 type TabKey = "sales" | "products" | "customers" | "credits";
 
-const PAGE_SIZE_DEFAULT = 3;
+const PAGE_SIZE_DEFAULT = 10;
 
-export const Reports = ({search}: {search : string}) => {
+export const Reports = () => {
+  const [search, setSearch] = useState("");
   const [rangeKey, setRangeKey] = useState<DateRangeKey>("today");
   const [from, setFrom] = useState<Date>(() => startOfDay(new Date()));
   const [to, setTo] = useState<Date>(() => endOfDay(new Date()));
@@ -264,10 +266,11 @@ export const Reports = ({search}: {search : string}) => {
 };
 
   return (
-    
-      <div className="flex-1 p-8 w-full space-y-2">
-        <h1 className="text-2xl font-semibold ">Reportes</h1>
+     <RootLayout search={search} setSearch={setSearch}>
+      <div className="flex-1 p-8 w-full bg-gray3 h-screen space-y-8">
+        <h1 className="text-2xl font-lato">Reportes</h1>
 
+        <div className="space-y-2">
         <div className="flex flex-col bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
           <div className="flex">
             <div className="flex w-1/2 space-x-4 items-center">
@@ -578,7 +581,9 @@ export const Reports = ({search}: {search : string}) => {
             />
           </>
         )}
+        </div>
       </div>
+      </RootLayout>
   );
 };
 
