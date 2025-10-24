@@ -146,7 +146,7 @@ export const Profile = () => {
         />
         </div>
         <h2 className="pl-8 mt-4 font-Lato font-medium text-base text-gray1">
-          Mostrando 10 de {profiles.length} resultados...
+         Hay {profiles.length} perfiles registrados...
         </h2>
       </div>
 

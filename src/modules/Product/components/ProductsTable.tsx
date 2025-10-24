@@ -57,7 +57,7 @@ export function ProductTable(props: ProductsProps) {
             key={row.id}
             className={`border-graybar border-y-2 text-center h-16 font-Lato hover:bg-gray3 transition ${openMenuId === row.id ? "bg-gray-200":""}`}
           >
-            <td className="text-base">{row.product_name}</td>
+            <td className="text-sm pl-2">{row.product_name}</td>
             <td className="text-sm">{row.sku}</td>
 
             <td className="text-sm">{renderCategory(row.category_id)}</td>
