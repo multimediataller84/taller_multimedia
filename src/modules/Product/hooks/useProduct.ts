@@ -17,57 +17,46 @@ export function useProduct() {
   const productosPerPage = 8;
 
   const [searchProducts, setSearchProducts] = useState("");
-  const filteredProducts = products.filter((c) => {
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+
+  const textFiltered = products.filter((c) => {
     const findProduct = `${c.category_id} ${c.product_name} ${c.id}`.toLowerCase();
     return findProduct.includes(searchProducts.toLowerCase());
   });
 
+  const filteredProducts = textFiltered.filter((c) => {
+    if (!categoryFilter) return true;
+    return String(c.category_id) === String(categoryFilter);
+  });
+
   const indexOfLastProduct = activePage * productosPerPage;
   const indexOfFirsProduct = indexOfLastProduct - productosPerPage;
-  
+
   const currentProducts = filteredProducts.slice(
     indexOfFirsProduct,
     indexOfLastProduct
   );
 
-  // 🔹 Cálculo total de páginas
-const totalPages = Math.ceil(filteredProducts.length / productosPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / productosPerPage);
+  const canPrev = activePage > 1;
+  const canNext = activePage < totalPages;
 
-// 🔹 Control de botones
-const canPrev = activePage > 1;
-const canNext = activePage < totalPages;
+  const goPrev = () => { if (canPrev) setActivePage(activePage - 1); };
+  const goNext = () => { if (canNext) setActivePage(activePage + 1); };
 
-// 🔹 Funciones de navegación
-const goPrev = () => {
-  if (canPrev) setActivePage(activePage - 1);
-};
-
-const goNext = () => {
-  if (canNext) setActivePage(activePage + 1);
-};
-
-// 🔹 Generador de páginas a mostrar (dinámico con "...")
-const getPagesDisplay = () => {
-  const pages: (number | string)[] = [];
-
-  if (totalPages <= 6) {
-    // Si hay pocas páginas, las muestra todas
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
-  } else {
-    if (activePage <= 3) {
-      pages.push(1, 2, 3, "...", totalPages);
-    } else if (activePage >= totalPages - 2) {
-      pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+  const getPagesDisplay = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 6) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
-      pages.push(1, "...", activePage - 1, activePage, activePage + 1, "...", totalPages);
+      if (activePage <= 3) pages.push(1, 2, 3, "...", totalPages);
+      else if (activePage >= totalPages - 2) pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+      else pages.push(1, "...", activePage - 1, activePage, activePage + 1, "...", totalPages);
     }
-  }
+    return pages;
+  };
 
-  return pages;
-};
-
-const pagesDisplay = getPagesDisplay();
-
+  const pagesDisplay = getPagesDisplay();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -92,6 +81,10 @@ const pagesDisplay = getPagesDisplay();
     fetchProducts();
   }, [query]);
 
+  useEffect(() => {
+    setActivePage(1);
+  }, [categoryFilter]);
+
   const openCreate = () => {
     setEditing(null);
     setIsModalOpen(true);
@@ -103,7 +96,7 @@ const pagesDisplay = getPagesDisplay();
   };
 
   const handleDelete = async (row: TProductEndpoint) => {
-     deleteProduct(row.id);
+    deleteProduct(row.id);
   };
 
   const headers = useMemo(
@@ -122,27 +115,16 @@ const pagesDisplay = getPagesDisplay();
   );
 
   return {
-    searchProducts,
-    setSearchProducts,
-    loading,
-    query,
-    setQuery,
+    searchProducts, setSearchProducts,
+    loading, query, setQuery,
     fetchProducts,
-    isModalOpen,
-    editing,
-    setActivePage,
-    currentProducts,
-    headers,
-    handleDelete,
-    openEdit,
-    openCreate,
-    setIsModalOpen,
-    activePage,
-    totalPages,
-  canPrev,
-  canNext,
-  goPrev,
-  goNext,
-  pagesDisplay,
+    isModalOpen, editing, setIsModalOpen,
+    openCreate, openEdit, handleDelete,
+    activePage, setActivePage,
+    currentProducts, headers,
+
+    totalPages, canPrev, canNext, goPrev, goNext, pagesDisplay,
+
+    categoryFilter, setCategoryFilter,
   };
 }

@@ -10,30 +10,19 @@ import Pagination from "../../../components/pagination";
 
 export default function Product() {
   const {
-    searchProducts,
-    setSearchProducts,
-    loading,
-    fetchProducts,
-    isModalOpen,
-    editing,
-    setActivePage,
-    currentProducts,
-    headers,
-    handleDelete,
-    openEdit,
-    openCreate,
-    setIsModalOpen,
-    activePage,
-    totalPages,
-    canPrev,
-    canNext,
-    goPrev,
-    goNext,
-    pagesDisplay,
+    searchProducts, setSearchProducts,
+    loading, fetchProducts,
+    isModalOpen, editing, setActivePage,
+    currentProducts, headers, handleDelete,
+    openEdit, openCreate, setIsModalOpen,
+    activePage, totalPages, canPrev, canNext,
+    goPrev, goNext, pagesDisplay,
+    categoryFilter, setCategoryFilter,
   } = useProduct();
 
+  const [categoryNameById, setCategoryNameById] = useState<Record<number, string>>({});
+
   useEffect(() => {
-    // Cargar categorías e impuestos
     const repo = ProductRepository.getInstance();
     const useCases = new UseCasesController(repo);
 
@@ -58,9 +47,7 @@ export default function Product() {
     loadLookups();
   }, []);
 
-  const [categoryNameById, setCategoryNameById] = useState<Record<number, string>>({});
-
- useEffect(() => {
+  useEffect(() => {
   // Cargamos categorías e impuestos con paginación
   const repo = ProductRepository.getInstance();
   const useCases = new UseCasesController(repo);
@@ -86,7 +73,7 @@ export default function Product() {
 
     // --- Impuestos con PAGINACIÓN ---
     try {
-      const pageSize = 500;              // tu API soporta limit/offset
+      const pageSize = 500;
       let offset = 0;
       const taxMapNumStr: Record<string | number, number> = {};
 
@@ -114,7 +101,7 @@ export default function Product() {
         }
 
         offset += items.length;
-        if (items.length < pageSize) break; // última página
+        if (items.length < pageSize) break;
       }
 
       console.log("[LOOKUP] impuestos totales:", Object.keys(taxMapNumStr).length);
@@ -139,18 +126,35 @@ export default function Product() {
 
           <div className="flex space-x-2">
             <div className="relative">
-            <select
-              className="appearance-none w-[220px] border py-2 rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
-              id="categoria"
-              name="categoria"
-            >
-              <option>Categoría</option>
-              <option>Administrador</option>
-              <option>Empleado</option>
-            </select>
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                    <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                  </svg>
+              <select
+                className="appearance-none w-[220px] border py-2 rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
+                id="categoria"
+                name="categoria"
+                value={categoryFilter || ""} 
+                onChange={(e) => setCategoryFilter(e.target.value)}  
+              >
+                <option value="">Todas las categorías</option>
+                {Object.entries(categoryNameById)
+                  .filter(([k]) => !Number.isNaN(Number(k)))               // evita duplicados string/number
+                  .map(([id, name]) => ({ value: String(id), label: name }))
+                  .sort((a, b) => a.label.localeCompare(b.label))
+                  .map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))
+                }
+              </select>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </div>
 
             <button
@@ -162,8 +166,6 @@ export default function Product() {
             </button>
           </div>
         </div>
-
-        {/* {<TaxExcelUploader />} */}
 
         {loading ? (
           <div className="p-6">
@@ -180,15 +182,15 @@ export default function Product() {
         )}
 
         <Pagination
-        totalPages={totalPages}
-        activePage={activePage}
-        setActivePage={setActivePage}
-        canPrev={canPrev}
-        canNext={canNext}
-        goPrev={goPrev}
-        goNext={goNext}
-        pagesDisplay={pagesDisplay}
-      />
+          totalPages={totalPages}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          canPrev={canPrev}
+          canNext={canNext}
+          goPrev={goPrev}
+          goNext={goNext}
+          pagesDisplay={pagesDisplay}
+        />
       </div>
 
       <ProductFormModal
