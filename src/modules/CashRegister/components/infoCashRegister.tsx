@@ -19,7 +19,7 @@ interface editProfileProps {
 export default function InfoCashRegister(props: editProfileProps) {
 
     return (
-            <div className="w-[70%] flex flex-col ">
+            <div className="w-[70%]  flex flex-col ">
             <div className="bg-gray3 w-full  flex flex-col">
               <div className="flex w-full justify-between pt-8">
                 <h2 className="pl-8 font-Lato text-2xl ">Datos de Caja</h2>
@@ -60,50 +60,76 @@ export default function InfoCashRegister(props: editProfileProps) {
               </div>
             </div>
 
-             <div className="w-auto bg-[#DEE8ED] h-min">
+             <div className=" bg-[#DEE8ED] size-full ">
               <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
                 <div className="flex space-x-8">
                   <div className="flex flex-col space-y-4">
-                    <label htmlFor="opening_amount" className="text-base text-black font-medium font-Lato ">Monto Inicial</label>
+                    <label htmlFor="opening_amount" className="text-base text-black font-medium font-Lato ">Monto Apertura</label>
                     <div className="relative">
                    <input
                       className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
                       type="text"
                       id="opening_amount"
                       name="opening_amount"
-                      value={props.cashRegisterSelect?.opening_amount || ""}
+                      value={
+                        props.cashRegisterSelect?.opening_amount !== undefined
+                          ? new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(props.cashRegisterSelect.opening_amount)
+                          : ""
+                      }
                       placeholder="Monto inicial"
                       readOnly
                     />
                     </div>
-                </div>
+                  </div>
 
-                <div className="flex flex-col space-y-4">
-                    <label htmlFor="closing_amount" className="text-base text-black font-medium font-Lato ">Monto final</label>
+                  <div className="flex flex-col space-y-4">
+                    <label htmlFor="amount" className="text-base text-black font-medium font-Lato ">Monto Actual</label>
+                    <div className="relative">
+                   <input
+                      className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
+                      type="text"
+                      name="amount"
+                      value={
+                        props.cashRegisterSelect?.amount !== undefined
+                          ? new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(props.cashRegisterSelect.amount)
+                          : ""
+                      }
+                      placeholder="Monto Actual"
+                      readOnly
+                    />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-4">
+                    <label htmlFor="closing_amount" className="text-base text-black font-medium font-Lato ">Monto Caja Cerrada</label>
                         <div className="relative">
                         <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
                         type="text"
                         id="closing_amount"
                         name="closing_amount"
-                        value={props.cashRegisterSelect?.closing_amount|| ""}
+                        value={
+                        props.cashRegisterSelect?.closing_amount !== undefined
+                          ? new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(props.cashRegisterSelect.closing_amount)
+                          : ""
+                      }
                         placeholder="Monto Final"
                         readOnly
                         />
                         </div>
-                    </div>
+                  </div>
                 </div>
                 
                 <div className="flex space-x-8">
                     <div className="flex flex-col space-y-4">
                     <label htmlFor="opened_at" className="text-base text-black font-medium font-Lato ">Fecha Caja Abierta</label>
                     <div className="relative">
-                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
+                    <input className="w-[346px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
                         type="text"
                         id="opened_at"
                         name="opened_at"
                         value={
                             props.cashRegisterSelect?.opened_at
-                            ? new Date(props.cashRegisterSelect.opened_at).toLocaleDateString("es-CR")
+                            ? new Date(props.cashRegisterSelect.opened_at).toLocaleString("es-CR")
                             : ""
                         }
                         placeholder="Fecha Caja Abierta" 
@@ -118,13 +144,13 @@ export default function InfoCashRegister(props: editProfileProps) {
                     <div className="flex flex-col space-y-4">
                     <label htmlFor="closed_at" className="text-base text-black font-medium font-Lato">Fecha Caja Cerrada</label>
                     <div className="relative">
-                    <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
+                    <input className="w-[346px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
                         type="text"
                         id="closed_at"
                         name="closed_att"
                         value={
                             props.cashRegisterSelect?.closed_at
-                            ? new Date(props.cashRegisterSelect.closed_at).toLocaleDateString("es-CR")
+                            ? new Date(props.cashRegisterSelect.closed_at).toLocaleString("es-CR")
                             : ""
                         }
                         placeholder="Fecha Caja Cerrada"

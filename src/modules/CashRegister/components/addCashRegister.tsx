@@ -30,10 +30,6 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
       newErrors.amount = "El monto es necesario";
     } 
 
-    if (!props.cashRegisterSelect?.opening_amount) {
-      newErrors.opening_amount = "El monto de apertura es necesario";
-    } 
-
     if (!props.cashRegisterSelect?.user_id || props.cashRegisterSelect.user_id <= 0) {
     newErrors.user_id = "El empleado es necesario";
     }
@@ -74,7 +70,7 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
 
         <div className="flex flex-col space-y-3 ">
           <label htmlFor="amount" className="text-base text-black font-medium font-lato">
-            Monto Inicial
+            Monto
           </label>
           <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors ${errors.amount ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
             type="number"
@@ -91,24 +87,7 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
           />
             {errors.amount && <p className="text-red-500 font-lato text-sm">{errors.amount}</p>}  
 
-          <label htmlFor="opening_amount" className="text-base text-black font-medium font-lato">
-            Monto Abrir
-          </label>
-            <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors ${errors.opening_amount ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
-
-            type="text"
-            id="opening_amount"
-            name="opening_amount"
-            value={props.cashRegisterSelect?.opening_amount || ""}
-            onChange={(e) => {
-                props.handleChange(e); 
-              if (errors.opening_amount) {
-                        setErrors((prev) => ({ ...prev, opening_amount: "" })); 
-                }
-              }}
-            placeholder="Monto Abrir"
-          />
-            {errors.opening_amount && <p className="text-red-500 font-lato text-sm">{errors.opening_amount}</p>}
+       
         </div>
 
         <div className="flex flex-col space-y-2 ">
@@ -171,3 +150,30 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
     </div>
   );
 }
+
+
+/*
+    if (!props.cashRegisterSelect?.opening_amount) {
+      newErrors.opening_amount = "El monto de apertura es necesario";
+    } 
+
+   <label htmlFor="opening_amount" className="text-base text-black font-medium font-lato">
+            Monto Abrir
+          </label>
+            <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors ${errors.opening_amount ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+
+            type="text"
+            id="opening_amount"
+            name="opening_amount"
+            value={props.cashRegisterSelect?.opening_amount || ""}
+            onChange={(e) => {
+                props.handleChange(e); 
+              if (errors.opening_amount) {
+                        setErrors((prev) => ({ ...prev, opening_amount: "" })); 
+                }
+              }}
+            placeholder="Monto Abrir"
+          />
+            {errors.opening_amount && <p className="text-red-500 font-lato text-sm">{errors.opening_amount}</p>}
+
+*/

@@ -46,6 +46,7 @@ export const Invoices = () => {
   
   const [paymentMethod, setPaymentMethod] = useState<string>("Efectivo");
   const [paymentReceipt, setPaymentReceipt] = useState<string>("");
+  const [cashAmount, setCashAmount] = useState<string>("");
 
   const { submitting, submit, mapItemsToPayload, error } = useSubmitInvoice();
   const {
@@ -181,7 +182,7 @@ export const Invoices = () => {
 
   return (
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="flex-1 bg-gray3 w-full h-screen p-8 space-y-4">
+      <div className="flex flex-col bg-gray3 w-[90%] h-screen p-8 space-y-2">
         <h2 className="font-Lato text-2xl">Facturas</h2>
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
         {error && (
@@ -213,7 +214,8 @@ export const Invoices = () => {
             Agregar productos
           </button>
           <button
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base bg-white border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-auto border rounded-3xl py-2 px-5 font-Lato disabled:bg-gray3 disabled:border-gray2 disabled:text-gray1 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800
+            transition duration-300 disabled:cursor-not-allowed"
             disabled={
               submitting ||
               !selectedClient ||
@@ -243,10 +245,26 @@ export const Invoices = () => {
                 showAlert("Acción requerida", "Debe seleccionar un vendedor (usuario y caja abiertos)", "error");
                 return;
               }
+              if (method === "Cash") {
+                const cashVal = Number(cashAmount);
+                if (!isFinite(cashVal)) {
+                  showAlert("Acción requerida", "Debe ingresar el monto entregado en efectivo", "error");
+                  return;
+                }
+                if (cashVal < subtotal) {
+                  showAlert(
+                    "Monto insuficiente",
+                    "El monto en efectivo no puede ser inferior al total de la factura",
+                    "error"
+                  );
+                  return;
+                }
+              }
               if ((method === "Debit Card" || method === "Transfer") && (!paymentReceipt || paymentReceipt.trim().length === 0)) {
                 showAlert("Acción requerida", "Debe ingresar el comprobante de pago para pagos con tarjeta o transferencia", "error");
                 return;
               }
+              const changeDue = method === "Cash" ? Math.max(0, Number(cashAmount) - subtotal) : 0;
               const payload = {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
@@ -258,8 +276,15 @@ export const Invoices = () => {
                 payment_receipt: (method === "Debit Card" || method === "Transfer") && paymentReceipt ? paymentReceipt.trim() : undefined
               } as const;
               console.log('[Invoice Submit] payload', payload);
+              if (method === "Cash") {
+                console.log('[Invoice Submit] cash_amount', Number(cashAmount), 'subtotal', subtotal, 'change_due', changeDue);
+              }
               await submit(payload);
-              showAlert("Factura creada", "La factura fue creada correctamente", "success");
+              const successMsg =
+                method === "Cash" && changeDue > 0
+                  ? `La factura fue creada correctamente. Vuelto: ₡${changeDue.toFixed(2)}`
+                  : "La factura fue creada correctamente";
+              showAlert("Factura creada", successMsg, "success");
 
                 setPaymentMethod("Efectivo");
                 clearItems();
@@ -267,6 +292,7 @@ export const Invoices = () => {
                 setQuery("");
                 setSelectedClient(null);
                 setPaymentReceipt("");
+                setCashAmount("");
                  
                 refetch();
               } catch (e) {
@@ -284,7 +310,7 @@ export const Invoices = () => {
                 showAlert("Error al generar factura", String(message), "error");
               }
             }}>
-            {submitting ? "Guardando…" : "Generar factura"}
+            {submitting ? "Guardando…" : "Generar Factura"}
           </button>
         </div>
         
@@ -350,12 +376,17 @@ export const Invoices = () => {
             </div>
             <div className="space-y-4 flex flex-col">
               <label className="text-base text-black font-medium font-lato">Fecha de emisión</label>
+              <div className="relative">
               <input
                 className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
                 focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={new Date().toLocaleString()}
                 readOnly
               />
+               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                </svg>
+                </div>
             </div>
             <div className="space-y-4 flex flex-col">
               <label className="text-base text-black font-medium font-lato">Pago</label>
@@ -370,6 +401,9 @@ export const Invoices = () => {
                   if (val !== "Tarjeta" && val !== "Transferencia") {
                     setPaymentReceipt("");
                   }
+                  if (val !== "Efectivo") {
+                    setCashAmount("");
+                  }
                 }}
                 
               >
@@ -383,6 +417,20 @@ export const Invoices = () => {
                     </svg>
               </div>
             </div>
+            {paymentMethod === "Efectivo" && (
+              <div className="space-y-4 flex flex-col">
+                <label className="text-base text-black font-medium font-lato">Monto entregado</label>
+                <input
+                  type="number"
+                  min={subtotal}
+                  step="0.01"
+                  className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+                  placeholder="0.00"
+                  value={cashAmount}
+                  onChange={(e) => setCashAmount(e.target.value)}
+                />
+              </div>
+            )}
             {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Comprobante de pago</label>
@@ -429,6 +477,7 @@ export const Invoices = () => {
               <div className="bg-white rounded-md p-6 shadow-sm">Cargando historial…</div>
             ) : (
               <>
+              <div className="mt-8">
                 <InvoiceHistoryTable
                   data={currentInvoices}
                   onSelect={(inv) => {
@@ -436,6 +485,7 @@ export const Invoices = () => {
                     setDetailOpen(true);
                   }}
                 />
+              </div>
 
                 {totalPages > 1 && (
                   <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">

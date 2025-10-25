@@ -14,7 +14,7 @@ export const InvoiceTabs: React.FC<Props> = ({ active, onChange }) => {
           className={`w-1/2 text-center ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("generar")}
         >
-          Factura
+          Facturar
         </h2>
         <h3
           className={`w-1/2 text-center ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
