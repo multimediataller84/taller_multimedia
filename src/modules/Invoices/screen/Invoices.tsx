@@ -297,13 +297,27 @@ export const Invoices = () => {
                 refetch();
               } catch (e) {
                 let message = "No se pudo crear la factura";
-                const err = e as unknown;
+                const err = e as any;
                 if (typeof err === "string") {
                   message = err;
                 } else if (err && typeof err === "object" && "response" in err) {
-                  const resp = (err as { response?: { data?: { message?: string } } }).response;
-                  const msg = resp?.data?.message;
-                  if (typeof msg === "string" && msg.trim().length > 0) message = msg;
+                  const resp = err.response as { data?: any; statusText?: string } | undefined;
+                  const data = resp?.data;
+                  if (typeof data === "string" && data.trim().length > 0) {
+                    message = data;
+                  } else if (data && typeof data === "object") {
+                    const candidates: Array<any> = [
+                      data.error,
+                      data.message,
+                      Array.isArray(data.errors) ? data.errors.map((x: any) => x?.message || x).join("; ") : undefined,
+                      Array.isArray(data) ? data.map((x: any) => x?.message || x).join("; ") : undefined,
+                    ];
+                    const found = candidates.find((c) => typeof c === "string" && c.trim().length > 0);
+                    if (typeof found === "string") message = found;
+                  }
+                  if (message === "No se pudo crear la factura" && typeof resp?.statusText === "string" && resp.statusText.trim()) {
+                    message = resp.statusText;
+                  }
                 } else if (err instanceof Error && err.message) {
                   message = err.message;
                 }
@@ -445,6 +459,16 @@ export const Invoices = () => {
           </div>
         </div>
 
+        {/* Totales */}
+        <div className="bg-white rounded-2xl text-base font-medium  shadow-sm p-6 font-Lato">
+          <div className="w-full md:w-80 ml-auto space-y-2 text-xl">
+            <div className="flex justify-between">
+              <span className="text-black">TOTAL ₡</span>
+              <span className="font-semibold">{subtotal.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Items Table (dinámica) */}
         <InvoiceItemsTable
           items={items}
@@ -454,15 +478,6 @@ export const Invoices = () => {
           disabled={false}
         />
 
-        {/* Totales */}
-        <div className="bg-white rounded-2xl text-base font-medium  shadow-sm p-6 font-Lato">
-          <div className="w-full md:w-80 ml-auto space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-black">TOTAL ₡</span>
-              <span className="font-semibold">{subtotal.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
           </>
         )}
 
@@ -473,19 +488,20 @@ export const Invoices = () => {
                 {errorHistory}
               </div>
             )}
+
             {loadingHistory ? (
               <div className="bg-white rounded-md p-6 shadow-sm">Cargando historial…</div>
             ) : (
               <>
-              <div className="mt-8">
-                <InvoiceHistoryTable
-                  data={currentInvoices}
-                  onSelect={(inv) => {
-                    setSelectedInvoice(inv);
-                    setDetailOpen(true);
-                  }}
-                />
-              </div>
+                <div className="mt-8">
+                  <InvoiceHistoryTable
+                    data={currentInvoices}
+                    onSelect={(inv) => {
+                      setSelectedInvoice(inv);
+                      setDetailOpen(true);
+                    }}
+                  />
+                </div>
 
                 {totalPages > 1 && (
                   <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">

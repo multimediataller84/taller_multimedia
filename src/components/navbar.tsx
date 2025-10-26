@@ -5,6 +5,7 @@ import { getUsernameAuth } from "../utils/getUsernameAuth";
 export interface SearchProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  showSearch?: boolean;
 }
 
 export const Navbar = (props: SearchProps) => {
@@ -63,17 +64,21 @@ export const Navbar = (props: SearchProps) => {
             </svg>
             
             <div className='flex justify-center w-full'>
-            <input
-              type="text"
-              placeholder="Buscar"
-              value={props.search}
-              onChange={(e) => props.setSearch(e.target.value)}
-              className={`w-[558px] h-9 pl-4 pb-1 
-              placeholder:font-medium placeholder:font-Lato placeholder:text-base placeholder:text-gray1
-              border border-gray2
-              rounded-2xl 
-              focus:outline-none focus:ring-2 focus:border-0 focus:ring-blue-500`}
-            />
+              {props.showSearch !== false ? (
+                <input
+                  type="text"
+                  placeholder="Buscar"
+                  value={props.search}
+                  onChange={(e) => props.setSearch(e.target.value)}
+                  className={`w-[558px] h-9 pl-4 pb-1 
+                  placeholder:font-medium placeholder:font-Lato placeholder:text-base placeholder:text-gray1
+                  border border-gray2
+                  rounded-2xl 
+                  focus:outline-none focus:ring-2 focus:border-0 focus:ring-blue-500`}
+                />
+              ) : (
+                <div className="w-[558px] h-9" />
+              )}
             </div>
           
           <div className="flex space-x-4">
