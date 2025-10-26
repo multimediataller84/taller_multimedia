@@ -50,10 +50,21 @@ const IncomeCard: React.FC = () => {
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "white",
-                    borderRadius: "8px",
+                    borderRadius: "10px",
                     border: "1px solid #ccc",
-                    fontSize: "12px",
+                    fontSize: "14px",
+                    padding: "10px 12px",
                   }}
+                  labelStyle={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}
+                  itemStyle={{ fontSize: 16 }}
+                  labelFormatter={(label) => `día ${label}`}
+                  formatter={(value) => [
+                    Number(value).toLocaleString("es-CR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }),
+                    "venta",
+                  ]}
                 />
                 <Line
                   type="monotone"

@@ -1,13 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { InvoiceService } from "../../Invoices/services/invoiceService";
-import { ProductRepository } from "../../Product/repositories/productRepository";
-import { UseCasesController } from "../../Product/controllers/useCasesController";
-import type { TInvoiceEndpoint } from "../../Invoices/models/types/TInvoiceEndpoint";
-import type { TProductEndpoint } from "../../Product/models/types/TProductEndpoint";
-
-const invoiceService = InvoiceService.getInstance();
-const productRepo = ProductRepository.getInstance();
-const productUseCases = new UseCasesController(productRepo);
+import { reportsRepository } from "../../Reports/repositories/reportsRepository";
+import { parseDateLoose } from "../../Reports/utils/reporting";
 
 export type BestSeller = { id: number; name: string; qty: number };
 
@@ -20,6 +13,37 @@ function isWithinLastDays(dateStr?: string, days = 7) {
   return diff >= 0 && diff <= days * 24 * 60 * 60 * 1000;
 }
 
+function readThroughQty(prod: unknown): number {
+  if (!prod || typeof prod !== "object") return 0;
+  const rec = prod as Record<string, unknown> & { InvoiceProduct?: { quantity?: unknown } };
+  if (rec.InvoiceProduct && typeof rec.InvoiceProduct === "object") {
+    return Number(rec.InvoiceProduct.quantity ?? 0);
+  }
+  const k = Object.keys(rec).find((key) => {
+    const v = (rec as Record<string, unknown>)[key];
+    return /invoice.*product/i.test(key) && typeof v === "object" && v !== null;
+  });
+  if (k) {
+    const t = (rec as Record<string, unknown>)[k] as Record<string, unknown>;
+    const q = (t.quantity as unknown) ?? (t.qty as unknown) ?? (t.Quantity as unknown) ?? 0;
+    return Number(q);
+  }
+  return 0;
+}
+
+function readId(prod: unknown): number {
+  if (!prod || typeof prod !== "object") return 0;
+  const rec = prod as Record<string, unknown>;
+  const id = Number((rec.id as unknown) ?? (rec.product_id as unknown) ?? 0);
+  return Number.isFinite(id) ? id : 0;
+}
+
+function readName(prod: unknown, id: number): string {
+  if (!prod || typeof prod !== "object") return `#${id}`;
+  const rec = prod as Record<string, unknown>;
+  return String((rec.product_name as unknown) ?? (rec.name as unknown) ?? `#${id}`);
+}
+
 export function useBestSellersWeek(limit = 5) {
   const [data, setData] = useState<BestSeller[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,35 +52,26 @@ export function useBestSellersWeek(limit = 5) {
     const load = async () => {
       setLoading(true);
       try {
-        const [invoices, prodRes] = await Promise.all([
-          invoiceService.getAll(),
-          productUseCases.getAll.execute({ limit: 1000, offset: 0, orderDirection: "ASC" }),
-        ]);
+        const invoices = await reportsRepository.getInvoices();
 
-        const products: TProductEndpoint[] = (prodRes.data ?? []) as TProductEndpoint[];
-        const nameById = new Map(products.map(p => [p.id, p.product_name] as const));
-
-        const recentInvoices = (invoices ?? []).filter((inv: TInvoiceEndpoint) =>
-          isWithinLastDays(inv.createdAt || inv.issue_date || undefined, 7)
-        );
-
-        const byProduct: Record<number, number> = {};
-        for (const inv of recentInvoices) {
-          const lines = (inv.products ?? []) as Array<{ id?: number; product_id?: number; quantity?: number }>;
-          for (const line of lines) {
-            const pid = Number((line.id ?? line.product_id) as number | undefined);
-            const qty = Number((line.quantity ?? 0) as number | undefined);
-            if (!Number.isFinite(pid) || !Number.isFinite(qty)) continue;
-            byProduct[pid] = (byProduct[pid] || 0) + qty;
+        const byProduct = new Map<number, { id: number; name: string; qty: number }>();
+        type InvoiceLike = { createdAt?: string; issue_date?: string; products?: unknown[] };
+        for (const inv of invoices ?? []) {
+          const invR = inv as unknown as InvoiceLike;
+          const when = parseDateLoose(invR.createdAt ?? invR.issue_date);
+          if (!when || !isWithinLastDays(when.toISOString(), 7)) continue;
+          const lines: unknown[] = invR.products ?? [];
+          for (const p of lines) {
+            const qty = readThroughQty(p);
+            if (!qty) continue;
+            const id = readId(p);
+            const name = readName(p, id);
+            const prev = byProduct.get(id);
+            if (prev) prev.qty += qty; else byProduct.set(id, { id, name, qty });
           }
         }
 
-        const rows: BestSeller[] = Object.entries(byProduct)
-          .map(([idStr, qty]) => ({
-            id: Number(idStr),
-            name: nameById.get(Number(idStr)) || `#${idStr}`,
-            qty: Number(qty),
-          }))
+        const rows: BestSeller[] = Array.from(byProduct.values())
           .sort((a, b) => b.qty - a.qty)
           .slice(0, limit);
 
