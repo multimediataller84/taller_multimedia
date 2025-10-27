@@ -18,7 +18,7 @@ export const Navbar = (props: SearchProps) => {
             
         <div className='flex justify-between w-full h-24 items-center mr-4'>
            
-            <svg className="h-15 ml-6" viewBox="0 0 1374 399" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="h-12 ml-6" viewBox="0 0 1374 399" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M25.8417 120.066C55.6576 91.5664 74.1233 87.2524 109.036 86.0664C139.978 87.4577 154.521 91.1482 177.321 99.5664C211.213 89.644 
             227.807 86.6715 252.34 86.5664C294.177 90.0664 311.489 102.566 329.282 126.066C356.693 166.066 357.031 196.568 342.266 268.066C331.2 303.724 
             320.912 321.843 298.024 352.066C264.956 388.023 245.587 394.798 210.503 398.066C197.722 396.146 190.48 394.467 177.321 389.566C165.364 394.909 
@@ -63,21 +63,21 @@ export const Navbar = (props: SearchProps) => {
             357.077 1301.11 357.973 1300.12 358.784C1299.14 359.595 1297.93 360 1296.48 360H1283.04L1319.45 267.456H1336.99L1373.34 360Z" fill="black"/>
             </svg>
             
-            <div className='flex justify-center w-full'>
+            <div className='flex justify-center'>
               {props.showSearch !== false ? (
                 <input
                   type="text"
                   placeholder="Buscar"
                   value={props.search}
                   onChange={(e) => props.setSearch(e.target.value)}
-                  className={`w-[558px] h-9 pl-4 pb-1 
+                  className={` w-[140px] sm:w-[200px] md:w-[300px] lg:w-[400px] xl:w-[558px] h-9 pl-4 pb-1 
                   placeholder:font-medium placeholder:font-Lato placeholder:text-base placeholder:text-gray1
                   border border-gray2
                   rounded-2xl 
                   focus:outline-none focus:ring-2 focus:border-0 focus:ring-blue-500`}
                 />
               ) : (
-                <div className="w-[558px] h-9" />
+                <></>
               )}
             </div>
           

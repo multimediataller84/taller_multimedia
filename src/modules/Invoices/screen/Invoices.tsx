@@ -182,8 +182,8 @@ export const Invoices = () => {
 
   return (
     <RootLayout search={search} setSearch={setSearch}>
-      <div className="flex flex-col bg-gray3 w-[90%] h-screen p-8 space-y-2">
-        <h2 className="font-Lato text-2xl">Facturas</h2>
+      <div className="flex flex-col bg-gray3 w-[90%] h-full  p-0 sm:p-2 md:p-8 space-y-2">
+        <h2 className="font-Lato text-lg sm:text-xl md:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">Facturas</h2>
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
@@ -194,12 +194,12 @@ export const Invoices = () => {
         {activeTab === "generar" && (
           <>
         {/* Header acciones de generar */}
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between ">
 
           <div className="flex justify-end w-full items-center gap-3">
 
            <button
-              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAdviceClick}
               disabled={aiLoading}
             >
@@ -207,14 +207,14 @@ export const Invoices = () => {
             </button>
 
           <button
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setProductModalOpen(true)}
             
           >
             Agregar productos
           </button>
           <button
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato disabled:bg-gray3 disabled:border-gray2 disabled:text-gray1 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800
+            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base disabled:bg-gray3 disabled:border-gray2 disabled:text-gray1 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800
             transition duration-300 disabled:cursor-not-allowed"
             disabled={
               submitting ||
@@ -330,46 +330,48 @@ export const Invoices = () => {
         
       </div>
       {/* Customer / Invoice Details */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Cliente</label>
-              <ClientSelector
-                query={query}
-                setQuery={setQuery}
-                filteredClients={filteredClients}
-                onSelect={handleSelectClient}
-                
-              />
-            </div>
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Teléfono</label>
-              <input
-                className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-2 focus:outline-blue-500 font-Lato"
-                placeholder="0000-0000"
-                value={selectedClient?.phone ?? ""}
-                readOnly
-              />
-            </div>
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Email</label>
-              <input
-                type="email"
-                className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-2 focus:outline-blue-500 font-Lato"
-                placeholder="correo@example.com"
-                value={selectedClient?.email ?? ""}
-                readOnly
-              />
-            </div>
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+          {/* Cliente */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Cliente</label>
+            <ClientSelector
+              query={query}
+              setQuery={setQuery}
+              filteredClients={filteredClients}
+              onSelect={handleSelectClient}
+            />
+          </div>
 
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Vendedor</label>
-              <div className="relative"> 
+          {/* Teléfono */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Teléfono</label>
+            <input
+              className="w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+              placeholder="0000-0000"
+              value={selectedClient?.phone ?? ""}
+              readOnly
+            />
+          </div>
+
+          {/* Email */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Email</label>
+            <input
+              type="email"
+              className="w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+              placeholder="correo@example.com"
+              value={selectedClient?.email ?? ""}
+              readOnly
+            />
+          </div>
+
+          {/* Vendedor */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Vendedor</label>
+            <div className="relative">
               <select
-                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-2 focus:outline-blue-500 font-Lato"
+                className="appearance-none w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={seller}
                 onChange={(e) => setSeller(e.target.value)}
                 disabled={loadingRegisters}
@@ -383,87 +385,90 @@ export const Invoices = () => {
                   </option>
                 ))}
               </select>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                    </svg>
-              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Fecha de emisión</label>
-              <div className="relative">
+          </div>
+
+          {/* Fecha */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Fecha de emisión</label>
+            <div className="relative">
               <input
-                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-2 focus:outline-blue-500 font-Lato"
+                className="appearance-none w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={new Date().toLocaleString()}
                 readOnly
               />
-               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
-                </svg>
-                </div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clipRule="evenodd" />
+              </svg>
             </div>
-            <div className="space-y-4 flex flex-col">
-              <label className="text-base text-black font-medium font-lato">Pago</label>
-              <div className="relative">
+          </div>
+
+          {/* Pago */}
+          <div className="flex flex-col space-y-2 sm:space-y-4">
+            <label className="text-sm sm:text-base text-black font-medium font-lato">Pago</label>
+            <div className="relative">
               <select
-                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-2 focus:outline-blue-500 font-Lato"
+                className="appearance-none w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
                 value={paymentMethod}
                 onChange={(e) => {
                   const val = e.target.value;
                   setPaymentMethod(val);
-                  if (val !== "Tarjeta" && val !== "Transferencia") {
-                    setPaymentReceipt("");
-                  }
-                  if (val !== "Efectivo") {
-                    setCashAmount("");
-                  }
+                  if (val !== "Tarjeta" && val !== "Transferencia") setPaymentReceipt("");
+                  if (val !== "Efectivo") setCashAmount("");
                 }}
-                
               >
                 <option value="Efectivo">Efectivo</option>
                 <option value="Tarjeta">Tarjeta</option>
                 <option value="Transferencia">Transferencia/SINPE</option>
                 <option value="Crédito">Crédito</option>
               </select>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                    </svg>
-              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+              </svg>
             </div>
-            {paymentMethod === "Efectivo" && (
-              <div className="space-y-4 flex flex-col">
-                <label className="text-base text-black font-medium font-lato">Monto entregado</label>
-                <input
-                  type="number"
-                  min={subtotal}
-                  step="0.01"
-                  className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-2 focus:outline-blue-500 font-Lato"
-                  placeholder="0.00"
-                  value={cashAmount}
-                  onChange={(e) => setCashAmount(e.target.value)}
-                />
-              </div>
-            )}
-            {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Comprobante de pago</label>
-                <input
-                  className="w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Digite número o referencia del comprobante"
-                  value={paymentReceipt}
-                  onChange={(e) => setPaymentReceipt(e.target.value)}
-                />
-              </div>
-            )}
           </div>
+
+          {/* Efectivo o Transferencia */}
+          {paymentMethod === "Efectivo" && (
+            <div className="flex flex-col space-y-2 sm:space-y-4">
+              <label className="text-sm sm:text-base text-black font-medium font-lato">Monto entregado</label>
+              <input
+                type="number"
+                min={subtotal}
+                step="0.01"
+                className="w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+                placeholder="0.00"
+                value={cashAmount}
+                onChange={(e) => setCashAmount(e.target.value)}
+              />
+            </div>
+          )}
+
+          {(paymentMethod === "Tarjeta" || paymentMethod === "Transferencia") && (
+            <div className="flex flex-col space-y-2 sm:space-y-4">
+              <label className="text-sm sm:text-base text-black font-medium font-lato">Comprobante de pago</label>
+              <input
+                className="w-full py-2 sm:py-2.5 border rounded-3xl px-3 sm:px-4 text-gray1 border-gray2 bg-white font-medium text-sm sm:text-base focus:outline-2 focus:outline-blue-500 font-Lato"
+                placeholder="Digite número o referencia del comprobante"
+                value={paymentReceipt}
+                onChange={(e) => setPaymentReceipt(e.target.value)}
+              />
+            </div>
+          )}
         </div>
+      </div>
 
         {/* Totales */}
-        <div className="bg-white rounded-2xl text-base font-medium  shadow-sm p-6 font-Lato">
+        <div className="bg-white rounded-2xl text-base font-medium shadow-sm p-4 sm:p-6 font-Lato">
           <div className="w-full md:w-80 ml-auto space-y-2 text-xl">
             <div className="flex justify-between">
-              <span className="text-black">TOTAL ₡</span>
+              <span className="text-black font-Lato">TOTAL ₡</span>
               <span className="font-semibold">{subtotal.toFixed(2)}</span>
             </div>
           </div>

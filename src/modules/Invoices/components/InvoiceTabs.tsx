@@ -9,15 +9,15 @@ interface Props {
 export const InvoiceTabs: React.FC<Props> = ({ active, onChange }) => {
   return (
     <div className="flex flex-col w-full ">
-      <div className="flex w-full space-y-4 font-lato font-medium">
+      <div className="flex w-full space-y-2 font-lato font-medium">
         <h2
-          className={`w-1/2 text-center ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
+          className={`w-1/2 text-center text-xs sm:text-base ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("generar")}
         >
           Facturar
         </h2>
         <h3
-          className={`w-1/2 text-center ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
+          className={`w-1/2 text-center text-xs sm:text-base ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("historial")}
         >
           Historial de Facturas
