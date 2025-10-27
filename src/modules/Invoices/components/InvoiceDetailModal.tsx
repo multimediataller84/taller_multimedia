@@ -15,13 +15,13 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className=" fixed inset-0 z-50 flex items-center justify-center size-full">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Detalle de factura</h2>
+      <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[90%] sm:w-[80%] md:w-[65%] lg:w-1/2 p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between ">
+          <h2 className="text-base sm:text-xl font-semibold">Detalle de factura</h2>
            <button
-              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white border-black hover:border-gray-700 hover:bg-gray-700"
+              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white"
               onClick={onClose}>
               Cancelar
             </button>
@@ -32,8 +32,8 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
 
         {data && !loading && !error && (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 2xl:grid-cols-2 space-y-4">
+              <div className="text-sm md:text-base" >
                 <div><span className="text-gray-600">Factura:</span> <span className="font-medium">{data.invoice_number || data.id}</span></div>
                 <div><span className="text-gray-600">Fecha:</span> <span className="font-medium">{
                   (() => {
@@ -48,49 +48,49 @@ export const InvoiceDetailModal: React.FC<Props> = ({ open, invoice, onClose }) 
                 }</span></div>
                 <div><span className="text-gray-600">Estado:</span> <span className="font-medium">{mapStatusToES(data.status)}</span></div>
               </div>
-              <div>
+              <div className="text-sm md:text-base">
                 <div><span className="text-gray-600">Cliente:</span> <span className="font-medium">{data.customer ? `${data.customer.name} ${data.customer.last_name}` : `#${data.customer_id}`}</span></div>
                 <div><span className="text-gray-600">Método:</span> <span className="font-medium">{mapPaymentMethodToES(data.payment_method)}</span></div>
               </div>
             </div>
 
-            <div className="overflow-x-auto border rounded max-h-80 overflow-y-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr className="text-left">
-                    <th className="px-4 py-2">Producto</th>
-                    <th className="px-4 py-2">SKU</th>
-                    <th className="px-4 py-2 text-right">Cant.</th>
-                    <th className="px-4 py-2 text-right">Precio Unit.</th>
-                    <th className="px-4 py-2 text-right">Total</th>
+            <div className="overflow-x-auto rounded-2xl  max-h-80 overflow-y-auto">
+              <table className="min-w-full text-sm bg-white">
+                <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 rounded-2xl">
+                  <tr className="text-center">
+                    <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 sm:text-left">Producto</th>
+                    <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2">SKU</th>
+                    <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 ">Cant.</th>
+                    <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 ">Precio Unit.</th>
+                    <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 ">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {data.products.map((p) => (
                     <tr key={p.id}>
-                      <td className="px-4 py-2">{p.name || `#${p.id}`}</td>
-                      <td className="px-4 py-2">{p.sku || '-'}</td>
-                      <td className="px-4 py-2 text-right">{Number(p.quantity ?? 0)}</td>
-                      <td className="px-4 py-2 text-right">{p.unit_price != null ? Number(p.unit_price).toFixed(2) : '0.00'}</td>
-                      <td className="px-4 py-2 text-right">{(Number(p.unit_price ?? 0) * Number(p.quantity ?? 0)).toFixed(2)}</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 text-center sm:text-left text-xs sm:text-sm">{p.name || `#${p.id}`}</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 text-center text-xs sm:text-sm">{p.sku || '-'}</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 text-center text-xs sm:text-sm">{Number(p.quantity ?? 0)}</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 text-center text-xs sm:text-sm">{p.unit_price != null ? Number(p.unit_price).toFixed(2) : '0.00'}</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-2 text-center text-xs sm:text-sm">{(Number(p.unit_price ?? 0) * Number(p.quantity ?? 0)).toFixed(2)}</td>
                     </tr>
                   ))}
                   {data.products.length === 0 && (
                     <tr>
-                      <td className="px-4 py-6 text-center text-gray-500" colSpan={5}>Sin productos</td>
+                      <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-6 text-center text-gray-500 text-xs sm:text-sm" colSpan={5}>Sin productos</td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex justify-end space-y-1">
-              <div className="w-full md:w-72 space-y-1 text-sm">
+            <div className="flex justify-end space-y-1 ">
+              <div className="w-full md:w-72 space-y-1 text-xs sm:text-sm">
                 <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span className="font-medium">{totals.subtotal != null ? totals.subtotal.toFixed(2) : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Impuestos</span><span className="font-medium">{totals.tax_total != null ? totals.tax_total.toFixed(2) : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Pagado</span><span className="font-medium">{data.amount_paid != null ? Number(data.amount_paid).toFixed(2) : '0.00'}</span></div>
-                <div className="flex justify-between text-base"><span className="text-gray-700">Total</span><span className="font-semibold">{totals.total != null ? totals.total.toFixed(2) : '-'}</span></div>
-                <div className="flex justify-between text-base"><span className="text-gray-700">Pendiente</span><span className="font-semibold">{totals.total != null ? Math.max(totals.total - Number(data.amount_paid ?? 0), 0).toFixed(2) : '-'}</span></div>
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-700">Total</span><span className="font-semibold">{totals.total != null ? totals.total.toFixed(2) : '-'}</span></div>
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-700">Pendiente</span><span className="font-semibold">{totals.total != null ? Math.max(totals.total - Number(data.amount_paid ?? 0), 0).toFixed(2) : '-'}</span></div>
               </div>
             </div>
           </div>

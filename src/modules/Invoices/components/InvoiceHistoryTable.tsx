@@ -9,20 +9,20 @@ interface Props {
 
 export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
   return (
-    <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-white border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600 ">
-            <tr className="text-left">
-              <th className="px-6 py-3">#</th>
-              <th className="px-6 py-3">Fecha</th>
-              <th className="px-6 py-3">Cliente</th>
-              <th className="px-6 py-3">Método</th>
-              <th className="px-6 py-3 ">Subtotal</th>
-              <th className="px-6 py-3 ">Total</th>
-              <th className="px-6 py-3 ">Pagado</th>
-              <th className="px-6 py-3 ">Pendiente</th>
-              <th className="px-6 py-3">Estado</th>
+    <div className="overflow-hidden ">
+      <div className="overflow-x-auto rounded-2xl">
+        <table className="w-full text-sm bg-white">
+          <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+            <tr className="text-center">
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">#</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Fecha</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Cliente</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Método</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Subtotal</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Total</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Pagado</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Pendiente</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -41,15 +41,15 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
                   onClick={() => onSelect?.(inv)}
                   className={onSelect ? "cursor-pointer hover:bg-gray-50" : undefined}
                 >
-                  <td className="px-6 py-3">{inv.id}</td>
-                  <td className="px-6 py-3">{formatted}</td>
-                  <td className="px-6 py-3">{customer}</td>
-                  <td className="px-6 py-3">{mapPaymentMethodToES(inv.payment_method)}</td>
-                  <td className="px-6 py-3 ">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 ">{total !== undefined ? total.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 ">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3 ">{due !== undefined ? due.toFixed(2) : "-"}</td>
-                  <td className="px-6 py-3">{mapStatusToES(inv.status)}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{inv.id}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{formatted}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{customer}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapPaymentMethodToES(inv.payment_method)}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{total !== undefined ? total.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{due !== undefined ? due.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapStatusToES(inv.status)}</td>
                 </tr>
               );
             })}
