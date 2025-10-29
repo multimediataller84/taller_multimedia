@@ -12,34 +12,24 @@ interface PieData {
 
 const COLORS: string[] = ["#2B7FFF", "#193cb8"]; 
 
-const renderLegend = (props: any) => {
-    const { payload } = props;
-    return (
-      <ul className="flex justify-center space-x-6 mt-2">
-        {payload.map((entry: any, index: number) => (
-          <li
-            key={`item-${index}`}
-            className="flex items-center space-x-1 text-sm font-medium"
-          >
-            <span
-              className="w-3 h-3 inline-block rounded-full"
-              style={{ backgroundColor: entry.color }}
-            />
-            <span
-              style={{
-                color:
-                  entry.value === "Productos inactivos"
-                    ? "#000" 
-                    : "#2B7FFF", 
-              }}
-            >
-              {entry.value}
-            </span>
-          </li>
-        ))}
-      </ul>
-    );
-  };
+type LegendEntry = { value: string | number; color: string };
+type CustomLegendProps = { payload?: readonly LegendEntry[] };
+
+const CustomLegend: React.FC<CustomLegendProps> = ({ payload }) => {
+  const items = payload ?? [];
+  return (
+    <ul className="flex justify-center space-x-6 mt-2">
+      {items.map((entry, index) => (
+        <li key={`item-${index}`} className="flex items-center space-x-2 text-sm font-medium">
+          <span className="w-3 h-3 inline-block rounded-full" style={{ backgroundColor: entry.color }} />
+          <span className={String(entry.value) === "Productos inactivos" ? "text-gray-800" : "text-blue-600"}>
+            {String(entry.value)}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 const ProductsCard: React.FC = () => {
   const { active, inactive } = useProductStats();
@@ -50,11 +40,11 @@ const ProductsCard: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full space-y-6">
-      <h1 className="font-Lato text-2xl">Stock de productos</h1>
+      <h1 className="font-Lato text-2xl tracking-tight">Stock de productos</h1>
 
-      <div className="w-full bg-white rounded-2xl shadow-sm flex flex-col h-70">
+      <div className="w-full bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md flex flex-col h-70">
         {/* Título */}
-        <h2 className="text-2xl font-Lato font-medium ml-4 mt-4">Activos</h2>
+        <h2 className="text-2xl font-Lato font-medium ml-4 mt-4 text-gray-700">Activos</h2>
 
         {/* Gráfica de pie centrada */}
         <div className="flex-1 flex items-center justify-center px-4">
@@ -64,6 +54,7 @@ const ProductsCard: React.FC = () => {
                 data={data}
                 dataKey="value"
                 nameKey="name"
+                innerRadius={40}
                 outerRadius={70}
                 label
               >
@@ -72,14 +63,15 @@ const ProductsCard: React.FC = () => {
                 ))}
               </Pie>
               <Tooltip
+                cursor={{ fill: "rgba(43,127,255,0.06)" }}
                 contentStyle={{
                   backgroundColor: "white",
-                  borderRadius: "8px",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
+                  borderRadius: "10px",
+                  border: "1px solid #E5E7EB",
+                  fontSize: "14px",
                 }}
               />
-              <Legend content={renderLegend} verticalAlign="bottom" align="center" iconType="circle" />
+              <Legend content={<CustomLegend />} verticalAlign="bottom" align="center" iconType="circle" />
             </PieChart>
           </ResponsiveContainer>
         </div>

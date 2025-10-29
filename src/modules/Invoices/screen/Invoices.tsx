@@ -62,7 +62,7 @@ export const Invoices = () => {
     loading: loadingHistory,
     error: errorHistory,
     refetch,
-  } = useInvoiceHistory();
+  } = useInvoiceHistory(activeTab === "historial" ? search : undefined);
 
   const { registers, loading: loadingRegisters } = useOpenRegisters();
   const [seller, setSeller] = useState<string>(""); // value will be "userId:registerId"
@@ -181,7 +181,7 @@ export const Invoices = () => {
   }
 
   return (
-    <RootLayout search={search} setSearch={setSearch}>
+    <RootLayout search={search} setSearch={setSearch} showSearch={activeTab === "historial"}>
       <div className="flex flex-col bg-gray3 w-[90%] h-full  p-0 sm:p-2 md:p-8 space-y-2">
         <h2 className="font-Lato text-lg sm:text-xl md:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">Facturas</h2>
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />

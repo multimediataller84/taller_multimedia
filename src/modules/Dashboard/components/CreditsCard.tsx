@@ -9,18 +9,25 @@ const CreditsCard: React.FC = () => {
   const usersPct = totalUsers > 0 ? Math.round((usersWithCredit / totalUsers) * 100) : 0;
   return (
     <div className="flex flex-col w-full space-y-6">
-      <h2 className="font-Lato text-2xl">Creditos</h2>
-      <div className="w-full h-70 bg-white rounded-2xl shadow-sm">
-        <div className="justify-between flex flex-col h-full p-4">
+      <h2 className="font-Lato text-2xl tracking-tight">Creditos</h2>
+      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md">
+        <div className="justify-between flex flex-col h-full p-5">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-base font-medium">Usuarios con crédito</span>
-              <span className="text-sm text-gray-600">{usersPct}%</span>
+              <span className="text-xl font-medium text-gray-700">Usuarios con crédito</span>
+              <span className="text-xl px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 font-semibold">{usersPct}%</span>
             </div>
             <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-3 bg-orange-500" style={{ width: `${usersPct}%` }} />
+              <div
+                className="h-3 rounded-full transition-all duration-500"
+                style={{
+                  width: `${usersPct}%`,
+                  background:
+                    "linear-gradient(90deg, rgba(255,159,67,1) 0%, rgba(255,112,67,1) 100%)",
+                }}
+              />
             </div>
-            <div className="flex items-center justify-between mt-2 text-sm text-gray-700">
+            <div className="flex items-center justify-between mt-2 text-sm text-gray-600">
               <span>{usersWithCredit.toLocaleString("es-CR")} con crédito</span>
               <span>{totalUsers.toLocaleString("es-CR")} usuarios</span>
             </div>
@@ -28,13 +35,20 @@ const CreditsCard: React.FC = () => {
 
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-base font-medium">Deuda total</span>
-              <span className="text-sm text-gray-600">{debtPct}%</span>
+              <span className="text-xl font-medium text-gray-700">Deuda total</span>
+              <span className="text-xl px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">{debtPct}%</span>
             </div>
             <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-3 bg-blue-500" style={{ width: `${debtPct}%` }} />
+              <div
+                className="h-3 rounded-full transition-all duration-500"
+                style={{
+                  width: `${debtPct}%`,
+                  background:
+                    "linear-gradient(90deg, rgba(43,127,255,1) 0%, rgba(25,60,184,1) 100%)",
+                }}
+              />
             </div>
-            <div className="flex items-center justify-between mt-2 text-sm text-gray-700">
+            <div className="flex items-center justify-between mt-2 text-sm text-gray-600">
               <span>₡{debt.toLocaleString("es-CR")}</span>
               <span>₡{assigned.toLocaleString("es-CR")}</span>
             </div>
@@ -46,4 +60,5 @@ const CreditsCard: React.FC = () => {
 };
 
 export default CreditsCard;
+
 

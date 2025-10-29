@@ -4,7 +4,7 @@ import type { TInvoiceEndpoint } from "../models/types/TInvoiceEndpoint";
 
 const service = InvoiceService.getInstance();
 
-export const useInvoiceHistory = () => {
+export const useInvoiceHistory = (search?: string) => {
   const [invoices, setInvoices] = useState<TInvoiceEndpoint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,12 +37,22 @@ export const useInvoiceHistory = () => {
     });
   }, [invoices]);
 
-  const total = sorted.length;
+  const filtered = useMemo(() => {
+    const q = (search ?? "").toLowerCase().trim();
+    if (!q) return sorted;
+    return sorted.filter((inv) => {
+      const c = inv.customer;
+      const full = `${c?.name ?? ""} ${c?.last_name ?? ""} ${c?.id_number ?? ""}`.toLowerCase();
+      return full.includes(q);
+    });
+  }, [sorted, search]);
+
+  const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(activePage, totalPages);
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
-  const currentInvoices = sorted.slice(start, end);
+  const currentInvoices = filtered.slice(start, end);
 
   // Build condensed page buttons: [1, 2, 3, '...', N] with neighbors around active
   const pagesDisplay: Array<number | string> = (() => {
@@ -67,7 +77,7 @@ export const useInvoiceHistory = () => {
   const goNext = () => setActivePage((p) => Math.min(totalPages, p + 1));
 
   return {
-    invoices: sorted,
+    invoices: filtered,
     currentInvoices,
     totalPages,
     activePage,
