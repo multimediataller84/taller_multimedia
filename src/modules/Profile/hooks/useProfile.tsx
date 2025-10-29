@@ -62,7 +62,7 @@ export const useProfile = () => {
   const [confirmationDeleteProfile, setConfirmationDeleteProfile] = useState(false);
 
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchProfiles = async () => {
       try {
         const data = await useCases.getAll.execute();
         setProfiles(data);
@@ -72,7 +72,7 @@ export const useProfile = () => {
         setLoading(false); 
       }
     };
-    fetchClients();
+    fetchProfiles();
   }, []);
 
   const handleAddProfile = async (newUser: TUser) => {

@@ -182,8 +182,7 @@ export const Invoices = () => {
 
   return (
     <RootLayout search={search} setSearch={setSearch} showSearch={activeTab === "historial"}>
-      <div className="flex flex-col bg-gray3 w-[90%] h-full  p-0 sm:p-2 md:p-8 space-y-2">
-        <h2 className="font-Lato text-lg sm:text-xl md:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">Facturas</h2>
+      <div className="flex flex-col bg-gray3 w-[90%] h-full p-2 md:p-8 space-y-2">
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">

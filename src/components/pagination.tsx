@@ -22,9 +22,9 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">
+    <div className="mt-4 mb-2 pr-19 w-auto space-x-1 2xl:space-x-2 flex items-center font-Lato font-medium">
       <button
-        className={`cursor-pointer size-[36px] border rounded-full transition ${
+        className={`cursor-pointer size-6 2xl:size-9 border rounded-full transition ${
           canPrev
             ? "bg-white border-gray2 text-gray1"
             : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
@@ -38,7 +38,7 @@ const Pagination: React.FC<PaginationProps> = ({
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="size-4 -translate-x-[1px]"
+            className="size-3 2xl:size-4 -translate-x-[1px]"
           >
             <path
               fillRule="evenodd"
@@ -53,9 +53,9 @@ const Pagination: React.FC<PaginationProps> = ({
         typeof p === "number" ? (
           <button
             key={`${p}-${idx}`}
-            className={`cursor-pointer size-[42px] border rounded-full active:outline-0 ${
+            className={`cursor-pointer size-9 2xl:size-[42px] border rounded-full active:outline-0 ${
               activePage === p
-                ? "bg-blue-500 text-white"
+                ? "bg-blue-500 border-blue-500 text-white"
                 : "bg-white border-gray2 text-gray1"
             }`}
             onClick={() => setActivePage(p)}
@@ -70,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
       )}
 
       <button
-        className={`cursor-pointer size-[36px] border rounded-full transition ${
+        className={`cursor-pointer size-6 2xl:size-9 border rounded-full transition ${
           canNext
             ? "bg-white border-gray2 text-gray1"
             : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
@@ -84,7 +84,7 @@ const Pagination: React.FC<PaginationProps> = ({
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="size-4 translate-x-[1px]"
+            className="size-3 2xl:size-4 translate-x-[1px]"
           >
             <path
               fillRule="evenodd"

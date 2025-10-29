@@ -111,13 +111,13 @@ export default function editClient(props: editClientProps) {
   };
 
   return (
-    <div className="w-[70%] flex flex-col ">
-      <div className="bg-gray3 w-full flex flex-col">
-        <div className="flex w-full justify-between pt-8">
-          <h2 className="pl-8 font-Lato text-2xl ">Datos del Cliente</h2>
-          <div className="flex space-x-8 pr-4">
+    <div className="flex flex-col w-full bg-gray3">
+      <div className="w-full flex flex-col">
+        <div className="flex w-full justify-between items-center pt-2 md:pt-4 2xl:pt-8">
+          <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Datos del Cliente</h2>
+          <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
             <button
-              className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 
+              className={`py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 
                 ${props.edit ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                 : "bg-gray3 border border-gray2 text-gray1"}`}
               onClick={validateOnSave}
@@ -125,12 +125,12 @@ export default function editClient(props: editClientProps) {
               Editar
             </button>
             <button
-              className="w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-[#D32626] hover:border-[#D32626] text-white font-Lato font-bold transition duration-300 "
+              className="text-white bg-black py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
               onClick={() => props.clientSelect && props.handleDelete(props.clientSelect.id)}
             >
               Eliminar
             </button>
-             <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
+             <button className="py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
                   onClick={() => {props.setVisibleEdit(false)
                     props.setClientSelect(null)
                   }
@@ -140,16 +140,16 @@ export default function editClient(props: editClientProps) {
         </div>
 
         <div className="flex flex-col w-full">
-          <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
+          <div className="flex w-full mt-2 2xl:mt-8 space-y-4 font-lato font-medium">
             <h2
-              className={`w-1/2 text-center ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
+              className={`w-1/2 text-center text-xs sm:text-base ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(0)}
             >
               Información General
             </h2>
 
             <h4
-              className={`w-1/2 text-center ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
+              className={`w-1/2 text-center text-xs sm:text-base ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(1)}
             >
               Facturas y Créditos
@@ -166,26 +166,27 @@ export default function editClient(props: editClientProps) {
         </div>
       </div>
 
-      <div className="w-auto bg-[#DEE8ED] size-full">
+      <div className="bg-[#DEE8ED] size-full">
         {moveBar === 0 && (
-          <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
-            <div className="flex space-x-8">
-
-              <div className="flex flex-col space-y-4">
-                  <label htmlFor="identification_type" className="text-base text-black font-medium font-lato">Tipo de cédula</label>
-                  <div className="relative">
+          <form className="flex flex-col font-lato pt-8 px-4 sm:px-8 space-y-6 max-w-5xl mx-auto">
+          
+            <div className="flex flex-wrap gap-2 2xl:gap-6">
+              {/* Tipo de cédula */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="identification_type" className="text-sm sm:text-base text-black font-medium">Tipo de cédula</label>
+                <div className="relative">
                   <select
                     id="identification_type"
                     name="identification_type"
-                    className="appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                              focus:outline-2 focus:outline-blue-500"
-                     value={props.clientSelect?.identification_type || ""}
+                    className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-base focus:outline-2 focus:outline-blue-500"
+                    value={props.clientSelect?.identification_type || ""}
                     onChange={(e) => {
                       props.handleChange(e);
                       if (errors.identification_type) {
                         setErrors((prev) => ({ ...prev, identification_type: "" }));
                       }
-                    }}>
+                    }}
+                  >
                     <option value="">Seleccione un tipo</option>
                     <option value="Cédula Física">Cédula Física</option>
                     <option value="Cédula Jurídica">Cédula Jurídica</option>
@@ -194,252 +195,248 @@ export default function editClient(props: editClientProps) {
                     <option value="Extranjero no domiciliado">Extranjero No Domiciliado</option>
                     <option value="No contribuyente">No Contribuyente</option>
                   </select>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                          <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                      </svg>
-                  </div>
-                  {errors.identification_type && (
-                    <span className="text-red-500 text-base font-lato">{errors.identification_type}</span>
-                  )}
-                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {errors.identification_type && (
+                  <span className="text-red-500 text-sm">{errors.identification_type}</span>
+                )}
+              </div>
 
-              <div className="flex flex-col space-y-4">
-                <label htmlFor="cedula" className="font-lato text-base text-black font-medium">
-                    Cédula
-                  </label>
-                  <input
-                  className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                    transition-colors
-                    ${errors.id_number ? "border-red-500" : "border-gray2"}
-                    focus:outline-2 focus:outline-blue-500`}
+              {/* Cédula */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="cedula" className="text-sm sm:text-base text-black font-medium">Cédula</label>
+                <input
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white  text-base
+                    ${errors.id_number ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="text"
                   id="cedula"
                   name="id_number"
                   value={props.clientSelect?.id_number || ""}
                   onChange={(e) => {
-                    props.handleChange(e); 
-                    if (errors.id_number) {
-                      setErrors((prev) => ({ ...prev, id_number: "" })); 
-                    }
+                    props.handleChange(e);
+                    if (errors.id_number) setErrors((prev) => ({ ...prev, id_number: "" }));
                   }}
                   placeholder="0-0000-0000"
                   maxLength={9}
                 />
                 {errors.id_number && (
-                  <span className="text-red-500 text-base font-lato">{errors.id_number}</span>
+                  <span className="text-red-500 text-sm">{errors.id_number}</span>
                 )}
               </div>
 
-              <div className="flex flex-col space-y-4">
-                <label htmlFor="telefono">Teléfono</label>
-                  <input
-                    className={`w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                    transition-colors ${errors.phone ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
-                    type="string"
-                    id="telefono"
-                    name="phone"
-                    pattern="[0-9]*"
-                    inputMode="numeric"
-                    value={props.clientSelect?.phone || ""}
-                    onChange={(e) => {
-                    props.handleChange(e); 
-                    if (errors.phone) {
-                      setErrors((prev) => ({ ...prev, phone: "" })); 
-                    }
-                    }}
-                    placeholder="0000-0000"
-                    maxLength={8}
-                  />
-                  {errors.phone && (
-                    <span className="text-red-500 text-sm">{errors.phone}</span>
-                  )}
+              {/* Teléfono */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="telefono" className="text-sm sm:text-base text-black font-medium">Teléfono</label>
+                <input
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-base
+                    ${errors.phone ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                  type="text"
+                  id="telefono"
+                  name="phone"
+                  value={props.clientSelect?.phone || ""}
+                  onChange={(e) => {
+                    props.handleChange(e);
+                    if (errors.phone) setErrors((prev) => ({ ...prev, phone: "" }));
+                  }}
+                  placeholder="0000-0000"
+                  maxLength={8}
+                />
+                {errors.phone && (
+                  <span className="text-red-500 text-sm">{errors.phone}</span>
+                )}
               </div>
             </div>
-            
 
-             <div className="flex space-x-8">
-                  <div className="flex flex-col space-y-4">
-                  <label htmlFor="province_id" className="font-lato text-base text-black font-medium">Provincia</label>
-                  <div className="relative">
-                    <select className={`appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                      transition-colors ${errors.province_id ? "border-red-500" : "border-gray2"}  disabled:bg-gray2 focus:outline-2 focus:outline-blue-500`}
+     
+            <div className="flex flex-wrap gap-2 2xl:gap-6">
+              {/* Provincia */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="province_id" className="text-sm sm:text-base text-black font-medium">Provincia</label>
+                <div className="relative">
+                  <select
                     id="province_id"
                     name="province_id"
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                      ${errors.province_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     value={props.clientSelect?.province_id || ""}
                     onChange={(e) => {
-                        props.handleChange(e); 
-                        if (errors.province_id) {
-                          setErrors((prev) => ({ ...prev, province_id: "" })); 
-                        }
-                      }}>
-                      <option value="">Seleccione</option>
-                        {props.provinces.map((prov) => (
-                        <option key={prov.id} value={prov.id}>
-                          {prov.name}
-                        </option>
-                        ))}
-                      </select>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                        <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    {errors.province_id && (
-                    <span className="text-red-500 text-base font-lato">{errors.province_id}</span>
-                    )}
-                  </div>
-            <div className="flex flex-col space-y-4">
-              <label htmlFor="nombre" className="font-lato text-base text-black font-medium">Nombre</label>
-              <input
-                className="w-[472px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                focus:outline-blue-500 focus:outline-2"
-                type="text"
-                id="name"
-                name="name"
-                value={props.clientSelect?.name || ""}
-                onChange={(e) => {
-                props.handleChange(e); 
-                  if (errors.name) {
-                    setErrors((prev) => ({ ...prev, name: "" })); 
-                  }
-                }}
-                placeholder="Nombre"
-              />
-              {errors.name && (
-                <span className="text-red-500 text-base font-lato">{errors.name}</span>
-              )}
-            </div>
-            </div>
-            
-            <div className="flex space-x-8">
-                      <div className="flex flex-col space-y-4">
-                        <label htmlFor="canton_id" className="font-lato text-base text-black font-medium">Cantón</label>
-                        <div className="relative">
-                        <select className={`appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                        transition-colors ${errors.canton_id ? "border-red-500" : "border-gray2"}  disabled:bg-gray2 focus:outline-2 focus:outline-blue-500`}                                id="canton_id"
-                                name="canton_id"
-                                value={props.clientSelect?.canton_id || ""}
-                                onChange={(e) => {
-                                  props.handleChange(e); 
-                                  if (errors.canton_id) {
-                                    setErrors((prev) => ({ ...prev, canton_id: "" })); 
-                                  }
-                                }}
-                              >
-                              <option value="">Seleccione</option>
-                              {props.cantons
-                                .filter((c) => c.province_id === Number(props.clientSelect?.province_id))
-                                .map((canton) => (
-                                  <option key={canton.id} value={canton.id}>
-                                    {canton.name}
-                                  </option>
-                                ))}
-                          </select>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                         {errors.canton_id && (
-                            <span className="text-red-500 text-base font-lato">{errors.canton_id}</span>
-                          )}
-                      </div>
-            <div className="flex flex-col space-y-4">
-              <label htmlFor="apellidos" className="font-lato text-base text-black font-medium">Apellidos</label>
-              <input
-                className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                transition-colors ${errors.last_name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
-                type="text"
-                id="apellidos"
-                name="last_name"
-                value={props.clientSelect?.last_name || ""}
-                onChange={(e) => {
-                props.handleChange(e); 
-                  if (errors.last_name) {
-                    setErrors((prev) => ({ ...prev, last_name: "" })); 
-                  }
-                }}
-                placeholder="Primer Apellido-Segundo Apellido"
-              />
-              {errors.last_name && (
-                <span className="text-red-500 text-base font-lato">{errors.last_name}</span>
-              )}
-            </div>
-            </div>
-
-
-            <div className="flex space-x-8">
-                  <div className="flex flex-col space-y-4">
-                  <label htmlFor="district_id" className="font-lato text-base text-black font-medium">Distrito</label>
-                  <div className="relative">
-                  <select className={`appearance-none w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors ${errors.district_id ? "border-red-500" : "border-gray2"}  disabled:bg-gray2 focus:outline-2 focus:outline-blue-500`}       
-                    id="district_id"
-                    name="district_id"
-                    value={props.clientSelect?.district_id || ""}
-                    onChange={(e) => {
-                        props.handleChange(e); 
-                        if (errors.district_id) {
-                          setErrors((prev) => ({ ...prev, district_id: "" })); 
-                        }
-                      }}>
+                      props.handleChange(e);
+                      if (errors.province_id) setErrors((prev) => ({ ...prev, province_id: "" }));
+                    }}
+                  >
                     <option value="">Seleccione</option>
-                    {props.districts.filter((d) => d.canton_id === Number(props.clientSelect?.canton_id))
-                    .map((district) => (
-                    <option key={district.id} value={district.id}>
-                    {district.name}
-                    </option>
+                    {props.provinces.map((prov) => (
+                      <option key={prov.id} value={prov.id}>{prov.name}</option>
                     ))}
                   </select>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                    {errors.canton_id && (
-                              <span className="text-red-500 text-base font-lato">{errors.district_id}</span>
-                    )}
-                  </div>
-            <div className="flex flex-col space-y-4">
-               <label htmlFor="correoElectronico" className="font-lato text-base text-black font-medium">Correo Electrónico</label>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {errors.province_id && (
+                  <span className="text-red-500 text-sm">{errors.province_id}</span>
+                )}
+              </div>
+
+              {/* Nombre */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="nombre" className="text-sm sm:text-base text-black font-medium">Nombre</label>
                 <input
-                  className={`w-[472px] py-2  border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                  transition-colors ${errors.email ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={props.clientSelect?.name || ""}
+                  onChange={(e) => {
+                    props.handleChange(e);
+                    if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+                  }}
+                  placeholder="Nombre"
+                />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">{errors.name}</span>
+                )}
+              </div>
+            </div>
+
+          
+            <div className="flex flex-wrap gap-2 2xl:gap-6">
+              {/* Cantón */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="canton_id" className="text-sm sm:text-base text-black font-medium">Cantón</label>
+                <div className="relative">
+                  <select
+                    id="canton_id"
+                    name="canton_id"
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                      ${errors.canton_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                    value={props.clientSelect?.canton_id || ""}
+                    onChange={(e) => {
+                      props.handleChange(e);
+                      if (errors.canton_id) setErrors((prev) => ({ ...prev, canton_id: "" }));
+                    }}
+                  >
+                    <option value="">Seleccione</option>
+                    {props.cantons
+                      .filter((c) => c.province_id === Number(props.clientSelect?.province_id))
+                      .map((canton) => (
+                        <option key={canton.id} value={canton.id}>{canton.name}</option>
+                      ))}
+                  </select>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {errors.canton_id && (
+                  <span className="text-red-500 text-sm">{errors.canton_id}</span>
+                )}
+              </div>
+
+              {/* Apellidos */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="apellidos" className="text-sm sm:text-base text-black font-medium">Apellidos</label>
+                <input
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    ${errors.last_name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                  type="text"
+                  id="apellidos"
+                  name="last_name"
+                  value={props.clientSelect?.last_name || ""}
+                  onChange={(e) => {
+                    props.handleChange(e);
+                    if (errors.last_name) setErrors((prev) => ({ ...prev, last_name: "" }));
+                  }}
+                  placeholder="Primer Apellido - Segundo Apellido"
+                />
+                {errors.last_name && (
+                  <span className="text-red-500 text-sm">{errors.last_name}</span>
+                )}
+              </div>
+            </div>
+
+     
+            <div className="flex flex-wrap gap-2 2xl:gap-6">
+              {/* Distrito */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="district_id" className="text-sm sm:text-base text-black font-medium">Distrito</label>
+                <div className="relative">
+                  <select
+                    id="district_id"
+                    name="district_id"
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                      ${errors.district_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                    value={props.clientSelect?.district_id || ""}
+                    onChange={(e) => {
+                      props.handleChange(e);
+                      if (errors.district_id) setErrors((prev) => ({ ...prev, district_id: "" }));
+                    }}
+                  >
+                    <option value="">Seleccione</option>
+                    {props.districts
+                      .filter((d) => d.canton_id === Number(props.clientSelect?.canton_id))
+                      .map((district) => (
+                        <option key={district.id} value={district.id}>{district.name}</option>
+                      ))}
+                  </select>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {errors.district_id && (
+                  <span className="text-red-500 text-sm">{errors.district_id}</span>
+                )}
+              </div>
+
+              {/* Correo */}
+              <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                <label htmlFor="correoElectronico" className="text-sm sm:text-base text-black font-medium">Correo Electrónico</label>
+                <input
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    ${errors.email ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="email"
                   id="correoElectronico"
                   name="email"
                   value={props.clientSelect?.email || ""}
                   onChange={(e) => {
-                    props.handleChange(e); 
-                    if (errors.email) {
-                      setErrors((prev) => ({ ...prev, email: "" })); 
-                    }
-                    }}
+                    props.handleChange(e);
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                  }}
                   placeholder="example@gmail.com"
                 />
                 {errors.email && (
                   <span className="text-red-500 text-sm">{errors.email}</span>
                 )}
-            </div>
+              </div>
             </div>
 
-            <div className="flex flex-col space-y-4">
-              <label htmlFor="direccion" className="font-lato text-base text-black font-medium">Dirección</label>
+            {/* Dirección */}
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="direccion" className="text-sm sm:text-base text-black font-medium">Dirección</label>
               <textarea
-                className={`pt-1 w-[724px] min-h-30 max-h-40 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base
-                transition-colors ${errors.address ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                className={`pt-1 w-full min-h-15 max-h-20 2xl:min-h-28 2xl:max-h-40 border rounded-3xl px-4 text-gray1 bg-white text-base
+                  ${errors.address ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                 id="direccion"
                 name="address"
-                value={props.clientSelect?.address}
+                value={props.clientSelect?.address || ""}
                 onChange={(e) => {
-                  props.handleChange(e); 
-                  if (errors.address) {
-                    setErrors((prev) => ({ ...prev, address: "" })); 
-                  }
+                  props.handleChange(e);
+                  if (errors.address) setErrors((prev) => ({ ...prev, address: "" }));
                 }}
                 placeholder="Dirección del cliente o empresa"
               />
               {errors.address && (
-                <span className="text-red-500 text-base font-lato">{errors.address}</span>
+                <span className="text-red-500 text-sm">{errors.address}</span>
               )}
             </div>
           </form>
+
         )}
 
         {moveBar === 1 && props.clientSelect?.id && (
