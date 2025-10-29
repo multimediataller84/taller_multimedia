@@ -36,17 +36,25 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
   };
 
   return (
-    <div className="fixed inset-0 grid place-items-center bg-black/50 z-50">
-      <div className="bg-white p-6 rounded-lg w-[520px]">
+    // Overlay
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+      {/* Caja modal con scroll interno */}
+      <div
+        className="
+          bg-white rounded-lg w-full max-w-[520px]
+          max-h-[90vh] overflow-y-auto
+          p-6
+        "
+      >
         <h2 className="text-xl font-semibold mb-4">
           {initialData ? "Editar producto" : "Nuevo producto"}
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        {/* 👇 padding-bottom grande para que el footer sticky no tape el último input */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 pb-24">
           {/* Nombre */}
           <label className="block text-sm text-gray-700 font-medium">Nombre</label>
           <input
-          required
             {...register("product_name", { required: true })}
             placeholder="Ej. Lápiz HB"
             className="w-full border p-2 rounded"
@@ -56,7 +64,6 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           <label className="block text-sm text-gray-700 font-medium">SKU</label>
           <div className="flex gap-2">
             <input
-            required
               {...register("sku", {
                 required: true,
                 pattern: /^[A-Z0-9-]+$/,
@@ -64,13 +71,15 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               onChange={() => setSkuStatus("idle")}
               placeholder="Ej. LPZ-HB-01"
               className="flex-1 border p-2 rounded"
-              maxLength={6}
             />
           </div>
 
-          {/* Categoría (bloqueada al editar) */}
+          {/* Categoría */}
           <label className="block text-sm text-gray-700 font-medium">
-            Categoría {isEditing && <span className="text-xs text-gray-500"></span>}
+            Categoría{" "}
+            {isEditing && (
+              <span className="text-xs text-gray-500">(no editable)</span>
+            )}
           </label>
           <Controller
             name="category_id"
@@ -79,12 +88,13 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
-                required
                 options={formattedCategoryOptions}
                 placeholder="Seleccione categoría"
                 onChange={(opt) => field.onChange((opt as any)?.value)}
                 value={
-                  formattedCategoryOptions.find((option) => option.value === field.value) || null
+                  formattedCategoryOptions.find(
+                    (option) => option.value === field.value
+                  ) || null
                 }
                 isDisabled={isEditing}
                 isClearable
@@ -93,9 +103,12 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             )}
           />
 
-          {/* Impuesto (bloqueado al editar) */}
+          {/* Impuesto */}
           <label className="block text-sm text-gray-700 font-medium">
-            Impuesto {isEditing && <span className="text-xs text-gray-500"></span>}
+            Impuesto{" "}
+            {isEditing && (
+              <span className="text-xs text-gray-500">(no editable)</span>
+            )}
           </label>
           <Controller
             name="tax_id"
@@ -104,12 +117,13 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             render={({ field }) => (
               <Select
                 {...field}
-                required
                 options={formattedTaxesOptions}
                 placeholder="Seleccione impuesto"
                 onChange={(opt) => field.onChange((opt as any)?.value)}
                 value={
-                  formattedTaxesOptions.find((option) => option.value === field.value) || null
+                  formattedTaxesOptions.find(
+                    (option) => option.value === field.value
+                  ) || null
                 }
                 isDisabled={isEditing}
                 isClearable
@@ -119,19 +133,22 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           />
 
           {/* Unidad de medida */}
-          <label className="block text-sm text-gray-700 font-medium">Unidad de medida</label>
+          <label className="block text-sm text-gray-700 font-medium">
+            Unidad de medida
+          </label>
           <Controller
             name="unit_measure_id"
             control={control}
             render={({ field }) => (
               <Select
                 {...field}
-                required
                 options={formattedUnitOptions}
                 placeholder="Seleccione unidad"
                 onChange={(opt) => field.onChange((opt as any)?.value ?? "")}
                 value={
-                  formattedUnitOptions.find((option) => option.value === field.value) || null
+                  formattedUnitOptions.find(
+                    (option) => option.value === field.value
+                  ) || null
                 }
                 isClearable
                 classNamePrefix="select"
@@ -141,10 +158,9 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
 
           {/* Utilidad */}
           <label className="block text-sm text-gray-700 font-medium">
-            Utilidad <span className="text-xs text-gray-500">(en %)</span>
+            Utilidad (%)
           </label>
           <input
-            required
             type="number"
             step="1"
             {...register("profit_margin", { required: true })}
@@ -152,45 +168,54 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             className="w-full border p-2 rounded"
           />
 
-          {/* Costo (editable) */}
+          {/* Costo */}
           <label className="block text-sm text-gray-700 font-medium">Costo</label>
           <input
-            required
             type="number"
             step="0.01"
             {...register("cost", { required: true })}
             placeholder="0.00"
             className="w-full border p-2 rounded"
           />
-          <p className="text-xs text-gray-500 -mt-2"></p>
 
-          {/* Precio final (calculado) */}
+          {/* Precio final calculado */}
           <label className="block text-sm text-gray-700 font-medium">
-            Precio final (calculado)
+            Precio unitario
           </label>
           <input
-            required
             type="number"
             step="0.01"
             {...register("unit_price", { required: true })}
             placeholder="0.00"
-            className="w-full border p-2 rounded bg-gray-100"
-            readOnly
+            className="w-full border p-2 rounded"
           />
-          <p className="text-xs text-gray-500 -mt-2"></p>
 
           {/* Stock */}
-          <label className="block text-sm text-gray-700 font-medium">Stock</label>
+          <label className="block text-sm text-gray-700 font-medium">
+            Stock
+          </label>
           <input
-            required
             type="number"
             {...register("stock", { required: true })}
             placeholder="0"
             className="w-full border p-2 rounded"
           />
 
-          <div className="flex justify-end gap-2 pt-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded border">
+          {/* FOOTER STICKY */}
+          <div
+            className="
+              flex justify-end gap-2 pt-3
+              sticky bottom-0 left-0
+              bg-white
+              border-t border-gray-300
+              pb-4
+            "
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded border"
+            >
               Cancelar
             </button>
             <button
