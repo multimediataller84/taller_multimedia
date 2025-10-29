@@ -4,6 +4,7 @@ import { TCustomerEndpoint } from "../models/types/TCustomerEndpoint";
 import { TProvince } from "../models/types/TProvince";
 import { TCanton } from "../models/types/TCanton";
 import { TDistrict } from "../models/types/TDistrict";
+import { TCustomer } from "../models/types/TCustomer";
 
 const customerService = CustomerService.getInstance();
 
@@ -102,9 +103,6 @@ export const useClient = () => {
     fetchLocations();
   }, []);
   
-
-
-
   const handleSave = async () => {
     if (!clientSelect) return;
     try {
@@ -132,21 +130,24 @@ export const useClient = () => {
     }
   };
 
-  const handleAddClient = async (newClient: any) => {
-    try {
-      const created = await customerService.post(newClient);
-      setClients((prev) => [...prev, created]);
-      setVisibleAdd(false);
-      if (add){
-        setConfirmationAddClient(true);
-        setTimeout(()=>{
-          setConfirmationAddClient(false);
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Error al añadir cliente:", error);
+  const handleAddClient = async (newClient: TCustomer) => {
+  try {
+    await customerService.post(newClient);
+
+    const data = await customerService.getAll(); 
+    setClients(data);
+
+    setVisibleAdd(false);
+    if (add) {
+      setConfirmationAddClient(true);
+      setTimeout(() => {
+        setConfirmationAddClient(false);
+      }, 2000);
     }
-  };
+  } catch (error) {
+    console.error("Error al añadir cliente:", error);
+  }
+};
 
   const handleChange = (
     e: React.ChangeEvent<
