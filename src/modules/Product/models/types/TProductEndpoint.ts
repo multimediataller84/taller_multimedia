@@ -13,4 +13,6 @@ export type TProductEndpoint = {
   state: TProductStatus;
   createdAt: Date;
   updatedAt: Date;
+  unit_measure_id?: number;
+  unit_measure?: { id: number; symbol: string; description: string };
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TProductEndpoint } from "../../Product/models/types/TProductEndpoint";
 import { useProductCatalog } from "../hooks/useProductCatalog";
 
@@ -9,7 +9,13 @@ interface Props {
 }
 
 export const ProductPickerModal: React.FC<Props> = ({ isOpen, onClose, onAdd }) => {
-  const { loading, query, setQuery, products } = useProductCatalog();
+  const { loading, query, setQuery, products, refetch } = useProductCatalog();
+
+  useEffect(() => {
+    if (isOpen) {
+      refetch();
+    }
+  }, [isOpen, refetch]);
 
   if (!isOpen) return null;
 
