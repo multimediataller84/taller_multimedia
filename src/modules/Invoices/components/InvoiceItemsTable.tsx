@@ -18,6 +18,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
             <tr className="text-left">
               <th className="px-2 sm:px-4 md:px-5 xl:px-6 py-3 text-left">Producto</th>
               <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-3 text-center">Cant.</th>
+              <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-3 text-center">Gramos</th>
               <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 text-center">Impuesto</th>
               <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 text-center">Precio Unit.</th>
               <th className="px-0.5 sm:px-2 md:px-4 xl:px-6 text-center">Precio Total</th>
@@ -47,6 +48,19 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                     </button>
                   </div>
                 </td>
+                <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-3 text-center">
+                  {((i.unit_measure_symbol || "").toLowerCase() === "kg") || (i.unit_measure_description || "").toLowerCase().includes("kilo") ? (
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="gramos"
+                      className="w-20 sm:w-24 md:w-28 px-2 py-1 border rounded-3xl text-[10px] sm:text-xs text-center"
+                      disabled={disabled}
+                    />
+                  ) : (
+                    <span className="text-xs sm:text-sm text-gray-400">-</span>
+                  )}
+                </td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{typeof i.tax_percentage === 'number' ? `${i.tax_percentage}%` : i.tax_id}</td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{(i.unit_price + i.profit_margin).toFixed(2)}</td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{((((i.unit_price + i.profit_margin) * i.qty)) + ((i.unit_price + i.profit_margin) * (i.tax_percentage) / 100 )).toFixed(2)}</td>
@@ -63,7 +77,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
             ))}
             {items.length === 0 && (
               <tr>
-                <td className="px-6 py-6 text-center text-gray-500" colSpan={6}>Sin productos añadidos</td>
+                <td className="px-6 py-6 text-center text-gray-500" colSpan={7}>Sin productos añadidos</td>
               </tr>
             )}
           </tbody>
