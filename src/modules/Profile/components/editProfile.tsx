@@ -86,9 +86,13 @@ export default function editClient(props: editProfileProps) {
                     <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                     <label htmlFor="role_id" className="text-sm sm:text-base text-black font-medium">Rol</label>
                     <div className="relative">
-                      <select className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                      <select className={`disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.role_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                         id="role_id"
                         name="role_id"
+                        disabled={
+                          getRoleAuth() === "admin" &&
+                          props.profileSelect?.username === getUsernameAuth()
+                      }
                         value={props.profileSelect?.role_id || ""}
                         onChange={(e) => {
                         props.handleChange(e); 
