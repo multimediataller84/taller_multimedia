@@ -12,7 +12,7 @@ interface Props {
 export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrease, onRemove, disabled = false }) => {
   return (
     <div className="overflow-hidden">
-      <div className="h-30 md:h-50 lg:h-60 xl:h-70 overflow-y-scroll rounded-2xl bg-white ">
+      <div className="h-28 md:h-50 lg:h-53 overflow-y-scroll rounded-2xl bg-white ">
         <table className="w-full text-sm bg-white ">
           <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 rounded-2xl">
             <tr className="text-left">
@@ -66,7 +66,7 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{((((i.unit_price + i.profit_margin) * i.qty)) + ((i.unit_price + i.profit_margin) * (i.tax_percentage) / 100 )).toFixed(2)}</td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">
                   <button
-                    className={`text-white bg-black py-2 rounded-3xl w-12 sm:w-16 md:w-18 xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato ${disabled ? ' cursor-not-allowed' : 'hover:bg-red-800 cursor-pointer '}`}
+                    className={`font-bold text-white bg-black py-2 rounded-3xl w-12 sm:w-16 md:w-18 xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato ${disabled ? ' cursor-not-allowed' : 'hover:bg-red-800 cursor-pointer '}`}
                     onClick={() => !disabled && onRemove(i.product_id)}
                     disabled={disabled}
                   >

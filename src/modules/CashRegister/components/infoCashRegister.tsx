@@ -19,11 +19,11 @@ interface editProfileProps {
 export default function InfoCashRegister(props: editProfileProps) {
 
     return (
-            <div className="w-[70%]  flex flex-col ">
-            <div className="bg-gray3 w-full  flex flex-col">
-              <div className="flex w-full justify-between pt-8">
-                <h2 className="pl-8 font-Lato text-2xl ">Datos de Caja</h2>
-                <div className="flex space-x-8 pr-4">
+            <div className="flex flex-col w-full bg-gray3">
+            <div className="w-full flex flex-col">
+              <div className="flex w-full justify-between items-center pt-2 md:pt-4 2xl:pt-8">
+                <h2 className="ont-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Datos de Caja</h2>
+                <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
                   <button onClick={() => {
                     if (props.cashRegisterSelect?.status === "closed") {
                       props.setVisibleOpen(!props.visibleOpen);
@@ -31,17 +31,18 @@ export default function InfoCashRegister(props: editProfileProps) {
                       props.setVisibleClose(!props.visibleClose);
                     }
                   }}
-                  className={`w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 text-white
+                  className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 text-white
                     ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}`}>
                   {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
                   </button>
 
-                  <button className="w-[94px] py-2 rounded-3xl font-Lato font-bold transition duration-300 bg-black hover:bg-[#D32626] text-white"
+                  <button 
+                  className="text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
                   onClick={() => props.cashRegisterSelect && props.handleDelete(props.cashRegisterSelect.id)}>
                     Eliminar
                   </button>
 
-                  <button className="w-[94px] py-2 rounded-3xl bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 font-Lato font-bold transition duration-300"
+                  <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
                     onClick={() => {props.setVisibleInfoCashRegister(false)
                     props.setCashRegisterSelect(null)}}
                   >Cancelar</button>
@@ -49,25 +50,29 @@ export default function InfoCashRegister(props: editProfileProps) {
               </div>
 
               <div className="flex flex-col w-full">
-                <div className="flex w-full mt-8 space-y-4 font-lato font-medium">
-                  <h2 className="w-1/3 text-center text-blue-500">
+                <div className="flex w-full text-xs md:text-base mt-4 md:mt-6 2xl:mt-8 space-y-4 font-lato font-medium">
+                  <h2 className="w-1/2 text-center text-blue-500">
                     Información General
                   </h2>
                 </div>
-                <div className="w-full h-1 bg-graybar mt-4">
-                  <div className="w-1/3 h-1 bg-blue-500"></div>
+                <div className="w-full h-0.5 lg:h-1 bg-graybar mt-1 2xl:mt-4">
+                  <div className="w-1/2 h-0.5 lg:h-1 bg-blue-500"></div>
                 </div>
               </div>
+
             </div>
 
-             <div className=" bg-[#DEE8ED] size-full ">
-              <form className="flex-col flex font-Lato pt-8 pl-8 space-y-4">
-                <div className="flex space-x-8">
-                  <div className="flex flex-col space-y-4">
-                    <label htmlFor="opening_amount" className="text-base text-black font-medium font-Lato ">Monto Apertura</label>
+             <div className="bg-[#DEE8ED] size-full ">
+              <form className="flex flex-col font-lato pt-2 lg:pt-8 px-4 sm:px-8 space-y-6 max-w-5xl mx-auto">
+                
+                <div className="flex flex-wrap gap-2 2xl:gap-6">
+
+                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                    <label htmlFor="opening_amount" className="text-sm sm:text-base text-black font-medium">Monto Apertura</label>
                     <div className="relative">
                    <input
-                      className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
+                    className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
+                    focus:outline-none"
                       type="text"
                       id="opening_amount"
                       name="opening_amount"
@@ -82,11 +87,12 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col space-y-4">
-                    <label htmlFor="amount" className="text-base text-black font-medium font-Lato ">Monto Actual</label>
+                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                    <label htmlFor="amount" className="text-sm sm:text-base text-black font-medium">Monto Actual</label>
                     <div className="relative">
                    <input
-                      className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
+                    className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
+                    focus:outline-none"
                       type="text"
                       name="amount"
                       value={
@@ -100,10 +106,11 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col space-y-4">
-                    <label htmlFor="closing_amount" className="text-base text-black font-medium font-Lato ">Monto Caja Cerrada</label>
+                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                    <label htmlFor="closing_amount" className="text-sm sm:text-base text-black font-medium">Monto Caja Cerrada</label>
                         <div className="relative">
-                        <input className="w-[220px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
+                        <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
+                        focus:outline-none"
                         type="text"
                         id="closing_amount"
                         name="closing_amount"
@@ -119,11 +126,13 @@ export default function InfoCashRegister(props: editProfileProps) {
                   </div>
                 </div>
                 
-                <div className="flex space-x-8">
-                    <div className="flex flex-col space-y-4">
-                    <label htmlFor="opened_at" className="text-base text-black font-medium font-Lato ">Fecha Caja Abierta</label>
+
+                <div className="flex flex-wrap gap-2 2xl:gap-6">
+                    <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                    <label htmlFor="opened_at" className="text-sm sm:text-base text-black font-medium">Fecha Caja Abierta</label>
                     <div className="relative">
-                    <input className="w-[346px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base  focus:outline-none transition-colors"
+                    <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
+                        focus:outline-none"
                         type="text"
                         id="opened_at"
                         name="opened_at"
@@ -141,11 +150,11 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
                     </div>
 
-                    <div className="flex flex-col space-y-4">
-                    <label htmlFor="closed_at" className="text-base text-black font-medium font-Lato">Fecha Caja Cerrada</label>
+                    <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                    <label htmlFor="closed_at" className="text-sm sm:text-base text-black font-medium">Fecha Caja Cerrada</label>
                     <div className="relative">
-                    <input className="w-[346px] py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-none transition-colors"
-                        type="text"
+                    <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-none"                        
+                    type="text"
                         id="closed_at"
                         name="closed_att"
                         value={
@@ -163,23 +172,21 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
                 </div>
                 
-                <label className="text-base text-black font-Lato font-medium">Empleado Asignado</label>
-                <div className="w-1/4 pr-18 flex flex-col">
-                        <div
-                        className="w-full h-auto rounded-xl pb-4 font-lato text-base shadow transition duration-150 delay-75 bg-blue-500 text-white hover:bg-blue-800"
-                            >
-                        <h2 className="w-full h-auto ml-4 mt-4 font-medium">
-                          {props.cashRegisterSelect?.user?.name || "No hay empleado"}
-                        </h2>
-                        <h3 className="mt-1 ml-4">
-                          {props.cashRegisterSelect?.user
-                            ? props.cashRegisterSelect.user.role_id === 1
-                              ? "Administrador"
-                              : "Empleado"
-                            : "No asignado"}
-                        </h3>
+                <label className="text-sm sm:text-base text-black font-medium">Empleado Asignado</label>
+                  <div className="w-full flex flex-col">
+                      <div className="w-auto h-auto rounded-xl pb-4 font-lato text-base shadow transition duration-150 delay-75 bg-linear-to-l from-[#193cb8] to-blue-500 text-white">
+                      <h2 className="h-auto ml-4 mt-4 font-medium">
+                        {props.cashRegisterSelect?.user?.name || "No hay empleado"}
+                      </h2>
+                      <h3 className="mt-1 ml-4">
+                        {props.cashRegisterSelect?.user
+                          ? props.cashRegisterSelect.user.role_id === 1
+                          ? "Administrador"
+                          : "Empleado"
+                          : "No asignado"}
+                      </h3>
                     </div>
-                    </div>
+                  </div>
               </form>
             </div>
                 

@@ -41,18 +41,14 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
   };
 
   return (
-    <div
-      className="fixed inset-0 flex justify-center items-center flex-col bg-black/50"
-      onClick={() => props.setVisibleOpen(false)}
-    >
-      <div
-        className="bg-white w-[30%] h-[70%] rounded-2xl shadow flex flex-col p-8 space-y-8"
+    <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
+      <div className="absolute inset-0 bg-black/50" onClick={() => (props.setVisibleOpen(false))} />
+        <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto space-y-2 md:space-y-4"
         onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-lato font-medium">Abrir Caja</h1>
+          <h1 className="text-base sm:text-xl font-semibold">Abrir Caja</h1>
           <div className="space-x-4">
-          <button
-            className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-blue-500 hover:bg-blue-600 text-white"
+          <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
             onClick={ () => {
                 if (validateOnSave()) {
                   props.handleOpenCashRegister(
@@ -70,8 +66,7 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
           >
             Abrir
           </button>
-            <button
-              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white border-black hover:border-gray-700 hover:bg-gray-700"
+          <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
               onClick={() => props.setVisibleOpen(false)}
             >
               Cancelar
@@ -79,10 +74,11 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
           </div>
         </div>
 
-          <label htmlFor="opening_amount" className="text-base text-black font-medium font-lato">
+          <div className="flex flex-col space-y-2">
+          <label htmlFor="opening_amount" className="text-sm sm:text-base text-black font-medium">
             Monto Abrir
           </label>
-          <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base transition-colors ${errors.opening_amount ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+          <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base transition-colors ${errors.opening_amount ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
             type="text"
             id="opening_amount"
             name="opening_amount"
@@ -96,28 +92,29 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
             placeholder="Monto Abrir"
           />
            {errors.opening_amount && <p className="text-red-500 font-lato text-sm">{errors.opening_amount}</p>}
+          </div>
 
-        <div className="flex flex-col space-y-2 ">
-          <label htmlFor="searchProfile" className="text-base text-black font-medium font-lato">
-            Empleado
-          </label>
-          <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white font-medium text-base transition-colors
-              ${errors.user_id
-                  ? "border-red-500"
-                  : props.cashRegisterSelect?.user_id && props.cashRegisterSelect.user_id > 0
-                  ? "border-blue-500"
-                  : "border-gray2"
-              }
-              focus:outline-2 focus:outline-blue-500`}
-            type="text"
-            placeholder="Buscar perfil"
-            value={searchProfile}
-            onChange={(e) => setSearchProfile(e.target.value)}
-          />
-          {errors.user_id && <p className="text-red-500 font-lato text-sm">{errors.user_id}</p>}
-        </div>
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="searchProfile" className="text-sm sm:text-base text-black font-medium">
+              Empleado
+            </label>
+            <input className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base transition-colors
+                ${errors.user_id
+                    ? "border-red-500"
+                    : props.cashRegisterSelect?.user_id && props.cashRegisterSelect.user_id > 0
+                    ? "border-blue-500"
+                    : "border-gray2"
+                }
+                focus:outline-2 focus:outline-blue-500`}
+              type="text"
+              placeholder="Buscar perfil"
+              value={searchProfile}
+              onChange={(e) => setSearchProfile(e.target.value)}
+            />
+            {errors.user_id && <p className="text-red-500 font-lato text-sm">{errors.user_id}</p>}
+          </div>
 
-        <div className="flex flex-col overflow-y-auto h-[30%] space-y-2">
+        <div className="flex flex-col overflow-y-auto h-50 space-y-2">
           {loading ? (
             <div className="w-full h-[48px] flex justify-center ">
               <div className="translate-y-15 w-6 h-6 border-2 border-t-transparent rounded-full animate-spin border-blue-500"></div>
@@ -126,7 +123,7 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
             filteredProfiles.map((profile) => (
               <div
                 key={profile.id}
-                className={`cursor-pointer rounded-xl px-4 py-3 shadow transition mr-18
+                className={`cursor-pointer rounded-xl mr-8 px-3 py-2 shadow transition
                 ${
                   props.cashRegisterSelect?.user_id === profile.id
                     ? "bg-blue-500 text-white"
@@ -141,8 +138,9 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
                     setErrors((prev) => ({ ...prev, user_id: "" }));
                 }}
               >
-                <h2 className="font-medium">{profile.username}</h2>
-                <p className="text-sm opacity-80">
+                <h2 className="text-sm sm:text-base text-black font-medium">{profile.username}</h2>
+                <h3 className="text-sm sm:text-base text-black font-medium opacity-80">{profile.name}</h3>
+                <p className="text-sm sm:text-base text-black font-medium text-right">
                   {profile.role_id === 1 ? "Administrador" : "Empleado"}
                 </p>
               </div>

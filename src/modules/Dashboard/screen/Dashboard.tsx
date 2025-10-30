@@ -12,7 +12,7 @@ export const Dashboard = () => {
   return (
 
     <RootLayout search={search} setSearch={setSearch} showSearch={false}>
-      <div className="w-[90%] h-screen bg-gray3 flex-col">
+      <div className="w-[90%] h-full bg-gray3 flex-col">
 
         <div className="grid w-full h-auto grid-cols-12 gap-6 px-8 mt-8">
           <div className="col-span-12 lg:col-span-7">

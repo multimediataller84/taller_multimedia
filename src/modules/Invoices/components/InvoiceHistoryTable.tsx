@@ -17,12 +17,12 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
               <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">#</th>
               <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Fecha</th>
               <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Cliente</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Método</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Subtotal</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Total</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Pagado</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 ">Pendiente</th>
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Estado</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3">Método</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Subtotal</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Total</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Pagado</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Pendiente</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -41,15 +41,15 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
                   onClick={() => onSelect?.(inv)}
                   className={onSelect ? "cursor-pointer hover:bg-gray-50" : undefined}
                 >
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{inv.id}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{formatted}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{customer}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapPaymentMethodToES(inv.payment_method)}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{total !== undefined ? total.toFixed(2) : "-"}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{due !== undefined ? due.toFixed(2) : "-"}</td>
-                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapStatusToES(inv.status)}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-[10px] xl:text-sm pl-2 ">{inv.id}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-[10px] xl:text-sm">{formatted}</td>
+                  <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 text-center text-[10px] lg:text-sm">{customer}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapPaymentMethodToES(inv.payment_method)}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{subtotal !== undefined ? subtotal.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{total !== undefined ? total.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{Number.isFinite(paid) ? paid.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm ">{due !== undefined ? due.toFixed(2) : "-"}</td>
+                  <td className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 text-center text-xs xl:text-sm">{mapStatusToES(inv.status)}</td>
                 </tr>
               );
             })}
