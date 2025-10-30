@@ -117,7 +117,7 @@ export default function editClient(props: editClientProps) {
           <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Datos del Cliente</h2>
           <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
             <button
-              className={`py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 
+              className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 
                 ${props.edit ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                 : "bg-gray3 border border-gray2 text-gray1"}`}
               onClick={validateOnSave}
@@ -125,12 +125,12 @@ export default function editClient(props: editClientProps) {
               Editar
             </button>
             <button
-              className="text-white bg-black py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
+              className="text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
               onClick={() => props.clientSelect && props.handleDelete(props.clientSelect.id)}
             >
               Eliminar
             </button>
-             <button className="py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
+             <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
                   onClick={() => {props.setVisibleEdit(false)
                     props.setClientSelect(null)
                   }
@@ -140,24 +140,24 @@ export default function editClient(props: editClientProps) {
         </div>
 
         <div className="flex flex-col w-full">
-          <div className="flex w-full mt-2 2xl:mt-8 space-y-4 font-lato font-medium">
+          <div className="flex w-full mt-4 md:mt-6 2xl:mt-8 font-lato font-medium">
             <h2
-              className={`w-1/2 text-center text-xs sm:text-base ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
+              className={`w-1/2 text-center text-xs md:text-base ${moveBar === 0 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(0)}
             >
               Información General
             </h2>
 
             <h4
-              className={`w-1/2 text-center text-xs sm:text-base ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
+              className={`w-1/2 text-center text-xs md:text-base ${moveBar === 1 ? "text-blue-500" : "text-gray1"}`}
               onClick={() => setmMoveBar(1)}
             >
               Facturas y Créditos
             </h4>
           </div>
-          <div className="w-full h-1 bg-graybar relative">
+          <div className="w-full h-0.5 lg:h-1 bg-graybar mt-1 2xl:mt-4 relative">
             <div
-              className={`h-1 w-1/2 bg-blue-500 transition-transform duration-150 ease-in-out
+              className={`h-0.5 lg:h-1 w-1/2 bg-blue-500 transition-transform duration-150 ease-in-out
                 ${moveBar === 0 ? "translate-x-0" : ""} 
                 ${moveBar === 1 ? "translate-x-full" : ""} 
                 `}
@@ -168,7 +168,7 @@ export default function editClient(props: editClientProps) {
 
       <div className="bg-[#DEE8ED] size-full">
         {moveBar === 0 && (
-          <form className="flex flex-col font-lato pt-8 px-4 sm:px-8 space-y-6 max-w-5xl mx-auto">
+          <form className="flex flex-col font-lato pt-2 lg:pt-8 px-4 sm:px-8 space-y-2 2xl:space-y-6 max-w-5xl mx-auto">
           
             <div className="flex flex-wrap gap-2 2xl:gap-6">
               {/* Tipo de cédula */}
@@ -178,7 +178,7 @@ export default function editClient(props: editClientProps) {
                   <select
                     id="identification_type"
                     name="identification_type"
-                    className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-base focus:outline-2 focus:outline-blue-500"
+                    className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
                     value={props.clientSelect?.identification_type || ""}
                     onChange={(e) => {
                       props.handleChange(e);
@@ -209,7 +209,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                 <label htmlFor="cedula" className="text-sm sm:text-base text-black font-medium">Cédula</label>
                 <input
-                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white  text-base
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white  text-sm sm:text-base
                     ${errors.id_number ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="text"
                   id="cedula"
@@ -231,7 +231,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                 <label htmlFor="telefono" className="text-sm sm:text-base text-black font-medium">Teléfono</label>
                 <input
-                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-base
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base
                     ${errors.phone ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="text"
                   id="telefono"
@@ -259,7 +259,7 @@ export default function editClient(props: editClientProps) {
                   <select
                     id="province_id"
                     name="province_id"
-                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                       ${errors.province_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     value={props.clientSelect?.province_id || ""}
                     onChange={(e) => {
@@ -286,7 +286,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                 <label htmlFor="nombre" className="text-sm sm:text-base text-black font-medium">Nombre</label>
                 <input
-                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                     ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="text"
                   id="name"
@@ -313,7 +313,7 @@ export default function editClient(props: editClientProps) {
                   <select
                     id="canton_id"
                     name="canton_id"
-                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                       ${errors.canton_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     value={props.clientSelect?.canton_id || ""}
                     onChange={(e) => {
@@ -342,7 +342,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                 <label htmlFor="apellidos" className="text-sm sm:text-base text-black font-medium">Apellidos</label>
                 <input
-                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                     ${errors.last_name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="text"
                   id="apellidos"
@@ -369,7 +369,7 @@ export default function editClient(props: editClientProps) {
                   <select
                     id="district_id"
                     name="district_id"
-                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                    className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                       ${errors.district_id ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                     value={props.clientSelect?.district_id || ""}
                     onChange={(e) => {
@@ -398,7 +398,7 @@ export default function editClient(props: editClientProps) {
               <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                 <label htmlFor="correoElectronico" className="text-sm sm:text-base text-black font-medium">Correo Electrónico</label>
                 <input
-                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-base
+                  className={`w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                     ${errors.email ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                   type="email"
                   id="correoElectronico"
@@ -420,7 +420,7 @@ export default function editClient(props: editClientProps) {
             <div className="flex flex-col space-y-2">
               <label htmlFor="direccion" className="text-sm sm:text-base text-black font-medium">Dirección</label>
               <textarea
-                className={`pt-1 w-full min-h-15 max-h-20 2xl:min-h-28 2xl:max-h-40 border rounded-3xl px-4 text-gray1 bg-white text-base
+                className={`pt-1 w-full min-h-15 max-h-20 2xl:min-h-28 2xl:max-h-40 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base
                   ${errors.address ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                 id="direccion"
                 name="address"

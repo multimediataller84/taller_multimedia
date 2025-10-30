@@ -13,20 +13,16 @@ interface CloseCashRegisterProps {
 export default function CloseCashRegister(props: CloseCashRegisterProps) {
 
   return (
-    <div
-      className="fixed inset-0 flex justify-center items-center flex-col bg-black/50"
-      onClick={() => props.setVisibleClose(false)}
-    >
-      <div
-        className="bg-white w-[30%] h-auto rounded-2xl shadow flex flex-col p-8 space-y-8"
+      <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
+       <div className="absolute inset-0 bg-black/50" onClick={() => (props.setVisibleClose(false))} />
+
+        <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto space-y-2 md:space-y-4"
         onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-lato font-medium">Cerrar Caja</h1>
+          <h1 className="text-base sm:text-xl font-semibold">Cerrar Caja</h1>
           <div className="space-x-4">
-          <button
-              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
+              <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
               onClick={async () => {
-                // usa siempre el valor de amount
                 const closingAmount = props.cashRegisterSelect?.amount ?? 0;
 
                 await props.handleCloseCashRegister(
@@ -41,20 +37,19 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
             >
               Cerrar
             </button>
-            <button
-              className="w-[94px] py-2 rounded-3xl font-Lato font-bold bg-black text-white border-black hover:border-gray-700 hover:bg-gray-700"
-              onClick={() => props.setVisibleClose(false)}
+            <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
+            onClick={() => props.setVisibleClose(false)}
             >
               Cancelar
             </button>
           </div>
         </div>
-
-          <label htmlFor="closing_amount" className="text-base text-black font-medium font-lato">
-            Monto Cerrar
-          </label>
-          <input
-          className="w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-gray-100 font-normal text-base transition-colors"
+        <div className="flex flex-col space-y-2">
+        <label htmlFor="closing_amount" className="text-sm sm:text-base text-black font-medium">
+          Monto Cerrar
+        </label>
+        <input
+          className="w-full py-2 border rounded-3xl px-4 text-gray1 bg-white text-sm sm:text-base border-gray2"
           type="number"
           id="closing_amount"
           name="closing_amount"
@@ -62,7 +57,7 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
           readOnly
           placeholder="Monto Cerrar"
         />
-
+        </div>
       </div>
     </div>
   );

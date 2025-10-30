@@ -54,7 +54,7 @@ export const Client = () => {
   <ContentLoader
     speed={2}
     foregroundColor="#ecebeb"
-    className="w-full h-auto bg-white rounded-xl pb-4 shadow"
+    className="w-full h-19 sm:h-29 md:h-34 2xl:h-38 bg-white rounded-xl pb-4 shadow"
   >
     <rect x="20" y="20" rx="4" ry="4" width="60" height="10" />
     <rect x="20" y="45" rx="4" ry="4" width="40" height="10" />
@@ -65,9 +65,9 @@ export const Client = () => {
     <RootLayout search={search} setSearch={setSearch}>
       <div className="w-40 flex-shrink-0 flex-grow-0 sm:w-50 md:w-60 2xl:min-w-1/5 bg-[#E9EEF0] flex-col">
         <div className="flex justify-between items-center mt-0 ml-0 sm:mt-2 sm:ml-2 md:mt-4 md:ml-4 2xl:mt-8 2xl:ml-8">
-          <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">Lista de Clientes</h2>
+          <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0 ">Lista de Clientes</h2>
           <button
-            className={`py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
+            className={`font-bold py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
               ${
                 visibleAdd == true
                   ? "bg-gray3 text-gray1 border-gray2 "
@@ -96,7 +96,7 @@ export const Client = () => {
         </div>
 
         <div className="w-full h-auto ml-2 mt-2 md:ml-4 2xl:ml-8">
-          <h3 className="font-Lato font-medium text-xs md:text-base xl:text-base text-gray1 ">
+          <h3 className="font-Lato font-medium text-[10px] sm:text-xs md:text-base xl:text-base text-gray1 ">
             Todos los clientes registrados <br />
             en sistema
           </h3>
@@ -132,8 +132,8 @@ export const Client = () => {
                 >
                   <h2 className="w-full ml-2 md:ml-4 mt-2 md:mt-4 font-medium text-xs sm:text-sm 2xl:text-base">{items.name}</h2>
                   <h3 className="w-full ml-2 md:ml-4 font-medium text-xs sm:text-sm 2xl:text-base">{items.last_name}</h3>
-                  <h4 className="mt-1 ml-2 md:ml-4 text-xs sm:text-sm 2xl:text-base">{items.id_number}</h4>
-                  <h5 className="mt-2 2xl:mt-5 justify-end w-full flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">Facturas: {items.invoices.length}</h5>
+                  <h4 className="mt-1 ml-2 md:ml-4 font-medium text-xs sm:text-sm 2xl:text-base opacity-80">{items.id_number}</h4>
+                  <h5 className="hidden mt-2 md:mt-5 justify-end w-full sm:flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">Facturas: {items.invoices.length}</h5>
                 </div>
               </div>
             ))

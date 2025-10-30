@@ -182,7 +182,7 @@ export const Invoices = () => {
 
   return (
     <RootLayout search={search} setSearch={setSearch} showSearch={activeTab === "historial"}>
-      <div className="flex flex-col bg-gray3 w-[90%] h-full p-2 md:p-8 space-y-2">
+      <div className="flex flex-col bg-gray3 w-[90%] h-full p-2 md:p-8 space-y-4">
         <InvoiceTabs active={activeTab} onChange={setActiveTab} />
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
@@ -198,7 +198,7 @@ export const Invoices = () => {
           <div className="flex justify-end w-full items-center gap-3">
 
            <button
-              className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAdviceClick}
               disabled={aiLoading}
             >
@@ -206,14 +206,14 @@ export const Invoices = () => {
             </button>
 
           <button
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setProductModalOpen(true)}
             
           >
             Agregar productos
           </button>
           <button
-            className="w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base disabled:bg-gray3 disabled:border-gray2 disabled:text-gray1 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800
+            className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base disabled:bg-gray3 disabled:border-gray2 disabled:text-gray1 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800
             transition duration-300 disabled:cursor-not-allowed"
             disabled={
               submitting ||
@@ -497,7 +497,6 @@ export const Invoices = () => {
               <div className="bg-white rounded-md p-6 shadow-sm">Cargando historial…</div>
             ) : (
               <>
-                <div className="mt-8">
                   <InvoiceHistoryTable
                     data={currentInvoices}
                     onSelect={(inv) => {
@@ -505,12 +504,11 @@ export const Invoices = () => {
                       setDetailOpen(true);
                     }}
                   />
-                </div>
 
                 {totalPages > 1 && (
-                  <div className="mt-4 mb-2 pr-19 w-auto space-x-2 flex items-center font-Lato font-medium">
+                  <div className="mt-4 mb-2 pr-19 w-auto space-x-1 2xl:space-x-2 flex items-center font-Lato font-medium">
                     <button
-                      className={`size-[36px] border rounded-full ${
+                      className={`cursor-pointer size-6 2xl:size-9 rounded-full ${
                         canPrev ? "bg-white border-gray2 text-gray1" : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
                       }`}
                       onClick={() => canPrev && goPrev()}
@@ -518,7 +516,8 @@ export const Invoices = () => {
                       aria-label="Anterior"
                     >
                       <div className="w-full justify-center flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 -translate-x-[1px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
+                        className="size-3 2xl:size-4 -translate-x-[1px]">
                           <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd" />
                         </svg>
                       </div>
@@ -527,7 +526,7 @@ export const Invoices = () => {
                       typeof p === "number" ? (
                         <button
                           key={`${p}-${idx}`}
-                          className={`size-[42px] border rounded-full active:outline-0 ${
+                         className={`cursor-pointer size-9 2xl:size-[42px] border rounded-full active:outline-0 ${
                             activePage === p ? "bg-blue-500 text-white" : "bg-white border-gray2 text-gray1"
                           }`}
                           onClick={() => setActivePage(p)}
@@ -539,7 +538,7 @@ export const Invoices = () => {
                       )
                     )}
                     <button
-                      className={`size-[36px] border rounded-full ${
+                      className={`cursor-pointer size-6 2xl:size-9 border rounded-full transition  ${
                         canNext ? "bg-white border-gray2 text-gray1" : "opacity-40 cursor-not-allowed bg-white border-gray2 text-gray1"
                       }`}
                       onClick={() => canNext && goNext()}
@@ -547,7 +546,8 @@ export const Invoices = () => {
                       aria-label="Siguiente"
                     >
                       <div className="w-full justify-center flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 translate-x-[1px]">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" 
+                        className="size-3 2xl:size-4 translate-x-[1px]">
                           <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd" />
                         </svg>
                       </div>

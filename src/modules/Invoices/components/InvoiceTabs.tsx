@@ -8,24 +8,24 @@ interface Props {
 
 export const InvoiceTabs: React.FC<Props> = ({ active, onChange }) => {
   return (
-    <div className="flex flex-col w-full ">
-      <div className="flex w-full space-y-2 font-lato font-medium">
+    <div className="flex flex-col w-full">
+      <div className="flex w-full font-lato font-medium">
         <h2
-          className={`w-1/2 text-center text-xs sm:text-base ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
+          className={`w-1/2 text-center text-xs md:text-base  font-lato font-medium ${active === "generar" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("generar")}
         >
           Facturar
         </h2>
         <h3
-          className={`w-1/2 text-center text-xs sm:text-base ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
+          className={`w-1/2 text-center text-xs md:text-base  font-lato font-medium ${active === "historial" ? "text-blue-500" : "text-gray1"}`}
           onClick={() => onChange("historial")}
         >
           Historial de Facturas
         </h3>
       </div>
-      <div className="w-full h-1 bg-graybar relative">
+      <div className="w-full h-0.5 lg:h-1 bg-graybar mt-1 2xl:mt-4 relative">
         <div
-          className={`h-1 w-1/2 bg-blue-500 transition-transform duration-150 ease-in-out
+          className={`h-0.5 lg:h-1 w-1/2 bg-blue-500 transition-transform duration-150 ease-in-out
             ${active === "generar" ? "translate-x-0" : "translate-x-full"}`}
         ></div>
       </div>
