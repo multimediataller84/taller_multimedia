@@ -83,7 +83,7 @@ useEffect(() => {
 
       <div className="absolute inset-0 backdrop-blur-3xl z-10"></div>
     
-      <div className="size-auto justify-center absolute z-100 items-center flex flex-col bg-white py-35 px-10 rounded-3xl shadow ">
+      <div className="size-auto justify-center absolute z-100 items-center flex flex-col bg-white py-35 px-5 md:px-10 rounded-3xl shadow ">
         
           <svg className="h-15 -translate-y-8" viewBox="0 0 1374 399" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M25.8417 120.066C55.6576 91.5664 74.1233 87.2524 109.036 86.0664C139.978 87.4577 154.521 91.1482 177.321 99.5664C211.213 89.644 
