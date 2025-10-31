@@ -29,30 +29,38 @@ export default function PaymentModal({ open, title = "Abonar a factura", maxAmou
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-2xl p-6 w-[360px] shadow-xl">
-        <h3 className="font-Lato text-lg mb-4">{title}</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
 
-        <div className="mb-4">
-          <label className="block text-sm mb-2">Fecha y hora</label>
+        <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto space-y-2">
+
+        <h3 className="text-base sm:text-xl font-semibold">{title}</h3>
+
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm sm:text-base text-black font-medium">Fecha y hora</label>
+          <div className="relative">
           <input
             type="text"
             readOnly
             value={nowText}
-            className="w-full h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-gray-100 font-medium text-base"
+              className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 bg-gray2 border-gray2 text-sm sm:text-base focus:outline-0 "
           />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+            </svg>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(submit)} className="space-y-4">
-          <div>
-            <label htmlFor="amount" className="block text-sm mb-2">Monto (₡)</label>
+          <div className="flex flex-col space-y-1">
+            <label htmlFor="amount" className="text-sm sm:text-base text-black font-medium">Monto (₡)</label>
             <input
               id="amount"
               type="number"
               inputMode="decimal"
               step="0.01"
               placeholder="0.00"
-              className="w-full h-[34px] border rounded-2xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
+              className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
               {...register("amount", {
                 required: true,
                 min: 0.01,
@@ -75,23 +83,24 @@ export default function PaymentModal({ open, title = "Abonar a factura", maxAmou
           <div className="flex justify-end gap-3 pt-2">
 
             <button
-              type="button"
-              onClick={onClose}
-              className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300"
+              type="submit"
+              disabled={isSubmitting}
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base bg-blue-500 border border-blue-500 text-white font-Lato font-bold transition duration-300 hover:bg-blue-800 hover:border-blue-800 disabled:opacity-60"
             >
-              Abandonar
+              Confirmar
             </button>
 
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-[94px] py-2 rounded-3xl bg-blue-500 border border-blue-500 text-white font-Lato font-bold transition duration-300 hover:bg-blue-800 hover:border-blue-800 disabled:opacity-60"
+              type="button"
+              onClick={onClose}
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
             >
-              Continuar
+              Cancelar
             </button>
           </div>
         </form>
       </div>
+      
     </div>
   );
 }

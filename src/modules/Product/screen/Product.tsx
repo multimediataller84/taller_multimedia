@@ -115,39 +115,45 @@ export default function Product() {
 
   return (
     <RootLayout search={searchProducts} setSearch={setSearchProducts}>
-      <div className="flex-1 bg-gray3 w-full h-screen p-8 space-y-8 ">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col space-y-2.5">
-            <h2 className="font-Lato text-2xl">Inventario</h2>
-            <h3 className="font-Lato font-medium text-base text-gray1">
-              Lista completa del inventario de productos en sistema
+      <div className="flex flex-col w-[90%] h-full bg-gray3 p-2 md:p-8 space-y-1 md:space-y-4">
+          <div className="flex flex-col 2xl:flex-row sm:justify-between space-y-4 w-full">
+          
+          <div className="flex flex-col w-1/2">
+            <h2 className="font-Lato text-base xl:text-lg 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">
+              Inventario
+            </h2>
+            <h3 className="font-Lato font-medium text-xs sm:text-sm md:text-base text-gray1 pl-2 pt-2 sm:pl-0 sm:pt-0">
+              Lista completa de productos registrados 
             </h3>
           </div>
 
-          <div className="flex space-x-2">
-            <div className="relative">
+          <div className="flex flex-row items-center gap-2 md:gap-4 2xl:gap-6 w-1/2">
+            <div className="relative flex-1 min-w-[220px]">
               <select
-                className="appearance-none w-[220px] border py-2 rounded-3xl px-4 text-gray1 border-gray2 bg-white font-medium text-base focus:outline-blue-500 focus:outline-2"
                 id="categoria"
                 name="categoria"
-                value={categoryFilter || ""} 
-                onChange={(e) => setCategoryFilter(e.target.value)}  
+                value={categoryFilter || ""}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="appearance-none w-full py-2 px-4 border border-gray2 rounded-3xl text-gray1 bg-white 
+                          text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
               >
                 <option value="">Todas las categorías</option>
                 {Object.entries(categoryNameById)
-                  .filter(([k]) => !Number.isNaN(Number(k)))               // evita duplicados string/number
+                  .filter(([k]) => !Number.isNaN(Number(k)))
                   .map(([id, name]) => ({ value: String(id), label: name }))
                   .sort((a, b) => a.label.localeCompare(b.label))
-                  .map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))
-                }
+                  .map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
               </select>
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1"
+                className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1 pointer-events-none"
               >
                 <path
                   fillRule="evenodd"
@@ -159,18 +165,17 @@ export default function Product() {
 
             <button
               onClick={openCreate}
-              className="w-[220px] border rounded-3xl py-2 font-Lato text-base mr-4 
-              transition duration-300 bg-blue-500 border-blue-500 hover:bg-blue-800 hover:border-blue-800 text-white"
+              className="flex-shrink-0 py-2 px-4 md:px-5 rounded-3xl text-sm md:text-base font-Lato font-bold 
+                        bg-blue-500 border border-blue-500 text-white transition-colors duration-300 
+                        hover:bg-blue-800 hover:border-blue-800"
             >
-              Añadir Producto
+              Añadir producto
             </button>
           </div>
         </div>
-
         {loading ? (
-          <div className="p-6">
+      
             <ProductsTableSkeleton headers={headers} rows={8} />
-          </div>
         ) : (
           <ProductTable
             products={currentProducts}

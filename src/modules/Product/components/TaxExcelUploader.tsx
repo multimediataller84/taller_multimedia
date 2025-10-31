@@ -5,7 +5,7 @@ export default function TaxExcelUploader() {
 
   return (
 
-    <div className="flex  items-center space-x-4">
+    <div className="flex items-center space-x-4">
       <input
         ref={inputRef}
         type="file"
@@ -17,7 +17,7 @@ export default function TaxExcelUploader() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="rounded-3xl py-2 px-5 font-Lato text-base transition duration-300 border bg-black text-white border-black hover:bg-gray-700 hover:border-gray-700"
+        className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:px-5 text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-black text-white border-black hover:bg-gray-700 hover:border-gray-700"
       >
         Seleccionar archivo
       </button>
@@ -26,13 +26,13 @@ export default function TaxExcelUploader() {
         type="button"
         onClick={handleUpload}
         disabled={!file || busy}
-        className="w-auto border rounded-3xl py-2 px-5 font-Lato text-base mr-4 transition duration-300 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800"
+        className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:px-5 text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800"
       >
         {busy ? "Subiendo..." : "Subir Excel"}
       </button>
 
-      <span className="text-base font-Lato text-gray1">{file ? file.name : "Ningún archivo seleccionado"}</span>
-      {msg && <span className="text-base text-gray1 ml-2">{msg}</span>}
+      <span className="font-Lato font-medium text-xs sm:text-sm md:text-base text-gray1 pl-2 pt-2 sm:pl-0 sm:pt-0">{file ? file.name : "Ningún archivo seleccionado"}</span>
+      {msg && <span className="font-Lato font-medium text-xs sm:text-sm md:text-base text-gray1 pl-2 pt-2 sm:pl-0 sm:pt-0">{msg}</span>}
     </div>
   );
 }

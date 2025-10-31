@@ -105,7 +105,9 @@ export default function Credit({ clientId, clientName = "" }: Props) {
   };
 
   if (loading) {
-    return <div className="p-8">Cargando...</div>;
+    return <div className=" justify-center mt-50 flex">
+      <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin border-blue-500"></div>
+      </div>;
   }
 
   if (!hasCredit) {
@@ -127,24 +129,32 @@ export default function Credit({ clientId, clientName = "" }: Props) {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between p-8">
-        <div className="flex flex-col gap-2">
+    <div className="flex flex-col w-full">
+      {/* 🧾 Encabezado del crédito */}
+
+      <div className="flex gap-4 flex-row items-center justify-between p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col w-[55%]">
           <CreditBalance credit={credit!} />
           {errorMsg && <span className="text-red-600 text-sm">{errorMsg}</span>}
-
-          <span className="text-xs text-gray-600">
+          <span className="font-Lato text-xs md:text-base xl:text-base text-gray-600">
             Disponible: {formatCRC(credit!.remaining)}
           </span>
         </div>
 
-        <CreditActions onDelete={() => setConfirmDeleteCreditOpen(true)} />
+        <div className="flex justify-end w-[45%] items-center">
+          <CreditActions onDelete={() => setConfirmDeleteCreditOpen(true)} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 px-8 pb-8">
-        <div className="col-span-2 flex flex-col gap-3">
+      {/* 📊 Contenido principal */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4 sm:px-6 md:px-8 pb-8">
+        {/* Facturas */}
+       
+        <div className="lg:col-span-2 flex flex-col gap-3 overflow-y-auto h-60 2xl:h-90">
           {(credit?.invoices?.length ?? 0) === 0 ? (
-            <div className="text-gray-600">Aún no hay facturas agregadas.</div>
+            <div className="text-gray-600 text-sm sm:text-base">
+              Aún no hay facturas agregadas.
+            </div>
           ) : (
             (credit?.invoices ?? []).map(inv => (
               <InvoiceCard
@@ -154,7 +164,9 @@ export default function Credit({ clientId, clientName = "" }: Props) {
                 createdAt={inv.createdAt}
                 locked={!!inv.locked}
                 selected={selectedInvoiceId === inv.id}
-                onSelect={() => setSelectedInvoiceId(prev => (prev === inv.id ? null : inv.id))}
+                onSelect={() =>
+                  setSelectedInvoiceId(prev => (prev === inv.id ? null : inv.id))
+                }
                 onPay={() => {
                   setInvoiceForPayment(inv.id);
                   setPayOpen(true);
@@ -164,25 +176,14 @@ export default function Credit({ clientId, clientName = "" }: Props) {
               />
             ))
           )}
+
         </div>
 
-        <div className="col-span-1 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h4 className="font-Lato font-semibold">Abonos</h4>
-            {selectedInvoice && (
-              <button
-                type="button"
-                onClick={() => setSelectedInvoiceId(null)}
-                className="text-blue-600 underline"
-                title="Quitar filtro"
-              >
-                Quitar filtro
-              </button>
-            )}
-          </div>
-
+        {/* Abonos */}
+        <div className="lg:col-span-1 flex flex-col gap-3">
+          <div className="overflow-y-auto h-60 2xl:h-90 space-y-3">
           {filteredPayments.length === 0 ? (
-            <div className="text-gray-600">
+            <div className="text-gray-600 text-sm sm:text-base">
               {selectedInvoice
                 ? "No hay abonos para la factura seleccionada."
                 : "Aún no hay abonos."}
@@ -194,13 +195,15 @@ export default function Credit({ clientId, clientName = "" }: Props) {
                 amount={paym.amount}
                 createdAt={paym.createdAt}
                 disabled={!!paym.locked}
-                onDelete={() => setPaymentToDelete(String(paym.id))} 
+                onDelete={() => setPaymentToDelete(String(paym.id))}
               />
             ))
           )}
+          </div>
         </div>
       </div>
 
+      {/* 🧩 Modales y diálogos */}
       <PaymentModal
         open={payOpen}
         title="Abonar a factura"
@@ -209,7 +212,7 @@ export default function Credit({ clientId, clientName = "" }: Props) {
           setPayOpen(false);
           setInvoiceForPayment(null);
         }}
-        onConfirm={(amount) => {
+        onConfirm={amount => {
           if (!invoiceForPayment) return;
           const res = payInvoice(invoiceForPayment, amount);
           if (res.ok) {
@@ -227,6 +230,7 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         onClose={() => setStatusModal(s => ({ ...s, open: false }))}
       />
 
+      {/* Confirmaciones */}
       <ConfirmDialog
         open={!!invoiceToCancel}
         onCancel={() => setInvoiceToCancel(null)}
@@ -236,11 +240,10 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         }}
         title="¿Estás seguro?"
         message="Se abonará automáticamente lo faltante de esta factura, se saldará y quedará bloqueada."
-        confirmLabel="Sí"
-        cancelLabel="No"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
       />
 
-      {/* ⬇️ Eliminación de crédito con modal de estado ⬇️ */}
       <ConfirmDialog
         open={confirmDeleteCreditOpen}
         onCancel={() => setConfirmDeleteCreditOpen(false)}
@@ -248,26 +251,19 @@ export default function Credit({ clientId, clientName = "" }: Props) {
           const res = await removeCredit();
           setConfirmDeleteCreditOpen(false);
 
-          if (res.ok) {
-            setStatusModal({
-              open: true,
-              title: "Crédito eliminado",
-              message: "El crédito del cliente se eliminó correctamente.",
-              status: "success",
-            });
-          } else {
-            setStatusModal({
-              open: true,
-              title: "No se pudo eliminar",
-              message: res.message || "Ocurrió un problema al eliminar el crédito.",
-              status: "error",
-            });
-          }
+          setStatusModal({
+            open: true,
+            title: res.ok ? "Crédito eliminado" : "No se pudo eliminar",
+            message: res.ok
+              ? "El crédito del cliente se eliminó correctamente."
+              : res.message || "Ocurrió un problema al eliminar el crédito.",
+            status: res.ok ? "success" : "error",
+          });
         }}
         title="¿Estás seguro?"
         message="Esto eliminará el crédito del cliente y su historial."
-        confirmLabel="Sí"
-        cancelLabel="No"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
       />
 
       <ConfirmDialog
@@ -279,8 +275,8 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         }}
         title="¿Estás seguro?"
         message="Esto eliminará la factura y ajustará el saldo disponible."
-        confirmLabel="Sí"
-        cancelLabel="No"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
       />
 
       <ConfirmDialog
@@ -292,9 +288,26 @@ export default function Credit({ clientId, clientName = "" }: Props) {
         }}
         title="¿Estás seguro?"
         message="Esto eliminará el abono y reajustará la deuda de su factura."
-        confirmLabel="Sí"
-        cancelLabel="No"
+        confirmLabel="Confirmar"
+        cancelLabel="Cancelar"
       />
     </div>
   );
 }
+
+
+/*
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <h4 className="font-Lato font-semibold text-base sm:text-lg">Abonos</h4>
+            {selectedInvoice && (
+              <button
+                type="button"
+                onClick={() => setSelectedInvoiceId(null)}
+                className="text-blue-600 underline text-sm"
+              >
+                Quitar filtro
+              </button>
+            )}
+          </div>
+
+*/

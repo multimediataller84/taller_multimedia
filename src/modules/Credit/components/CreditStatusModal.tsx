@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 type Status = "success" | "error";
 
 type Props = {
@@ -12,40 +14,35 @@ export default function CreditStatusModal({
   open,
   title,
   message,
-  status,
   onClose,
 }: Props) {
   if (!open) return null;
 
-  const isSuccess = status === "success";
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 2000);
+
+    return () => clearTimeout(timer); // limpia el timeout si se desmonta antes
+  }, [onClose]);
+
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
-        <div className="mb-3 flex items-center gap-2">
-          <div
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${
-              isSuccess ? "bg-green-100" : "bg-red-100"
-            }`}
-          >
-            <span className={`text-xl ${isSuccess ? "text-green-600" : "text-red-600"}`}>
-              {isSuccess ? "✓" : "!"}
-            </span>
-          </div>
-          <h2 className="text-lg font-semibold">{title}</h2>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
 
-        <p className="mb-5 text-sm text-gray-700">{message}</p>
-
-        <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            Aceptar
-          </button>
+      <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="h-full items-center flex-col flex justify-center w-full">
+                <div className="w-full justify-center flex mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-12 stroke-blue-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+          <h2 className="text-base sm:text-xl font-semibold">{title}</h2>
+          <p className="text-sm sm:text-base ">{message}</p>
         </div>
       </div>
+
     </div>
   );
 }
