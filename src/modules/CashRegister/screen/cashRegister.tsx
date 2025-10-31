@@ -4,6 +4,8 @@ import ContentLoader from 'react-content-loader'
 import InfoCashRegister from "../components/infoCashRegister";
 import AddCashRegister from "../components/addCashRegister";
 import Pagination from "../../../components/pagination";
+import { getRoleAuth } from "../../../utils/getRoleAuth";
+import { getUsernameAuth } from "../../../utils/getUsernameAuth";
 
 export const CashRegister = () => {
     
@@ -40,6 +42,21 @@ export const CashRegister = () => {
         pagesDisplay,
     } = useCashRegister();
 
+    const role = getRoleAuth();
+    const username = getUsernameAuth();
+
+    const hasCashRegister = currentCashRegister.some(
+        (item) => item.user?.name === username
+    );
+
+    
+    const filteredCashRegisters =
+    role === "employee"
+        ? currentCashRegister.filter(
+            (item) => item.user?.name === username
+        )
+        : currentCashRegister;
+
     const CashRegisterLoader = () => (
         <ContentLoader
             speed={2}
@@ -55,13 +72,21 @@ export const CashRegister = () => {
             <div className="w-40 flex-shrink-0 flex-grow-0 sm:w-50 md:w-60 2xl:min-w-1/5 bg-[#E9EEF0] flex-col">
                 <div className="flex justify-between items-center mt-0 ml-0 sm:mt-2 sm:ml-2 md:mt-4 md:ml-4 2xl:mt-8 2xl:ml-8">
                     <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0 ">Lista de Cajas</h2>
-                    <button
+                    <button disabled={role === "employee" && hasCashRegister}
                     className={`font-bold py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
                     ${
                         visibleAdd == true
                         ? "bg-gray3 text-gray1 border-gray2 "
                         : "bg-blue-500 text-white border-blue-500 hover:bg-blue-800 hover:border-blue-800"
-                    }`}
+                    }
+
+                    ${
+                        role === "employee" && hasCashRegister
+                        ? "cursor-not-allowed"
+                        : "cursor-pointer"
+                    }
+                        
+                    `}
                     onClick={() => {
                     setVisibleAdd(true);
                     setVisibleEdit(false);
@@ -79,55 +104,54 @@ export const CashRegister = () => {
                     </button>
                 </div>
 
-            <div className="w-full h-auto ml-2 mt-2 md:ml-4 2xl:ml-8">
-                <h3 className="font-Lato font-medium text-[10px] sm:text-xs md:text-base xl:text-base text-gray1 ">
-                Todas las cajas registradas <br />
-                en sistema
-                </h3>
-            </div>
-
             <div className="w-full h-100 lg:h-120 flex flex-col overflow-y-auto mt-2 md:mt-4">
-            <div className="space-y-2">
-                {loading ? ( 
-                [...Array(4)].map((_, index) => (
-                <div key={index} className="w-full pl-2 2xl:pl-8 pr-4 2xl:pr-11 flex">
-                    <CashRegisterLoader />
-                </div>
-                ))
-            ) : ( 
-                currentCashRegister.map((items) => (
-                <div key={items.id} className="w-full pl-2 2xl:pl-8 pr-4 2xl:pr-11 flex">
-                    <div
-                    className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
-                                ${
-                                cashRegisterSelect?.id === items.id
-                                    ? "bg-blue-500 text-white hover:bg-blue-800"
-                                    : "bg-white text-black hover:bg-gray-200"
-                                }
-                                `}
-                    onClick={() => {
-                        setCashRegisterSelect(items);
-                        setVisibleEdit(true);
-                        setVisibleAdd(false);
-                    }}
-                    >
-                    <h2 className="w-full ml-2 md:ml-4 mt-2 md:mt-4 font-medium text-xs sm:text-sm 2xl:text-base">
-                        Caja {items.id}
-                    </h2>
-                    <h3 className="w-full ml-2 md:ml-4 font-medium text-xs sm:text-sm 2xl:text-base opacity-80">
-                          {items.user?.name || "Sin empleado"}
-                    </h3>
-                    <h4 className="mt-1 ml-2 md:ml-4 text-xs sm:text-sm 2xl:text-base font-medium opacity-80">
-                        {new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(items.opening_amount)}
-                    </h4>
-                    <h5 className="hidden mt-2 md:mt-5 justify-end w-full sm:flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">
-                        {items.status === "open" ? "Abierta": "Cerrada"}
-                    </h5>
+                <div className="space-y-2">
+                {loading ? (
+                    [...Array(4)].map((_, index) => (
+                    <div key={index} className="w-full pl-2 2xl:pl-8 pr-4 2xl:pr-11 flex">
+                        <CashRegisterLoader />
                     </div>
+                    ))
+                ) : filteredCashRegisters.length > 0 ? (
+                    filteredCashRegisters.map((items) => (
+                    <div key={items.id} className="w-full pl-2 2xl:pl-8 pr-4 2xl:pr-11 flex">
+                        <div
+                        className={`cursor-pointer w-full h-auto rounded-xl pb-4 font-lato text-black text-base shadow transition duration-150 delay-75 
+                        ${
+                            cashRegisterSelect?.id === items.id
+                            ? "bg-blue-500 text-white hover:bg-blue-800"
+                            : "bg-white text-black hover:bg-gray-200"
+                        }`}
+                        onClick={() => {
+                            setCashRegisterSelect(items);
+                            setVisibleEdit(true);
+                            setVisibleAdd(false);
+                        }}
+                        >
+                        <h2 className="w-full ml-2 md:ml-4 mt-2 md:mt-4 font-medium text-xs sm:text-sm 2xl:text-base">
+                            Caja {items.id}
+                        </h2>
+                        <h3 className="w-full ml-2 md:ml-4 font-medium text-xs sm:text-sm 2xl:text-base opacity-80">
+                            {items.user?.name || "Sin empleado"}
+                        </h3>
+                        <h4 className="mt-1 ml-2 md:ml-4 text-xs sm:text-sm 2xl:text-base font-medium opacity-80">
+                            {new Intl.NumberFormat("es-CR", {
+                            style: "currency",
+                            currency: "CRC",
+                            }).format(items.opening_amount)}
+                        </h4>
+                        <h5 className="hidden mt-2 md:mt-5 justify-end w-full sm:flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">
+                            {items.status === "open" ? "Abierta" : "Cerrada"}
+                        </h5>
+                        </div>
+                    </div>
+                    ))
+                ) : (
+                    <p className="ml-2 md:ml-4 2xl:ml-8 font-Lato font-medium text-[10px] sm:text-xs md:text-base xl:text-base text-gray1">
+                    No tienes cajas asignadas.
+                    </p>
+                )}
                 </div>
-                ))
-            )}
-            </div>
             </div>
 
              <div className="w-full flex pl-2 2xl:pl-8">
@@ -142,7 +166,9 @@ export const CashRegister = () => {
             pagesDisplay={pagesDisplay}
             />
             </div>
-            <h2 className="ml-2 md:ml-4 2xl:ml-8 mt-4 font-Lato font-medium text-xs md:text-base xl:text-base text-gray1">
+            <h2 className={`ml-2 md:ml-4 2xl:ml-8 mt-4 font-Lato font-medium text-xs md:text-base xl:text-base text-gray1
+                ${getRoleAuth() === "employee" ? "hidden": "inline"}
+                `}>
             Hay {cashRegister.length} cajas registradas
             </h2>
       </div>        

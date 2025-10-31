@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { useProfile } from "../../Profile/hooks/useProfile";
+import { getRoleAuth } from "../../../utils/getRoleAuth";
+import { getUsernameAuth } from "../../../utils/getUsernameAuth";
 
 interface AddCashRegisterProps {
   visibleAdd: boolean;
@@ -38,6 +40,15 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
 
     return Object.keys(newErrors).length === 0;
   };
+
+  const role = getRoleAuth();
+  const username = getUsernameAuth();
+
+// Si es empleado, solo ve su propio perfil
+const visibleProfiles =
+  role === "employee"
+    ? filteredProfiles.filter((profile) => profile.username === username)
+    : filteredProfiles;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
@@ -108,40 +119,45 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
         </div>
 
         <div className="flex flex-col overflow-y-auto h-50 space-y-2">
-          {loading ? (
-             <div className="w-full h-[48px] flex justify-center">
-              <div className="translate-y-15 w-6 h-6 border-2 border-t-transparent rounded-full animate-spin border-blue-500"></div>
+        {loading ? (
+          <div className="w-full h-[48px] flex justify-center">
+            <div className="translate-y-15 w-6 h-6 border-2 border-t-transparent rounded-full animate-spin border-blue-500"></div>
+          </div>
+        ) : visibleProfiles.length > 0 ? (
+          visibleProfiles.map((profile) => (
+            <div
+              key={profile.id}
+              className={`cursor-pointer rounded-xl mr-8 px-3 py-2 shadow transition
+              ${
+                props.cashRegisterSelect?.user_id === profile.id
+                  ? "bg-blue-500 text-white"
+                  : "bg-white hover:bg-gray-200"
+              }`}
+              onClick={() => {
+                props.setCashRegisterSelect({
+                  ...props.cashRegisterSelect,
+                  user_id: profile.id,
+                  employee_name: profile.username,
+                });
+
+                setErrors((prev) => ({ ...prev, user_id: "" }));
+              }}
+            >
+              <h2 className="text-sm sm:text-base font-medium">{profile.username}</h2>
+              <h3 className="text-sm sm:text-base font-medium opacity-80">
+                {profile.name}
+              </h3>
+              <p className="text-sm sm:text-base font-medium text-right">
+                {profile.role_id === 1 ? "Administrador" : "Empleado"}
+              </p>
             </div>
-          ) : (
-            filteredProfiles.map((profile) => (
-              <div
-                key={profile.id}
-                className={`cursor-pointer rounded-xl mr-8 px-3 py-2 shadow transition
-                ${
-                  props.cashRegisterSelect?.user_id === profile.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-white hover:bg-gray-200"
-                }`}
-                onClick={() => {
-                  props.setCashRegisterSelect({
-                    ...props.cashRegisterSelect,
-                    user_id: profile.id,
-                    employee_name: profile.username,
-                  });
-
-                    setErrors((prev) => ({ ...prev, user_id: "" }));
-
-                }}
-              >
-                <h2 className="text-sm sm:text-base text-black font-medium">{profile.username}</h2>
-                <h3 className="text-sm sm:text-base text-black font-medium opacity-80">{profile.name}</h3>
-                <p className="text-sm sm:text-base text-black font-medium text-right">
-                  {profile.role_id === 1 ? "Administrador" : "Empleado"}
-                </p>
-              </div>
-            ))
-          )}
-        </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 mt-2">
+            No tienes permisos para ver otros perfiles.
+          </p>
+        )}
+      </div>
       </div>
     </div>
   );
