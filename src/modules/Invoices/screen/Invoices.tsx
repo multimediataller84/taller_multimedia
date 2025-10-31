@@ -37,6 +37,8 @@ export const Invoices = () => {
     increaseQty,
     decreaseQty,
     removeItem,
+    updateGrams,
+    updateUnitPrice,
     subtotal,
     clearItems,
   } = useInvoiceItems();
@@ -268,7 +270,7 @@ export const Invoices = () => {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
                 payment_method: method,
-                products: mapItemsToPayload(items.map((i) => ({ product_id: i.product_id, qty: i.qty })) ),
+                products: mapItemsToPayload(items),
                 status: statusForMethod,
                 cash_register_id: selRegisterId,
                 user_id: selUserId,
@@ -479,6 +481,8 @@ export const Invoices = () => {
           onIncrease={increaseQty}
           onDecrease={decreaseQty}
           onRemove={removeItem}
+          onUpdateGrams={updateGrams}
+          onUpdateUnitPrice={updateUnitPrice}
           disabled={false}
         />
 

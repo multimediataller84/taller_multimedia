@@ -3,6 +3,7 @@ import type { TPaymentMethod } from "./TPaymentMethod";
 export type TInvoiceProduct = {
   id: number; // product id
   quantity: number;
+  unit_price: number;
 };
 
 export type TInvoice = {

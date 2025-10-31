@@ -12,6 +12,7 @@ export type TInvoiceItem = {
   unit_measure_id?: number;
   unit_measure_symbol?: string;
   unit_measure_description?: string;
+  grams?: number;
 };
 
 export const createItemFromProduct = (p: TProductEndpoint): TInvoiceItem => ({
@@ -26,4 +27,5 @@ export const createItemFromProduct = (p: TProductEndpoint): TInvoiceItem => ({
   unit_measure_id: p.unit_measure_id,
   unit_measure_symbol: p.unit_measure?.symbol,
   unit_measure_description: p.unit_measure?.description,
+  grams: 0,
 });
