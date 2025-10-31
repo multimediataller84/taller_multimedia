@@ -198,7 +198,7 @@ export const Invoices = () => {
           <div className="flex justify-end w-full items-center gap-3">
 
            <button
-              className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="hidden font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-black hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAdviceClick}
               disabled={aiLoading}
             >
@@ -206,7 +206,7 @@ export const Invoices = () => {
             </button>
 
           <button
-            className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="font-bold w-auto border rounded-3xl py-2 px-5 font-Lato text-xs sm:text-sm md:text-base transition duration-300 border-blue-500 bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setProductModalOpen(true)}
             
           >
