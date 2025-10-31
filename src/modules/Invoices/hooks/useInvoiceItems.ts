@@ -62,7 +62,7 @@ export const useInvoiceItems = () => {
 
   const subtotal = useMemo(() => {
     return items.reduce((acc, i) => {
-      const base = pricePerMargin(i) * i.qty;
+      const base = pricePerMargin(i) * effectiveQty(i);
       const tax = base * (i.tax_percentage / 100);
       return acc + base + tax;
     }, 0);
