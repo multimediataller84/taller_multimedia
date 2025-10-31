@@ -75,10 +75,10 @@ export function ProductTable(props: ProductsProps) {
             <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{row.stock}</td>
             <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{row.state}</td>
 
-            <td className="relative">
+            <td className="relative py-2">
               <div className="flex justify-center items-center w-full h-full">
                 <button
-                  className={`rounded-full w-10 h-9 xl:w-13 xl:h-12 border group active:outline-hidden 
+                  className={`rounded-full w-7 h-7 sm:w-8 sm:h-8 2xl:w-10 2xl:h-10 border group active:outline-hidden 
                     flex justify-center items-center transition duration-300 ease-in-out hover:scale-110  
                     ${openMenuId === row.id ? "bg-blue-500 border-blue-500" : "bg-white border-gray2 hover:bg-gray2"}`}
                   onClick={() => handleToggleMenu(row.id)}
@@ -96,7 +96,7 @@ export function ProductTable(props: ProductsProps) {
 
                {openMenuId === row.id && (
                 <div
-                  className="absolute flex flex-row bg-white p-2 sm:p-2.5 md:p-3 rounded-3xl shadow
+                  className="absolute flex flex-row bg-white p-0.5 md:p-1 rounded-3xl shadow
                             space-x-2 sm:space-x-3 md:space-x-4 
                             right-full mr-3 top-1/2 -translate-y-1/2 z-20 w-auto"
                 >
