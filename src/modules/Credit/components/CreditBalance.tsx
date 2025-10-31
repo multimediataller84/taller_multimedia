@@ -7,12 +7,10 @@ type Props = {
 
 export default function CreditBalance({ credit }: Props) {
   return (
-    <div className="">
-      <p className="font-Lato text-lg">
+      <p className="font-Lato text-xs sm:text-sm md:text-base xl:text-base ">
         Balance: <span className="font-bold">{formatCRC(credit.remaining)}</span>
         {" "}de{" "}
         <span className="font-bold">{formatCRC(credit.assigned)}</span>
       </p>
-    </div>
   );
 }

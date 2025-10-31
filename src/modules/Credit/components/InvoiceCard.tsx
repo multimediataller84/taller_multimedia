@@ -8,7 +8,6 @@ type Props = {
   onPay: () => void;
   onCancel: () => void;
   onDelete: () => void;
-  
   selected?: boolean;
   onSelect?: () => void;
 };
@@ -24,25 +23,29 @@ export default function InvoiceCard({
   selected = false,
   onSelect,
 }: Props) {
-  const when = new Date(createdAt).toLocaleString("es-CR", { dateStyle: "short", timeStyle: "short" });
+  const when = new Date(createdAt).toLocaleString("es-CR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 
-  const disabledClasses = "bg-white border border-gray2 text-gray1 cursor-not-allowed";
+  const disabledClasses =
+    "bg-white border border-gray2 text-gray1 cursor-not-allowed";
 
   const payBtn = locked
-    ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-blue-500 border border-blue-500 hover:bg-blue-800 text-white font-Lato font-bold transition duration-300";
+    ? `py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 ${disabledClasses} font-Lato font-bold transition duration-300`
+    : "py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-blue-500 border border-blue-500 hover:bg-blue-800 text-white font-Lato font-bold transition duration-300";
 
   const cancelBtn = locked
-    ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-black border border-black text-white font-Lato font-bold transition duration-300 hover:bg-gray-700 hover:border-gray-700";
+    ? `py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 ${disabledClasses} font-Lato font-bold transition duration-300`
+    : "py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-blue-500 border border-blue-500 hover:bg-blue-800 text-white font-Lato font-bold transition duration-300";
 
   const delBtn = locked
-    ? `w-[94px] py-2 rounded-3xl ${disabledClasses} font-Lato font-bold transition duration-300`
-    : "w-[94px] py-2 rounded-3xl bg-black border border-black hover:bg-red-800 hover:border-red-800 text-white font-Lato font-bold transition duration-300";
+    ? `py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 ${disabledClasses} font-Lato font-bold transition duration-300`
+    : "py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-full xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-black border border-black hover:bg-red-800 hover:border-red-800 text-white font-Lato font-bold transition duration-300";
 
   return (
     <div
-      className={`border rounded-2xl p-4 flex items-center justify-between transition-colors ${
+      className={`border rounded-2xl p-4 flex flex-col sm:flex-row gap-4 sm:gap-0 sm:items-center sm:justify-between transition-colors ${
         selected ? "bg-gray-100 border-gray-300" : "bg-white border-gray2"
       } ${onSelect ? "cursor-pointer" : ""}`}
       onClick={onSelect}
@@ -56,17 +59,23 @@ export default function InvoiceCard({
         }
       }}
     >
-      <div className="flex flex-col">
+      {/* Información de la factura */}
+      <div className="flex flex-col w-full">
         <span className="font-Lato text-sm text-gray-600">
           {selected ? "Factura (seleccionada)" : "Factura"}
         </span>
-        <span className="font-Lato text-base">{when}</span>
+        <span className="font-Lato text-base break-words">{when}</span>
         <span className="font-Lato text-sm text-gray-700 mt-1">
-          Pendiente de la factura: <b>{formatCRC(dueRemaining)}</b> de <b>{formatCRC(amount)}</b>
+          Pendiente de la factura:{" "}
+          <b>{formatCRC(dueRemaining)}</b> de <b>{formatCRC(amount)}</b>
         </span>
       </div>
 
-      <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+      {/* Botones */}
+      <div
+        className="flex flex-col lg:flex-row items-center gap-3 w-full sm:w-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           onClick={!locked ? onPay : undefined}
@@ -81,7 +90,7 @@ export default function InvoiceCard({
           disabled={!!locked}
           className={cancelBtn}
         >
-          Cancelar
+          Saldar
         </button>
         <button
           type="button"

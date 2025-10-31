@@ -4,7 +4,7 @@ type Props = {
 };
 
 export function ProductsTableSkeleton({ headers, rows = 8 }: Props) {
-  const cols = headers.length + 1; // +1 por la columna de acciones
+  const cols = headers.length + 1;
 
   return (
     <table className="table-fixed w-full bg-white rounded-2xl">
@@ -13,7 +13,7 @@ export function ProductsTableSkeleton({ headers, rows = 8 }: Props) {
           {headers.map((h, index) => (
             <th
               key={h.key}
-              className={`h-16 px-4 text-center font-lato font-medium text-base ${
+              className={`h-16 px-4 text-center font-lato font-medium text-[10px] sm:text-xs ${
                 index === 0 ? "rounded-tl-xl" : ""
               }`}
             >

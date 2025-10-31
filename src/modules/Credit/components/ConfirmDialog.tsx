@@ -12,36 +12,38 @@ export default function ConfirmDialog({
   open,
   title = "Estás seguro?",
   message = "",
-  confirmLabel = "Sí",
-  cancelLabel = "No",
+  confirmLabel = "Confirmar",
+  cancelLabel = "Cancelar",
   onConfirm,
   onCancel,
 }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-2xl p-6 w-[360px] shadow-xl">
-        <h3 className="font-Lato text-lg mb-2">{title}</h3>
-        {message && <p className="text-sm text-gray-700 mb-4">{message}</p>}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/50" onClick={onCancel}></div>
+
+      <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto space-y-4">
+        <h3 className="text-base sm:text-xl font-semibold">{title}</h3>
+        {message && <p className="text-sm sm:text-base ">{message}</p>}
 
         <div className="flex justify-end gap-3">
           {}
           <button
             type="button"
-            onClick={onCancel}
-            className="w-[94px] py-2 rounded-3xl bg-[#FF4747] border border-[#FF4747] hover:bg-[#D32626] text-white font-Lato font-bold transition duration-300"
+            onClick={onConfirm}
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base bg-blue-500 border border-blue-500 text-white font-Lato font-bold transition duration-300 hover:bg-blue-800 hover:border-blue-800 disabled:opacity-60"
           >
-            {cancelLabel}
+            {confirmLabel}
           </button>
 
           {}
           <button
             type="button"
-            onClick={onConfirm}
-            className="w-[94px] py-2 rounded-3xl bg-blue-500 border border-blue-500 text-white font-Lato font-bold transition duration-300 hover:bg-blue-800 hover:border-blue-800"
+            onClick={onCancel}
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
           >
-            {confirmLabel}
+            {cancelLabel}
           </button>
         </div>
       </div>

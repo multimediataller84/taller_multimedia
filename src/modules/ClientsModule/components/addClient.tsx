@@ -112,7 +112,7 @@ export default function addProfile (props: addProfileProps){
                 <h2 className="font-Lato text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Añadir Cliente</h2>
                 <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
                   <button
-                    className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300   ${
+                    className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 ${
                       props.add ? "bg-blue-500 text-white border border-blue-500 hover:bg-blue-800 hover:border-blue-800" 
                       : 
                       "bg-gray3 border border-gray2 text-gray1  "

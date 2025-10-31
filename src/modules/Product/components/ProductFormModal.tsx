@@ -1,5 +1,3 @@
-import { Controller } from "react-hook-form";
-import Select from "react-select";
 import { useProductForm } from "../hooks/useProductModal";
 import { TProduct } from "../models/types/TProduct";
 import { TProductEndpoint } from "../models/types/TProductEndpoint";
@@ -17,7 +15,6 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
   const {
     register,
     handleSubmit,
-    control,
     formattedCategoryOptions,
     formattedTaxesOptions,
     formattedUnitOptions,
@@ -36,33 +33,37 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
   };
 
   return (
-    // Overlay
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      {/* Caja modal con scroll interno */}
-      <div
-        className="
-          bg-white rounded-lg w-full max-w-[520px]
-          max-h-[90vh] overflow-y-auto
-          p-6
-        "
-      >
-        <h2 className="text-xl font-semibold mb-4">
+   
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+  <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
+
+    <div className="relative z-100 bg-gray3 rounded-2xl shadow-lg w-[60%] sm:w-[70%] md:w-[50%] lg:w-1/3 2xl:w-1/4 p-6 max-h-[90vh] overflow-y-auto ">
+
+    <div className="flex flex-col">
+      <div className="justify-between flex">
+       <h2 className="text-base sm:text-xl font-semibold">
           {initialData ? "Editar producto" : "Nuevo producto"}
         </h2>
+        <button onClick={onClose}
+        className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
+        >
+        Cancelar
+        </button>
+      </div>
 
-        {/* 👇 padding-bottom grande para que el footer sticky no tape el último input */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 pb-24">
-          {/* Nombre */}
-          <label className="block text-sm text-gray-700 font-medium">Nombre</label>
-          <input
-            {...register("product_name", { required: true })}
-            placeholder="Ej. Lápiz HB"
-            className="w-full border p-2 rounded"
-          />
+      <form onSubmit={handleSubmit(onSubmit)} className="flex-col flex space-y-2">
+         <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">Nombre</label>
+            <input
+              {...register("product_name", { required: true })}
+              placeholder="Ej. Lápiz HB"
+              className="w-full py-2 border rounded-3xl px-4 text-gray1 bg-white border-gray2 text-sm sm:text-base transition-colors focus:outline-2 focus:outline-blue-500"
+            />
+         </div>
 
-          {/* SKU */}
-          <label className="block text-sm text-gray-700 font-medium">SKU</label>
-          <div className="flex gap-2">
+         <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">SKU</label>
+          
             <input
               {...register("sku", {
                 required: true,
@@ -70,164 +71,147 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
               })}
               onChange={() => setSkuStatus("idle")}
               placeholder="Ej. LPZ-HB-01"
-              className="flex-1 border p-2 rounded"
+              className="w-full py-2 border rounded-3xl px-4 text-gray1 bg-white border-gray2 text-sm sm:text-base transition-colors focus:outline-2 focus:outline-blue-500"
             />
           </div>
 
-          {/* Categoría */}
-          <label className="block text-sm text-gray-700 font-medium">
+          <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">
             Categoría{" "}
             {isEditing && (
-              <span className="text-xs text-gray-500">(no editable)</span>
+              <span className="text-sm sm:text-base text-black font-medium">(no editable)</span>
             )}
-          </label>
-          <Controller
-            name="category_id"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={formattedCategoryOptions}
-                placeholder="Seleccione categoría"
-                onChange={(opt) => field.onChange((opt as any)?.value)}
-                value={
-                  formattedCategoryOptions.find(
-                    (option) => option.value === field.value
-                  ) || null
-                }
-                isDisabled={isEditing}
-                isClearable
-                classNamePrefix="select"
-              />
-            )}
-          />
-
-          {/* Impuesto */}
-          <label className="block text-sm text-gray-700 font-medium">
+            </label>
+            <div className="relative">
+            <select
+              {...register("category_id", { required: true })}
+              disabled={isEditing}
+              className="disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+            >
+              <option value="">Seleccione categoría</option>
+              {formattedCategoryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+              className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+              <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+            </svg>
+            </div>
+          </div>
+          
+          <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">
             Impuesto{" "}
             {isEditing && (
-              <span className="text-xs text-gray-500">(no editable)</span>
+              <span className="text-sm sm:text-base text-black font-medium">(no editable)</span>
             )}
-          </label>
-          <Controller
-            name="tax_id"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={formattedTaxesOptions}
-                placeholder="Seleccione impuesto"
-                onChange={(opt) => field.onChange((opt as any)?.value)}
-                value={
-                  formattedTaxesOptions.find(
-                    (option) => option.value === field.value
-                  ) || null
-                }
-                isDisabled={isEditing}
-                isClearable
-                classNamePrefix="select"
-              />
-            )}
-          />
-
-          {/* Unidad de medida */}
-          <label className="block text-sm text-gray-700 font-medium">
+            </label>
+            <div className="relative">
+            <select
+            {...register("tax_id", { required: true })}
+            disabled={isEditing}
+              className="disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+            >
+              <option value="">Seleccione impuesto</option>
+              {formattedTaxesOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+              className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+              <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">
             Unidad de medida
-          </label>
-          <Controller
-            name="unit_measure_id"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={formattedUnitOptions}
-                placeholder="Seleccione unidad"
-                onChange={(opt) => field.onChange((opt as any)?.value ?? "")}
-                value={
-                  formattedUnitOptions.find(
-                    (option) => option.value === field.value
-                  ) || null
-                }
-                isClearable
-                classNamePrefix="select"
+            </label>
+            <div className="relative">
+            <select
+              {...register("unit_measure_id")}
+              className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+            >
+              <option value="">Seleccione unidad</option>
+              {formattedUnitOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                </svg>
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="text-sm sm:text-base text-black font-medium">
+              Utilidad (%)
+            </label>
+            <input
+              type="number"
+              step="1"
+              {...register("profit_margin", { required: true })}
+              placeholder="0"
+              className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1">
+              <label className="text-sm sm:text-base text-black font-medium">Costo</label>
+              <input
+                type="number"
+                step="0.01"
+                {...register("cost", { required: true })}
+                placeholder="0.00"
+                className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
               />
-            )}
-          />
+          </div>
+          
+          <div className="flex flex-col space-y-1">
+              <label className="text-sm sm:text-base text-black font-medium">
+              Precio unitario
+              </label>
+              <input
+              type="number"
+              step="0.01"
+              {...register("unit_price", { required: true })}
+              placeholder="0.00"
+              className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+            />
+          </div>
 
-          {/* Utilidad */}
-          <label className="block text-sm text-gray-700 font-medium">
-            Utilidad (%)
-          </label>
-          <input
-            type="number"
-            step="1"
-            {...register("profit_margin", { required: true })}
-            placeholder="0"
-            className="w-full border p-2 rounded"
-          />
-
-          {/* Costo */}
-          <label className="block text-sm text-gray-700 font-medium">Costo</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register("cost", { required: true })}
-            placeholder="0.00"
-            className="w-full border p-2 rounded"
-          />
-
-          {/* Precio final calculado */}
-          <label className="block text-sm text-gray-700 font-medium">
-            Precio unitario
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            {...register("unit_price", { required: true })}
-            placeholder="0.00"
-            className="w-full border p-2 rounded"
-          />
-
-          {/* Stock */}
-          <label className="block text-sm text-gray-700 font-medium">
+          <div className="flex flex-col space-y-1">
+          <label className="text-sm sm:text-base text-black font-medium">
             Stock
           </label>
           <input
             type="number"
             {...register("stock", { required: true })}
             placeholder="0"
-            className="w-full border p-2 rounded"
+            className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
           />
-
-          {/* FOOTER STICKY */}
-          <div
-            className="
-              flex justify-end gap-2 pt-3
-              sticky bottom-0 left-0
-              bg-white
-              border-t border-gray-300
-              pb-4
-            "
-          >
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded border"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
-              disabled={skuStatus === "dup" || skuStatus === "checking"}
-            >
-              {isEditing ? "Guardar cambios" : "Crear producto"}
-            </button>
           </div>
-        </form>
-      </div>
+          
+          <button
+            type="submit"
+            className="py-2 rounded-3xl px-2 md:px-3 w-full text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50"
+            disabled={skuStatus === "dup" || skuStatus === "checking"}
+          >
+            {isEditing ? "Guardar cambios" : "Crear producto"}
+          </button>
+          
+      </form>
     </div>
+  </div>
+</div>
   );
 };
