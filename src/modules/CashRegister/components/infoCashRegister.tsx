@@ -1,6 +1,7 @@
 import { TCashRegisterWithUser, TCloseRegister, TOpenRegister } from "../models/interfaces/ICashRegisterService";
 import OpenCashRegister from "./OpenCashRegister";
 import CloseCashRegister from "./CloseCashRegister";
+import { getRoleAuth } from "../../../utils/getRoleAuth";
 
 interface editProfileProps {
   cashRegisterSelect: TCashRegisterWithUser | null; 
@@ -32,12 +33,15 @@ export default function InfoCashRegister(props: editProfileProps) {
                     }
                   }}
                   className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 text-white
-                    ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}`}>
+                    ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}
+                    ${getRoleAuth() === "admin" ? "hidden": "inline"}
+                    `}>
                   {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
                   </button>
 
                   <button 
-                  className="text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
+                  className={`text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300
+                  ${getRoleAuth() === "admin" ? "hidden": "inline"}`}
                   onClick={() => props.cashRegisterSelect && props.handleDelete(props.cashRegisterSelect.id)}>
                     Eliminar
                   </button>

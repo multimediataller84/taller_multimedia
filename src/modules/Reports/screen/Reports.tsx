@@ -620,9 +620,9 @@ function Td2({ children }: { children: React.ReactNode }) {
 
 function KpiCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="flex flex-col font-Lato bg-white min-w-[140px] sm:min-w-[160px] md:min-w-[180px] flex-1 text-center  rounded-2xl p-4 border border-gray-200 shadow">
-      <div className="text-base font-bold">{title}</div>
-      <div className="text-base">{value}</div>
+    <div className="flex flex-col font-Lato bg-white min-w-[140px] sm:min-w-[160px] md:min-w-[180px] flex-1 text-center rounded-2xl p-4 border border-gray-200 shadow">
+      <div className="text-base 2xl:text-xl font-bold">{title}</div>
+      <div className="text-base 2xl:text-xl">{value}</div>
     </div>
   );
 }

@@ -70,7 +70,7 @@ export const Router = () => {
       <Route
         path="/cashRegister"
         element={
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["employee","admin"]}>
             <CashRegister />
           </ProtectedRoute>
         }

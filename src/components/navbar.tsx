@@ -109,7 +109,7 @@ export const Navbar = (props: SearchProps) => {
           <div className="bg-white absolute flex flex-col mt-[98px] right-0 mr-4 h-auto w-52 p-1 rounded-[4px] shadow-md text-gray1 z-110">
             <Link to="/profiles" className={`text-left px-4 font-lato text-base font-medium w-full py-4 hover:bg-gray3 hover:underline ${getRoleAuth() === "admin" ? "block": "hidden"}`}>Administración Perfiles</Link>
             <div className="flex-col flex">
-              <div className="px-2 h-0.5 w-full bg-gray2"></div>
+              <div className={`px-2 h-0.5 w-full bg-gray2 ${getRoleAuth() === "admin" ? "block": "hidden"}`}></div>
               <Link to="/" onClick={()=>{sessionStorage.clear()}} className="text-left px-4 w-full py-4 font-medium hover:bg-gray3 hover:underline">Cerrar Sesión</Link>
             </div>
           </div>
