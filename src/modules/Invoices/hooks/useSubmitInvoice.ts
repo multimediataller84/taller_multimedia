@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { AxiosError } from "axios";
 import { InvoiceService } from "../services/invoiceService";
 import type { TInvoice, TInvoiceProduct } from "../models/types/TInvoice";
+import type { TInvoiceItem } from "../models/types/TInvoiceItem";
 
 const service = InvoiceService.getInstance();
 
@@ -33,8 +34,12 @@ export const useSubmitInvoice = () => {
     }
   };
 
-  const mapItemsToPayload = (items: { product_id: number; qty: number }[]): TInvoiceProduct[] =>
-    items.map((i) => ({ id: i.product_id, quantity: i.qty }));
+  const mapItemsToPayload = (items: TInvoiceItem[]): TInvoiceProduct[] =>
+    items.map((i) => ({
+      id: i.product_id,
+      quantity: i.qty,
+      unit_price: i.unit_price + i.profit_margin,
+    }));
 
   return { submitting, error, submit, mapItemsToPayload };
 };

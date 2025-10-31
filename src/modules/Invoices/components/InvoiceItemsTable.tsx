@@ -6,10 +6,13 @@ interface Props {
   onIncrease: (id: number) => void;
   onDecrease: (id: number) => void;
   onRemove: (id: number) => void;
+  onUpdateGrams: (id: number, grams: number) => void;
+  onUpdateUnitPrice: (id: number, unit_price: number) => void;
   disabled?: boolean;
 }
 
-export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrease, onRemove, disabled = false }) => {
+export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrease, onRemove, disabled = false, onUpdateGrams, onUpdateUnitPrice }) => {
+  const isKgItem = (i: TInvoiceItem) => ((i.unit_measure_symbol || "").toLowerCase() === "kg") || (i.unit_measure_description || "").toLowerCase().includes("kilo");
   return (
     <div className="overflow-hidden">
       <div className="h-30 md:h-50 lg:h-60 xl:h-70 overflow-y-scroll rounded-2xl bg-white ">
@@ -49,21 +52,44 @@ export const InvoiceItemsTable: React.FC<Props> = ({ items, onIncrease, onDecrea
                   </div>
                 </td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6 py-3 text-center">
-                  {((i.unit_measure_symbol || "").toLowerCase() === "kg") || (i.unit_measure_description || "").toLowerCase().includes("kilo") ? (
+                  {isKgItem(i) ? (
                     <input
                       type="number"
                       min={0}
                       placeholder="gramos"
                       className="w-20 sm:w-24 md:w-28 px-2 py-1 border rounded-3xl text-[10px] sm:text-xs text-center"
                       disabled={disabled}
+                      value={typeof i.grams === 'number' ? i.grams : 0}
+                      onChange={(e) => !disabled && onUpdateGrams(i.product_id, Number(e.target.value))}
                     />
                   ) : (
                     <span className="text-xs sm:text-sm text-gray-400">-</span>
                   )}
                 </td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{typeof i.tax_percentage === 'number' ? `${i.tax_percentage}%` : i.tax_id}</td>
-                <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{(i.unit_price + i.profit_margin).toFixed(2)}</td>
-                <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">{((((i.unit_price + i.profit_margin) * i.qty)) + ((i.unit_price + i.profit_margin) * (i.tax_percentage) / 100 )).toFixed(2)}</td>
+                <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">
+                  {isKgItem(i) ? (
+                    <input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      className="w-20 sm:w-24 md:w-28 px-2 py-1 border rounded-3xl text-[10px] sm:text-xs text-center"
+                      disabled={disabled}
+                      value={(i.unit_price + i.profit_margin).toFixed(2)}
+                      onChange={(e) => !disabled && onUpdateUnitPrice(i.product_id, Number(e.target.value) - i.profit_margin)}
+                    />
+                  ) : (
+                    (i.unit_price + i.profit_margin).toFixed(2)
+                  )}
+                </td>
+                <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">
+                  {(() => {
+                    const perUnit = i.unit_price + i.profit_margin;
+                    const base = perUnit * i.qty;
+                    const tax = base * (i.tax_percentage / 100);
+                    return (base + tax).toFixed(2);
+                  })()}
+                </td>
                 <td className="px-0.5 sm:px-2 md:px-4 xl:px-6  py-3 text-center text-xs sm:text-sm">
                   <button
                     className={`text-white bg-black py-2 rounded-3xl w-12 sm:w-16 md:w-18 xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato ${disabled ? ' cursor-not-allowed' : 'hover:bg-red-800 cursor-pointer '}`}
