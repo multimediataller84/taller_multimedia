@@ -77,6 +77,9 @@ export const Client = () => {
                 setVisibleAdd(true);
                 setVisibleEdit(false);
                 setAdd(false);
+                setConfirmationEditClient(false);
+                setConfirmationAddClient(false);
+                setConfirmationDeleteClient(false);   
                 setClientSelect({
                   name: "",
                   last_name: "",

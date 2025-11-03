@@ -71,6 +71,9 @@ export const Profile = () => {
             onClick={() => {
               setVisibleAddProfile(true);
               setVisibleEditProfile(false);
+              setConfirmationAddProfile(false);
+              setConfirmationDeleteProfile(false);
+              setConfirmationEditProfile(false);
               setAddProfile(false);
               setProfileSelect({
                 name: "",

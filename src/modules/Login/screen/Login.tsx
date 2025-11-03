@@ -132,22 +132,25 @@ useEffect(() => {
         
         <form onSubmit={handleSubmit(onSubmit)} className="flex-col flex mt-8 h-auto space-y-3">
           
-          <div className="relative w-[284px] flex ">
+        <div className="relative w-[284px] flex ">
           <input
-            type="text"
-            id="username"
-            placeholder=" "
-            {...register("username", {
-              required: "Username is required",
-              onChange: () => clearError(),
-            })}
-            className={`peer border w-full h-[48px] rounded-3xl px-4 bg-white 
-              ${
-                errors.username || error
-                  ? "border-red-500 outline-red-500"
-                  : "border-gray2 outline-none"
-              }`}
-          />
+          type="text"
+          id="username"
+          placeholder=" "
+          {...register("username", {
+            required: "Username is required",
+            onChange: (e) => {
+              e.target.value = e.target.value.toLowerCase();
+              clearError();
+            },
+          })}
+          className={`peer border w-full h-[48px] rounded-3xl px-4 bg-white lowercase 
+            ${
+              errors.username || error
+                ? "border-red-500 outline-red-500"
+                : "border-gray2 outline-none"
+            }`}
+        />
           <label
             htmlFor="username"
             className={`absolute flex -translate-y-1/2 px-1 left-4 top-0 bg-white transition-colors
@@ -166,11 +169,12 @@ useEffect(() => {
             type="password"
             id="password"
             placeholder=" "
+            maxLength={6}
             {...register("password", {
               required: "Password is required",
               minLength: {
                 value: 6,
-                message: "La  must be at least 6 characters",
+                message: "Password required at least 6 characters",
               },
             onChange: () => clearError(),
             })}
@@ -193,6 +197,8 @@ useEffect(() => {
             Contraseña
           </label>
         </div>
+                        {errors.password?.message && <p className="text-red-500 text-sm font-lato text-center">{errors.password.message}</p>}
+
            
         {loading ? (
           <div className="w-full h-[48px] flex justify-center ">
