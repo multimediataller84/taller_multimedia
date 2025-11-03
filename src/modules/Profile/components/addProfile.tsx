@@ -161,6 +161,7 @@ export default function addProfile (props: addClientProps){
                       type="password"
                       id="password"
                       name="password"
+                      maxLength={6}
                       value={props.profileSelect?.password || ""}
                       onChange={(e) => {
                         props.handleChange(e); 
