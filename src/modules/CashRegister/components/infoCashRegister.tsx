@@ -25,7 +25,8 @@ export default function InfoCashRegister(props: editProfileProps) {
               <div className="flex w-full justify-between items-center pt-2 md:pt-4 2xl:pt-8">
                 <h2 className="ont-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Datos de Caja</h2>
                 <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
-                  <button onClick={() => {
+                 <button 
+                  onClick={() => {
                     if (props.cashRegisterSelect?.status === "closed") {
                       props.setVisibleOpen(!props.visibleOpen);
                     } else {
@@ -34,17 +35,31 @@ export default function InfoCashRegister(props: editProfileProps) {
                   }}
                   className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 text-white
                     ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}
-                    ${getRoleAuth() === "admin" ? "hidden": "inline"}
-                    `}>
+                    ${
+                      getRoleAuth() === "admin" && props.cashRegisterSelect?.user?.name
+                        ? "hidden"
+                        : "inline"
+                    }
+                  `}
+                >
                   {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
-                  </button>
+                </button>
 
-                  <button 
+                <button 
                   className={`text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300
-                  ${getRoleAuth() === "admin" ? "hidden": "inline"}`}
-                  onClick={() => props.cashRegisterSelect && props.handleDelete(props.cashRegisterSelect.id)}>
-                    Eliminar
-                  </button>
+                    ${
+                      getRoleAuth() === "admin" && props.cashRegisterSelect?.user?.name
+                        ? "hidden"
+                        : "inline"
+                    }
+                  `}
+                  onClick={() => 
+                    props.cashRegisterSelect && 
+                    props.handleDelete(props.cashRegisterSelect.id)
+                  }
+                >
+                  Eliminar
+                </button>
 
                   <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
                     onClick={() => {props.setVisibleInfoCashRegister(false)
