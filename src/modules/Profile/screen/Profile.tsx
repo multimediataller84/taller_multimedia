@@ -7,6 +7,7 @@ import ConfirmationAddProfile from "../components/confirmationAddProfile";
 import ConfirmationDeleteProfile from "../components/confirmationDeleteProfile";
 import ConfirmationEditProfile from "../components/confirmationEditProfile";
 import Pagination from "../../../components/pagination";
+import logo2 from "../../../components/utils/logo2.svg";
 
 export const Profile = () => {
   const {
@@ -154,6 +155,12 @@ export const Profile = () => {
          Hay {profiles.length} perfiles registrados
         </h2>
       </div>
+
+      {!(visibleEditProfile || visibleAddProfile) && (
+        <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
+          <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
+        </div>
+      )}
 
       {confirmationAddProfile && 
       (<ConfirmationAddProfile/>)}

@@ -6,6 +6,7 @@ import AddCashRegister from "../components/addCashRegister";
 import Pagination from "../../../components/pagination";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import logo2 from "../../../components/utils/logo2.svg";
 
 export const CashRegister = () => {
     
@@ -173,6 +174,12 @@ export const CashRegister = () => {
             </h2>
       </div>        
     
+        {!(visibleEdit || visibleAdd) && (
+          <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
+            <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
+          </div>
+        )}
+
         {visibleEdit && <InfoCashRegister
           cashRegisterSelect = {cashRegisterSelect}
           setCashRegisterSelect = {setCashRegisterSelect}
