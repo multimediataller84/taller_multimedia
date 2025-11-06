@@ -22,9 +22,15 @@ export function ProductTable(props: ProductsProps) {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
+  const truncate = (s: any, n: number) => {
+    const str = String(s ?? "");
+    return str.length > n ? str.slice(0, n) + "..." : str;
+  };
+
   const renderCategory = (category_id: any) => {
     const key = String(category_id);
-    return categoryNameById[key] ?? categoryNameById[Number(key)] ?? category_id;
+    const name = categoryNameById[key] ?? categoryNameById[Number(key)] ?? category_id;
+    return truncate(name, 31);
   };
 
   return (

@@ -7,6 +7,7 @@ import ConfirmationEditClient from "../components/confirmationEditClient";
 import ConfirmationAddClient from "../components/confirmationAddClient";
 import ConfirmationDeleteClient from "../components/confirmationDeleteClient"
 import Pagination from "../../../components/pagination";
+import logo2 from "../../../components/utils/logo2.svg";
 
 export const Client = () => {
 
@@ -160,6 +161,12 @@ export const Client = () => {
           Hay {clients.length} clientes registrados
         </h2>
       </div>
+
+      {!(visibleEdit || visibleAdd) && (
+        <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
+          <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
+        </div>
+      )}
 
       {visibleEdit && (
         <EditClient
