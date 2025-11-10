@@ -49,6 +49,8 @@ export const Client = () => {
     cantons,
     districts,
     loadingLocations,
+    errorMessage,
+    setErrorMessage
   } = useClient();
 
   const ClientLoader = () => (
@@ -68,7 +70,7 @@ export const Client = () => {
         <div className="flex justify-between items-center mt-0 ml-0 sm:mt-2 sm:ml-2 md:mt-4 md:ml-4 2xl:mt-8 2xl:ml-8">
           <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0 ">Lista de Clientes</h2>
           <button
-            className={`font-bold py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
+            className={`font-bold mr-0.5 sm:mr-2 py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
               ${
                 visibleAdd == true
                   ? "bg-gray3 text-gray1 border-gray2 "
@@ -81,6 +83,7 @@ export const Client = () => {
                 setConfirmationEditClient(false);
                 setConfirmationAddClient(false);
                 setConfirmationDeleteClient(false);   
+                setErrorMessage("")
                 setClientSelect({
                   name: "",
                   last_name: "",
@@ -125,6 +128,7 @@ export const Client = () => {
                         : "bg-white text-black hover:bg-gray-200"
                     }`}
                   onClick={() => {
+                    setErrorMessage("")
                     setClientSelect(items);
                     setVisibleEdit(true);
                     setVisibleAdd(false);
@@ -162,8 +166,8 @@ export const Client = () => {
         </h2>
       </div>
 
-      {!(visibleEdit || visibleAdd) && (
-        <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
+      {!(visibleEdit || visibleAdd || confirmationAddClient || confirmationDeleteClient || confirmationEditClient || errorMessage) && (
+        <div className="flex z-10 w-full items-center justify-center bg-[#DEE8ED]">
           <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
         </div>
       )}
@@ -209,13 +213,23 @@ export const Client = () => {
         />
       )}
 
+      {errorMessage && (
+        
+        <div className="flex relative w-[70%] justify-center items-center flex-col">
+            <div className="bg-white w-auto h-48 -translate-y-20 px-11 items-center rounded-2xl shadow">
+            <div className="h-full items-center flex-col flex justify-center w-full">
+                <div className="w-full justify-center flex mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-12 stroke-red-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                </div>
+                <div className="text-base xl:text-2xl text-center font-Lato font-medium whitespace-pre-line">{errorMessage}</div>
+            </div>       
+            </div>
+        </div>
+      )}
+
       
     </RootLayout>
   );
 };
-
-
-/*
-bg-[#E9EEF0]
-
-*/

@@ -300,10 +300,11 @@ export const Reports = () => {
               <div className="relative">
               <input
                 type="date"
-                className="cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+                className=" cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
                 disabled={rangeKey !== "custom"}
                 value={from.toISOString().slice(0, 10)}
                 onChange={(e) => setFrom(startOfDay(new Date(e.target.value)))}
+                
               />
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
                 className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">

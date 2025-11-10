@@ -2,7 +2,7 @@ import { TUserEndpoint } from "../models/types/TUserEndpoint";
 import { useState } from "react";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
-
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface editProfileProps {
   profileSelect: TUserEndpoint | null; 
@@ -15,6 +15,16 @@ interface editProfileProps {
 }
 
 export default function editClient(props: editProfileProps) {
+
+      const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean;
+        action: "edit" | "delete" | null;
+        payload?: any;
+      }>({
+        open: false,
+        action: null,
+        payload: null,
+      });
 
       const [errors, setErrors] = useState<{ [key: string]: string }>({});
     
@@ -49,12 +59,24 @@ export default function editClient(props: editProfileProps) {
                   ${props.editProfile ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                   : 
                   "bg-gray3 border border-gray2 text-gray1 "}`}
-                    onClick={validateOnSave}>
+                    onClick={() =>
+                    setConfirmDialog({
+                      open: true,
+                      action: "edit",
+                      payload: props.profileSelect,
+                    })
+                  }>
                     Editar
                   </button>
                   <button
                     className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-black hover:border-[#D32626] hover:bg-[#D32626] text-white "
-                    onClick={() => props.profileSelect && props.handleDelete(props.profileSelect.id)}
+                    onClick={() =>
+                    setConfirmDialog({
+                      open: true,
+                      action: "delete",
+                      payload: props.profileSelect,
+                    })
+                  }
                   >
                     Eliminar
                   </button>
@@ -105,7 +127,7 @@ export default function editClient(props: editProfileProps) {
                         <option value={1}>Administrador</option>
                         <option value={2}>Empleado</option>
                       </select> 
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="disabled:bg-gray2 w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
                           <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
                       </svg>
                     </div>
@@ -117,7 +139,7 @@ export default function editClient(props: editProfileProps) {
                     <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                       <label htmlFor="username" className="text-sm sm:text-base text-black font-medium">Nombre de usuario</label>
                       <input
-                      className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                      className={`disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
                       id="username"
                       name="username"
@@ -129,6 +151,7 @@ export default function editClient(props: editProfileProps) {
                           setErrors((prev) => ({ ...prev, username: "" }));
                         }
                       }}
+                      disabled
                       placeholder="Nombre de usuario"
                     />
                       {errors.username && (
@@ -138,7 +161,7 @@ export default function editClient(props: editProfileProps) {
                 </div>
 
                 <div className="flex flex-wrap gap-2 2xl:gap-6">
-                                        <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                     <label htmlFor="nombre" className="text-sm sm:text-base text-black font-medium">Nombre</label>
                     <input className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
@@ -151,6 +174,7 @@ export default function editClient(props: editProfileProps) {
                           setErrors((prev) => ({ ...prev, name: "" })); 
                         }
                       }}
+                      
                       placeholder="Nombre"
                     />
                     {errors.username && (
@@ -160,6 +184,31 @@ export default function editClient(props: editProfileProps) {
                 </div>
               </form>
             </div>
+
+             <ConfirmDialog
+                  open={confirmDialog.open}
+                  onCancel={() => setConfirmDialog({ open: false, action: null, payload: null })}
+                  onConfirm={() => {
+                    if (confirmDialog.action === "delete" && confirmDialog.payload) {
+                      props.handleDelete(confirmDialog.payload.id);
+                    } else if (confirmDialog.action === "edit" && confirmDialog.payload) {
+                      validateOnSave();
+                    }
+                    setConfirmDialog({ open: false, action: null, payload: null });
+                  }}
+                  title={
+                    confirmDialog.action === "delete"
+                      ? "¿Eliminar Perfil?"
+                      : "¿Editar Perfil?"
+                  }
+                  message={
+                    confirmDialog.action === "delete"
+                      ? "Esta acción eliminará el Perfil de forma permanente"
+                      : "¿Seguro que deseas editar la información de este Perfil?"
+                  }
+                  confirmLabel={confirmDialog.action === "delete" ? "Eliminar" : "Editar"}
+                  cancelLabel="Cancelar"
+                />
           </div>
     );
 }

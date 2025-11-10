@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+
 interface addClientProps{
     visibleAddProfile: boolean;
     setVisibleAddProfile: React.Dispatch<React.SetStateAction<boolean>>;  
@@ -10,7 +12,7 @@ interface addClientProps{
 }
 
 export default function addProfile (props: addClientProps){
-
+    
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
   
     const validateOnSave = (): boolean => {
@@ -28,14 +30,23 @@ export default function addProfile (props: addClientProps){
       newErrors.name = "El nombre es obligatorio";
     }
 
-    if (!props.profileSelect?.password) {
-      newErrors.password = "La contraseña es obligatoria";
-    }
+      if (!props.profileSelect?.password) {
+    newErrors.password = "La contraseña es obligatoria";
+  } else if (props.profileSelect.password.length < 6) {
+    newErrors.password = "La contraseña debe tener al menos 6 caracteres";
+  }
 
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
-  }    
+  }
+  
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({
+      open: false,
+      payload: null as any,
+  });
+
     return (
         <div className="flex flex-col w-full bg-gray3">
             <div className="w-full flex flex-col">
@@ -48,10 +59,13 @@ export default function addProfile (props: addClientProps){
                       : 
                       "bg-gray3 border border-gray2 text-gray1 "
                     }`}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (validateOnSave() && props.profileSelect) {
-                        props.handleAddProfile(props.profileSelect);
-                        props.setProfileSelect(null); 
+                        setConfirmDialog({
+                          open: true,
+                          payload: props.profileSelect,
+                        })
                       }
                     }}
                   >
@@ -64,6 +78,22 @@ export default function addProfile (props: addClientProps){
                   }
                   >Cancelar</button>
                 </div>
+
+                <ConfirmDialog
+                open={confirmDialog.open}
+                onCancel={() => setConfirmDialog({ open: false, payload: null })}
+                onConfirm={() => {
+                  if (confirmDialog.payload) {
+                    props.handleAddProfile(confirmDialog.payload);
+                    props.setProfileSelect(null);
+                  }
+                  setConfirmDialog({ open: false, payload: null });
+                }}
+                title="¿Agregar perfil?"
+                message="¿Seguro que deseas agregar este nuevo perfil?"
+                 confirmLabel="Agregar"
+                cancelLabel="Cancelar"
+                />
               </div>
 
               <div className="flex flex-col w-full">
@@ -154,25 +184,60 @@ export default function addProfile (props: addClientProps){
                     )}
                   </div>
 
-                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-                  <label htmlFor="password" className="text-sm sm:text-base text-black font-medium">Contraseña</label>
-                  <input
-                      className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
-                      type="password"
-                      id="password"
-                      name="password"
-                      maxLength={6}
-                      value={props.profileSelect?.password || ""}
-                      onChange={(e) => {
-                        props.handleChange(e); 
-                        if (errors.password) {
-                          setErrors((prev) => ({ ...prev, password: "" })); 
-                        }
-                      }}
-                      placeholder="Contraseña"
-                  />
-                  {errors.username && (
-                      <span className="text-red-500 text-base font-lato">{errors.password}</span>
+                   <div className="flex flex-col space-y-2 flex-1 min-w-[220px] relative">
+                    <label
+                      htmlFor="password"
+                      className="text-sm sm:text-base text-black font-medium"
+                    >
+                      Contraseña
+                    </label>
+
+                    <div className="relative w-full">
+                      <input
+                        className={`appearance-none w-full py-2 border rounded-3xl px-4 pr-10 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${
+                          errors.password ? "border-red-500" : "border-gray2"
+                        }`}
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        name="password"
+                        minLength={6}
+                        value={props.profileSelect?.password || ""}
+                        onChange={(e) => {
+                          props.handleChange(e);
+                          if (errors.password) {
+                            setErrors((prev) => ({ ...prev, password: "" }));
+                          }
+                        }}
+                        placeholder="Contraseña"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray1 hover:text-blue-500 focus:outline-none"
+                      >
+                        {showPassword ? (
+                          
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5  fill-gray1">
+                            <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                            <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                            <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                          </svg>
+                        ) : (
+                          
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5  fill-gray1">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+
+                    {errors.password && (
+                      <span className="text-red-500 text-base font-lato">
+                        {errors.password}
+                      </span>
                     )}
                   </div>
                 </div>

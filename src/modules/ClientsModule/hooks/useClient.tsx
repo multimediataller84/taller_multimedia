@@ -66,6 +66,7 @@ export const useClient = () => {
   const [confirmationEditClient, setConfirmationEditClient] = useState(false);
   const [confirmationAddClient, setConfirmationAddClient] = useState(false);
   const [confirmationDeleteClient, setConfirmationDeleteClient] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -179,10 +180,29 @@ export const useClient = () => {
       setTimeout(()=>{
           setConfirmationDeleteClient(false);
         }, 2000);
-    } catch (error) {
-      console.error("Error al eliminar cliente:", error);
+      } catch (error: any) {
+    console.error("Error al eliminar cliente:", error);
+
+    const backendError = error?.response?.data?.error || "";
+
+    if (
+      backendError.includes("violates foreign key constraint") &&
+      backendError.includes("credits_customer_id_fkey")
+    ) {
+      setErrorMessage("No se puede eliminar este cliente porque \ntiene créditos o facturas asociadas.");
+      setVisibleEdit(false);
+      setClientSelect(null);
+    } else {
+      setErrorMessage("Ocurrió un error al eliminar el cliente. Intente nuevamente.");
+      setVisibleEdit(false);
+      setClientSelect(null);
     }
-  };
+
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 2000);
+  }
+  }
 
   return {
     search,
@@ -223,5 +243,7 @@ export const useClient = () => {
     cantons,
     districts,
     loadingLocations,
+    errorMessage,
+    setErrorMessage
   };
 };
