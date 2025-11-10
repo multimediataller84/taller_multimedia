@@ -35,11 +35,6 @@ export default function InfoCashRegister(props: editProfileProps) {
                   }}
                   className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 text-white
                     ${props.cashRegisterSelect?.status === "closed" ? "bg-blue-500 hover:bg-blue-600" : "bg-black hover:bg-gray-800"}
-                    ${
-                      getRoleAuth() === "admin" && props.cashRegisterSelect?.user?.name
-                        ? "hidden"
-                        : "inline"
-                    }
                   `}
                 >
                   {props.cashRegisterSelect?.status === "closed" ? "Abrir" : "Cerrar"}
@@ -48,9 +43,9 @@ export default function InfoCashRegister(props: editProfileProps) {
                 <button 
                   className={`text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300
                     ${
-                      getRoleAuth() === "admin" && props.cashRegisterSelect?.user?.name
-                        ? "hidden"
-                        : "inline"
+                      getRoleAuth() === "admin" && props.cashRegisterSelect?.status === "closed"
+                        ? "inline"
+                        : "hidden"
                     }
                   `}
                   onClick={() => 
