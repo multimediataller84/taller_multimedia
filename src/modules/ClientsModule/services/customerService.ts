@@ -32,17 +32,13 @@ export class CustomerService implements ICustomerService {
   }
 
   async delete(id: number): Promise<TCustomerEndpoint> {
-    try {
-      const response = await apiClient.delete<TCustomerEndpoint>(`/customer/${id}`);
+    const response = await apiClient.delete<TCustomerEndpoint>(`/customer/${id}`);
 
-      if (response.status !== 200 && response.status !== 201) {
-        throw new Error(`Server error at delete customer`);
-      }
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`Invalid Delete Customer`);
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(`Server error at delete customer`);
     }
+
+    return response.data;
   }
 
    async get(id: number): Promise<TCustomerEndpoint> {

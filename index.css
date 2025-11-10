@@ -29,3 +29,15 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #84959c;
 }
+
+
+/* Ocultar ícono del calendario nativo en Chrome, Safari, Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Ocultar ícono en Firefox */
+input[type="date"] {
+  -moz-appearance: textfield;
+}

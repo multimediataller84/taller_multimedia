@@ -2,6 +2,8 @@ import { useProductForm } from "../hooks/useProductModal";
 import { TProduct } from "../models/types/TProduct";
 import { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { ProductFormInputs } from "../models/types/TProductsForm";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+import { useState } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -12,6 +14,9 @@ type Props = {
 };
 
 export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Props) => {
+
+  const [visibleConfirmDialog, setVisibleConfirmDialog] = useState(false); 
+
   const {
     register,
     handleSubmit,
@@ -24,12 +29,26 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
     isEditing,
   } = useProductForm(initialData, isOpen);
 
+    const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    mode: "", // "create" o "edit"
+    payload: null as any,
+  });
+
   if (!isOpen) return null;
 
   const onSubmit = async (data: ProductFormInputs & { cost: string }) => {
     await submit(data);
     await onChange();
     onClose();
+  };
+
+  const handleOpenConfirm = (mode: "create" | "edit") => {
+    setConfirmDialog({
+      open: true,
+      mode,
+      payload: null,
+    });
   };
 
   return (
@@ -83,18 +102,20 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
             )}
             </label>
             <div className="relative">
-            <select
-              {...register("category_id", { required: true })}
-              disabled={isEditing}
-              className="disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
-            >
-              <option value="">Seleccione categoría</option>
-              {formattedCategoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            {formattedCategoryOptions.length > 0 && (
+              <select
+                {...register("category_id", { required: true })}
+                disabled={isEditing}
+                className="disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+              >
+                <option value="">Seleccione categoría</option>
+                {formattedCategoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
               className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
               <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
@@ -202,16 +223,44 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           </div>
           
           <button
-            type="submit"
-            className="py-2 rounded-3xl px-2 md:px-3 w-full text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50"
-            disabled={skuStatus === "dup" || skuStatus === "checking"}
-          >
-            {isEditing ? "Guardar cambios" : "Crear producto"}
-          </button>
-          
+              type="button"
+              className="py-2 rounded-3xl px-2 md:px-3 w-full text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50"
+              disabled={skuStatus === "dup" || skuStatus === "checking"}
+              onClick={() => {
+                handleOpenConfirm(isEditing ? "edit" : "create");
+              }}
+            >
+              {isEditing ? "Guardar cambios" : "Crear producto"}
+            </button>         
       </form>
     </div>
   </div>
+
+        <div className="z-100">
+        <ConfirmDialog
+        open={confirmDialog.open}
+        onCancel={() => setConfirmDialog({ open: false, mode: "", payload: null })}
+        onConfirm={() => {
+          handleSubmit(async (data) => {
+            await onSubmit(data); // ejecuta el submit del formulario
+            setConfirmDialog({ open: false, mode: "", payload: null }); // ✅ lo cierra después
+          })();
+        }}
+        title={
+          confirmDialog.mode === "edit"
+            ? "¿Guardar cambios?"
+            : "¿Crear nuevo producto?"
+        }
+        message={
+          confirmDialog.mode === "edit"
+            ? "¿Seguro que deseas guardar los cambios de este producto?"
+            : "¿Seguro que deseas crear este nuevo producto?"
+        }
+        confirmLabel={confirmDialog.mode === "edit" ? "Guardar" : "Crear"}
+        cancelLabel="Cancelar"
+        />
+        </div>
+        
 </div>
   );
 };

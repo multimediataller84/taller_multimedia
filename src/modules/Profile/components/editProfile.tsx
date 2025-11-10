@@ -3,7 +3,6 @@ import { useState } from "react";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
 
-
 interface editProfileProps {
   profileSelect: TUserEndpoint | null; 
   setProfileSelect: React.Dispatch<React.SetStateAction<any>>;
@@ -105,7 +104,7 @@ export default function editClient(props: editProfileProps) {
                         <option value={1}>Administrador</option>
                         <option value={2}>Empleado</option>
                       </select> 
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="disabled:bg-gray2 w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
                           <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
                       </svg>
                     </div>
@@ -117,7 +116,7 @@ export default function editClient(props: editProfileProps) {
                     <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                       <label htmlFor="username" className="text-sm sm:text-base text-black font-medium">Nombre de usuario</label>
                       <input
-                      className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
+                      className={`disabled:bg-gray2 appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.username ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
                       id="username"
                       name="username"
@@ -129,6 +128,7 @@ export default function editClient(props: editProfileProps) {
                           setErrors((prev) => ({ ...prev, username: "" }));
                         }
                       }}
+                      disabled
                       placeholder="Nombre de usuario"
                     />
                       {errors.username && (
@@ -138,7 +138,7 @@ export default function editClient(props: editProfileProps) {
                 </div>
 
                 <div className="flex flex-wrap gap-2 2xl:gap-6">
-                                        <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
                     <label htmlFor="nombre" className="text-sm sm:text-base text-black font-medium">Nombre</label>
                     <input className={`appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500 ${errors.name ? "border-red-500" : "border-gray2"} focus:outline-2 focus:outline-blue-500`}
                       type="text"
@@ -151,6 +151,7 @@ export default function editClient(props: editProfileProps) {
                           setErrors((prev) => ({ ...prev, name: "" })); 
                         }
                       }}
+                      
                       placeholder="Nombre"
                     />
                     {errors.username && (
@@ -163,3 +164,12 @@ export default function editClient(props: editProfileProps) {
           </div>
     );
 }
+
+
+/*
+={
+                          getRoleAuth() === "admin" &&
+                          props.profileSelect?.username === getUsernameAuth()
+                      }
+
+*/

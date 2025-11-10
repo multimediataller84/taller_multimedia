@@ -60,6 +60,8 @@ export const useProfile = () => {
   const [confirmationEditProfile, setConfirmationEditProfile] = useState(false);
   const [confirmationAddProfile, setConfirmationAddProfile] = useState(false);
   const [confirmationDeleteProfile, setConfirmationDeleteProfile] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("")
+
 
   useEffect(() => {
     const fetchProfiles = async () => {
@@ -151,13 +153,32 @@ export const useProfile = () => {
       setVisibleEditProfile(false);
       setVisibleAddProfile(false);
       setConfirmationDeleteProfile(true);
-      setTimeout(()=>{
+      setTimeout(() => {
         setConfirmationDeleteProfile(false);
       }, 2000);
-    } catch (error) {
-      console.error("Error al eliminar cliente:", error);
+    } catch (error: any) {
+      console.error("Error al eliminar empleado:", error);
+
+      const backendError = error?.response?.data?.error || "";
+
+      if (backendError.includes("Cannot delete an employee associated with a cash register")) {
+        setErrorMessage("No se puede eliminar este empleado porque tiene una caja asociada.");
+        setVisibleAddProfile(false);
+        setVisibleEditProfile(false);
+        setProfileSelect(null);
+      } else {
+        setErrorMessage("Ocurrió un error al eliminar el empleado. \nIntente nuevamente.");
+        setVisibleAddProfile(false);
+        setVisibleEditProfile(false);
+        setProfileSelect(null);
+      }
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
     }
   };
+
 
   return {
     searchProfiles,
@@ -192,6 +213,8 @@ export const useProfile = () => {
     canNext,
     goPrev,
     goNext,
-    pagesDisplay
+    pagesDisplay,
+    errorMessage,
+    setErrorMessage
   };
 };

@@ -4,6 +4,7 @@ import Credit from "../../Credit/screen/Credit";
 import { TProvince } from "../models/types/TProvince";
 import { TCanton } from "../models/types/TCanton";
 import { TDistrict } from "../models/types/TDistrict";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface editClientProps {
   clientSelect: TCustomerEndpoint | null; 
@@ -20,6 +21,16 @@ interface editClientProps {
 }
 
 export default function editClient(props: editClientProps) {
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    action: "edit" | "delete" | null;
+    payload?: any;
+  }>({
+    open: false,
+    action: null,
+    payload: null,
+  });
 
   const [moveBar, setmMoveBar] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -120,13 +131,25 @@ export default function editClient(props: editClientProps) {
               className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 
                 ${props.edit ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                 : "bg-gray3 border border-gray2 text-gray1"}`}
-              onClick={validateOnSave}
+              onClick={() =>
+                setConfirmDialog({
+                  open: true,
+                  action: "edit",
+                  payload: props.clientSelect,
+                })
+              }
             >
               Editar
             </button>
             <button
               className="text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300 "
-              onClick={() => props.clientSelect && props.handleDelete(props.clientSelect.id)}
+              onClick={() =>
+                setConfirmDialog({
+                  open: true,
+                  action: "delete",
+                  payload: props.clientSelect,
+                })
+              }
             >
               Eliminar
             </button>
@@ -447,6 +470,32 @@ export default function editClient(props: editClientProps) {
           />
         )}
       </div>
+
+     <ConfirmDialog
+      open={confirmDialog.open}
+      onCancel={() => setConfirmDialog({ open: false, action: null, payload: null })}
+      onConfirm={() => {
+        if (confirmDialog.action === "delete" && confirmDialog.payload) {
+          props.handleDelete(confirmDialog.payload.id);
+        } else if (confirmDialog.action === "edit" && confirmDialog.payload) {
+          validateOnSave();
+        }
+        setConfirmDialog({ open: false, action: null, payload: null });
+      }}
+      title={
+        confirmDialog.action === "delete"
+          ? "¿Eliminar cliente?"
+          : "¿Editar cliente?"
+      }
+      message={
+        confirmDialog.action === "delete"
+          ? "Esta acción eliminará el cliente de forma permanente"
+          : "¿Seguro que deseas editar la información de este cliente?"
+      }
+      confirmLabel={confirmDialog.action === "delete" ? "Eliminar" : "Editar"}
+      cancelLabel="Cancelar"
+    />
+
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { fmtCRC } from "../utils/formatters";
 import type { TProductEndpoint } from "../models/types/TProductEndpoint";
 import { useState } from "react";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+
 
 interface ProductsProps  {
   products: TProductEndpoint[];
@@ -8,7 +10,7 @@ interface ProductsProps  {
   onEdit: (row: TProductEndpoint) => void;
   onDelete: (row: TProductEndpoint) => void;
   categoryNameById?: Record<string | number, string>;
-};
+}
 
 export function ProductTable(props: ProductsProps) {
   const {
@@ -31,6 +33,27 @@ export function ProductTable(props: ProductsProps) {
     const key = String(category_id);
     const name = categoryNameById[key] ?? categoryNameById[Number(key)] ?? category_id;
     return truncate(name, 31);
+  };
+
+  const [confirmDialog, setConfirmDialog] = useState({
+  open: false,
+  payload: null as any,
+  });
+
+  // Cuando el usuario hace clic en "Eliminar"
+  const handleDeleteClick = (row: any) => {
+    setConfirmDialog({
+      open: true,
+      payload: row,
+    });
+  };
+
+  // Cuando el usuario confirma en el diálogo
+  const handleConfirmDelete = () => {
+    if (confirmDialog.payload) {
+      onDelete(confirmDialog.payload); // usamos el onDelete que ya viene en props
+    }
+    setConfirmDialog({ open: false, payload: null });
   };
 
   return (
@@ -115,13 +138,13 @@ export function ProductTable(props: ProductsProps) {
                     Editar
                   </button>
                   <button
-                    className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300
-                    bg-black border border-black text-white  
-                              hover:bg-[#D32626] hover:border-[#D32626]"
-                    onClick={() => onDelete(row)}
-                  >
-                    Eliminar
-                  </button>
+                  className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300
+                  bg-black border border-black text-white  
+                  hover:bg-[#D32626] hover:border-[#D32626]"
+                  onClick={() => handleDeleteClick(row)}
+                >
+                  Eliminar
+                </button>
                 </div>
               )}
             </td>
@@ -129,6 +152,17 @@ export function ProductTable(props: ProductsProps) {
         ))}
         <tr className="border-graybar text-center h-4 font-Lato"></tr>
       </tbody>
+
+        <ConfirmDialog
+          open={confirmDialog.open}
+          onCancel={() => setConfirmDialog({ open: false, payload: null })}
+          onConfirm={handleConfirmDelete}
+          title="¿Eliminar producto?"
+          message="¿Seguro que deseas eliminar este producto? Esta acción no se puede deshacer."
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+        />
+      
     </table>
   );
 }

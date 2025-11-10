@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TProvince } from "../models/types/TProvince";
 import { TCanton } from "../models/types/TCanton";
 import { TDistrict } from "../models/types/TDistrict";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface addProfileProps{
     visibleAdd: boolean;
@@ -20,6 +21,10 @@ interface addProfileProps{
 export default function addProfile (props: addProfileProps){
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [confirmDialog, setConfirmDialog] = useState({
+      open: false,
+      payload: null as any,
+    });
   
     const validateOnSave = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -27,47 +32,45 @@ export default function addProfile (props: addProfileProps){
     const type = props.clientSelect?.identification_type;
     const id = props.clientSelect?.id_number?.trim();
 
-  if (!type) {
-    newErrors.identification_type = "Seleccione un tipo de cédula";
-  }
+    if (!type) newErrors.identification_type = "Seleccione un tipo de cédula";
 
-  if (!id) {
-    newErrors.id_number = "La cédula es obligatoria";
-  } else {
-    switch (type) {
-      case "Cédula Física":
-        if (!/^[1-7]\d{4}\d{4}$/.test(id))
-          newErrors.id_number = "Formato inválido. Ejemplo: 112345678";
-        break;
-      case "Cédula Jurídica":
-        if (!/^3\d{3}\d{6,}$/.test(id))
-          newErrors.id_number = "Formato inválido. Ejemplo: 3101234567";
-        break;
-      case "DIMEX":
-        if (!/^(\d{1}\d{3}\d{6,}|\d{10,12})$/.test(id))
-          newErrors.id_number = "Formato inválido para DIMEX";
-        break;
-      case "NITE":
-        if (!/^4\d{3}\d{6}$/.test(id))
-          newErrors.id_number = "Formato inválido. Ejemplo: 4000123456";
-        break;
-      case "Extranjero no domiciliado":
-        if (!/^\d{9}$/.test(id))
-          newErrors.id_number = "Formato inválido. Deben ser 9 dígitos";
-        break;
-      case "No contribuyente":
-        if (id !== "999999999")
-          newErrors.id_number = "El formato debe ser 999999999";
-        break;
-      default:
-        newErrors.id_number = "Seleccione un tipo de cédula válido";
+    if (!id) {
+      newErrors.id_number = "La cédula es obligatoria";
+    } else {
+      switch (type) {
+        case "Cédula Física":
+          if (!/^[1-7]\d{4}\d{4}$/.test(id))
+            newErrors.id_number = "Formato inválido. Ejemplo: 112345678";
+          break;
+        case "Cédula Jurídica":
+          if (!/^3\d{3}\d{6,}$/.test(id))
+            newErrors.id_number = "Formato inválido. Ejemplo: 3101234567";
+          break;
+        case "DIMEX":
+          if (!/^(\d{1}\d{3}\d{6,}|\d{10,12})$/.test(id))
+            newErrors.id_number = "Formato inválido para DIMEX";
+          break;
+        case "NITE":
+          if (!/^4\d{3}\d{6}$/.test(id))
+            newErrors.id_number = "Formato inválido. Ejemplo: 4000123456";
+          break;
+        case "Extranjero no domiciliado":
+          if (!/^\d{9}$/.test(id))
+            newErrors.id_number = "Formato inválido. Deben ser 9 dígitos";
+          break;
+        case "No contribuyente":
+          if (id !== "999999999")
+            newErrors.id_number = "El formato debe ser 999999999";
+          break;
+        default:
+          newErrors.id_number = "Seleccione un tipo de cédula válido";
+      }
     }
-  }
-    
+
     if (!props.clientSelect?.phone) {
       newErrors.phone = "El teléfono es obligatorio";
     } else if (!/^\d{4}\d{4}$/.test(String(props.clientSelect.phone))) {
-      newErrors.phone = "Formato de télefono incorrecto";
+      newErrors.phone = "Formato de teléfono incorrecto";
     }
 
     if (!props.clientSelect?.email) {
@@ -76,32 +79,19 @@ export default function addProfile (props: addProfileProps){
       newErrors.email = "Correo inválido";
     }
 
-    if (!props.clientSelect?.name) {
-      newErrors.name = "El nombre es obligatorio";
-    }
-
-    if (!props.clientSelect?.last_name) {
+    if (!props.clientSelect?.name) newErrors.name = "El nombre es obligatorio";
+    if (!props.clientSelect?.last_name)
       newErrors.last_name = "Los apellidos son obligatorios";
-    }
-
-    if (!props.clientSelect?.address) {
+    if (!props.clientSelect?.address)
       newErrors.address = "La dirección es obligatoria";
-    }
-
-    if (!props.clientSelect?.province_id) {
+    if (!props.clientSelect?.province_id)
       newErrors.province_id = "La provincia es obligatoria";
-    }
-
-    if (!props.clientSelect?.canton_id) {
-      newErrors.canton_id = "El cantón es obligatoria";
-    }
-
-    if (!props.clientSelect?.district_id) {
-      newErrors.district_id = "El distrtio es obligatorio";
-    }
+    if (!props.clientSelect?.canton_id)
+      newErrors.canton_id = "El cantón es obligatorio";
+    if (!props.clientSelect?.district_id)
+      newErrors.district_id = "El distrito es obligatorio";
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
@@ -111,19 +101,22 @@ export default function addProfile (props: addProfileProps){
               <div className="flex w-full justify-between items-center pt-2 md:pt-4 2xl:pt-8">
                 <h2 className="font-Lato text-sm md:text-base xl:text-base 2xl:text-2xl pl-8">Añadir Cliente</h2>
                 <div className="flex space-x-2 md:space-x-4 2xl:space-x-8 pr-4">
+                   
                   <button
                     className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 ${
-                      props.add ? "bg-blue-500 text-white border border-blue-500 hover:bg-blue-800 hover:border-blue-800" 
-                      : 
-                      "bg-gray3 border border-gray2 text-gray1  "
+                      props.add
+                        ? "bg-blue-500 text-white border border-blue-500 hover:bg-blue-800 hover:border-blue-800"
+                        : "bg-gray3 border border-gray2 text-gray1"
                     }`}
                     onClick={(e) => {
-                    e.preventDefault();
-                    if (validateOnSave() && props.clientSelect) {
-                      props.handleAddClient(props.clientSelect);
-                      props.setClientSelect(null);
-                    }
-                  }}
+                      e.preventDefault();
+                      if (validateOnSave() && props.clientSelect) {
+                        setConfirmDialog({
+                          open: true,
+                          payload: props.clientSelect,
+                        });
+                      }
+                    }}
                   >
                     Confirmar
                   </button>
@@ -134,6 +127,22 @@ export default function addProfile (props: addProfileProps){
                   }
                   >Cancelar</button>
                 </div>
+
+                <ConfirmDialog
+                open={confirmDialog.open}
+                onCancel={() => setConfirmDialog({ open: false, payload: null })}
+                onConfirm={() => {
+                  if (confirmDialog.payload) {
+                    props.handleAddClient(confirmDialog.payload);
+                    props.setClientSelect(null);
+                  }
+                  setConfirmDialog({ open: false, payload: null });
+                }}
+                title="¿Agregar cliente?"
+                message="¿Seguro que deseas agregar este nuevo cliente?"
+                confirmLabel="Agregar"
+                cancelLabel="Cancelar"
+              />
               </div>
               
               <div className="flex flex-col w-full">
