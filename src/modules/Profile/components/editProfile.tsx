@@ -2,6 +2,7 @@ import { TUserEndpoint } from "../models/types/TUserEndpoint";
 import { useState } from "react";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface editProfileProps {
   profileSelect: TUserEndpoint | null; 
@@ -14,6 +15,16 @@ interface editProfileProps {
 }
 
 export default function editClient(props: editProfileProps) {
+
+      const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean;
+        action: "edit" | "delete" | null;
+        payload?: any;
+      }>({
+        open: false,
+        action: null,
+        payload: null,
+      });
 
       const [errors, setErrors] = useState<{ [key: string]: string }>({});
     
@@ -48,12 +59,24 @@ export default function editClient(props: editProfileProps) {
                   ${props.editProfile ? "bg-blue-500 text-white hover:bg-blue-800 hover:border-blue-800" 
                   : 
                   "bg-gray3 border border-gray2 text-gray1 "}`}
-                    onClick={validateOnSave}>
+                    onClick={() =>
+                    setConfirmDialog({
+                      open: true,
+                      action: "edit",
+                      payload: props.profileSelect,
+                    })
+                  }>
                     Editar
                   </button>
                   <button
                     className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 bg-black hover:border-[#D32626] hover:bg-[#D32626] text-white "
-                    onClick={() => props.profileSelect && props.handleDelete(props.profileSelect.id)}
+                    onClick={() =>
+                    setConfirmDialog({
+                      open: true,
+                      action: "delete",
+                      payload: props.profileSelect,
+                    })
+                  }
                   >
                     Eliminar
                   </button>
@@ -161,15 +184,31 @@ export default function editClient(props: editProfileProps) {
                 </div>
               </form>
             </div>
+
+             <ConfirmDialog
+                  open={confirmDialog.open}
+                  onCancel={() => setConfirmDialog({ open: false, action: null, payload: null })}
+                  onConfirm={() => {
+                    if (confirmDialog.action === "delete" && confirmDialog.payload) {
+                      props.handleDelete(confirmDialog.payload.id);
+                    } else if (confirmDialog.action === "edit" && confirmDialog.payload) {
+                      validateOnSave();
+                    }
+                    setConfirmDialog({ open: false, action: null, payload: null });
+                  }}
+                  title={
+                    confirmDialog.action === "delete"
+                      ? "¿Eliminar Perfil?"
+                      : "¿Editar Perfil?"
+                  }
+                  message={
+                    confirmDialog.action === "delete"
+                      ? "Esta acción eliminará el Perfil de forma permanente"
+                      : "¿Seguro que deseas editar la información de este Perfil?"
+                  }
+                  confirmLabel={confirmDialog.action === "delete" ? "Eliminar" : "Editar"}
+                  cancelLabel="Cancelar"
+                />
           </div>
     );
 }
-
-
-/*
-={
-                          getRoleAuth() === "admin" &&
-                          props.profileSelect?.username === getUsernameAuth()
-                      }
-
-*/
