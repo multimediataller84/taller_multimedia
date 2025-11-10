@@ -15,8 +15,6 @@ type Props = {
 
 export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Props) => {
 
-  const [visibleConfirmDialog, setVisibleConfirmDialog] = useState(false); 
-
   const {
     register,
     handleSubmit,
