@@ -134,7 +134,7 @@ export const Profile = () => {
                   <h3 className="w-full ml-2 md:ml-4 text-xs sm:text-sm 2xl:text-base opacity-80">{items.name}</h3>
                   <h4 className="mt-2 md:mt-5 justify-end w-full flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">
                     {" "}
-                    {items.role_id === 1 ? "Administrador" : "Empleado"}
+                    {items.role_id === 1 ? "Administrador" : "Cajero"}
                   </h4>
                 </div>
               </div>

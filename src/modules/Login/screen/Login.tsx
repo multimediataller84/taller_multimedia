@@ -179,7 +179,7 @@ useEffect(() => {
             required: "La contraseña es obligatoria",
             minLength: {
               value: 6,
-              message: "La contrañeña necesita minimo 6 caracteres",
+              message: "La contraseña necesita minimo 6 caracteres",
             },
             onChange: () => clearError(),
           })}

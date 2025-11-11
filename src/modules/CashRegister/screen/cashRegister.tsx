@@ -5,8 +5,12 @@ import InfoCashRegister from "../components/infoCashRegister";
 import AddCashRegister from "../components/addCashRegister";
 import Pagination from "../../../components/pagination";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
-import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import { getNameAuth } from "../../../utils/getNameAuth";
 import logo2 from "../../../components/utils/logo2.svg";
+import ConfirmationAddCashRegister from "../components/confirmationAddCashRegister";
+import ConfirmationCloseCashRegister from "../components/confirmationCloseCashRegister";
+import ConfirmationDeleteCashRegister from "../components/confirmationDeleteCashRegister";
+import ConfirmationOpenCashRegister from "../components/confirmationOpenCashRegister";
 
 export const CashRegister = () => {
     
@@ -41,20 +45,30 @@ export const CashRegister = () => {
         goPrev,
         goNext,
         pagesDisplay,
+        confirmationAddCashRegister, 
+        setConfirmationAddCashRegister,
+        confirmationCloseCashRegister, 
+        setConfirmationCloseCashRegister,
+        confirmationDeleteCashRegister, 
+        setConfirmationDeleteCashRegister,
+        confirmationOpenCashRegister, 
+        setConfirmationOpenCashRegister,
+        errorMessage, 
+        setErrorMessage
     } = useCashRegister();
 
     const role = getRoleAuth();
-    const username = getUsernameAuth();
+    const name = getNameAuth();
 
     const hasCashRegister = currentCashRegister.some(
-        (item) => item.user?.name === username
+        (item) => item.user?.name === name
     );
 
     
     const filteredCashRegisters =
     role === "employee"
         ? currentCashRegister.filter(
-            (item) => item.user?.name === username
+            (item) => item.user?.name === name
         )
         : currentCashRegister;
 
@@ -74,7 +88,7 @@ export const CashRegister = () => {
                 <div className="flex justify-between items-center mt-0 ml-0 sm:mt-2 sm:ml-2 md:mt-4 md:ml-4 2xl:mt-8 2xl:ml-8">
                     <h2 className="font-Lato text-xs sm:text-sm md:text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0 ">Lista de Cajas</h2>
                     <button disabled={role === "employee" && hasCashRegister}
-                    className={`font-bold py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
+                    className={`font-bold mr-0.5 sm:mr-2 py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato transition duration-300 border ml-2 mt-2 sm:ml-0 sm:mt-0
                     ${
                         visibleAdd == true
                         ? "bg-gray3 text-gray1 border-gray2 "
@@ -89,6 +103,10 @@ export const CashRegister = () => {
                         
                     `}
                     onClick={() => {
+                    setConfirmationAddCashRegister(false);
+                    setConfirmationCloseCashRegister(false);
+                    setConfirmationDeleteCashRegister(false);
+                    setConfirmationOpenCashRegister(false);
                     setVisibleAdd(true);
                     setVisibleEdit(false);
                     setAdd(false);
@@ -127,6 +145,10 @@ export const CashRegister = () => {
                             setCashRegisterSelect(items);
                             setVisibleEdit(true);
                             setVisibleAdd(false);
+                            setConfirmationAddCashRegister(false);
+                            setConfirmationCloseCashRegister(false);
+                            setConfirmationDeleteCashRegister(false);
+                            setConfirmationOpenCashRegister(false);
                         }}
                         >
                         <h2 className="w-full ml-2 md:ml-4 mt-2 md:mt-4 font-medium text-xs sm:text-sm 2xl:text-base">
@@ -174,7 +196,7 @@ export const CashRegister = () => {
             </h2>
       </div>        
     
-        {!(visibleEdit || visibleAdd) && (
+        {!(visibleEdit || visibleAdd || confirmationAddCashRegister || confirmationCloseCashRegister || confirmationDeleteCashRegister || confirmationOpenCashRegister) && (
           <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
             <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
           </div>
@@ -193,6 +215,18 @@ export const CashRegister = () => {
           setVisibleClose = {setVisibleClose}
           handleDelete = {handleDelete}
         />}
+
+        {confirmationAddCashRegister && 
+        <ConfirmationAddCashRegister/>}
+        
+        {confirmationCloseCashRegister && 
+        <ConfirmationCloseCashRegister/>}
+        
+        {confirmationDeleteCashRegister && 
+        <ConfirmationDeleteCashRegister/>}
+
+        {confirmationOpenCashRegister && 
+        <ConfirmationOpenCashRegister/>}
 
         {visibleAdd && <AddCashRegister
             visibleAdd = {visibleAdd}

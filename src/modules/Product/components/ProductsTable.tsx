@@ -102,7 +102,15 @@ export function ProductTable(props: ProductsProps) {
             <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{fmtCRC(row.unit_price)}</td>
             <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{fmtCRC(Number(row.unit_price) + Number(row.profit_margin) + ((Number(row.unit_price) + Number(row.profit_margin)) * (Number(row.tax.percentage) / 100 )))}</td>
             <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{row.stock}</td>
-            <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">{row.state}</td>
+            <td className="px-0.5 sm:px-2 md:px-2 xl:px-4 text-center text-[10px] lg:text-sm">
+                {row.state === "Active"
+                ? "Activo"
+                : row.state === "Discontinued"
+                ? "Descontinuado"
+                : row.state === "Inactive"
+                ? "Inactivo"
+                : ""}
+            </td>
 
             <td className="relative py-2">
               <div className="flex justify-center items-center w-full h-full">
