@@ -10,8 +10,9 @@ const CreditsCard: React.FC = () => {
   return (
     <div className="flex flex-col w-full space-y-6">
       <h2 className="font-Lato text-2xl tracking-tight">Creditos</h2>
-      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md">
-        <div className="justify-between flex flex-col h-full p-5">
+      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md relative overflow-hidden">
+        <div className="absolute left-0 top-0 h-full w-3 bg-orange-500 rounded-l-2xl" aria-hidden="true" />
+        <div className="justify-between flex flex-col h-full p-5 pl-6">
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-xl font-medium text-gray-700">Usuarios con crédito</span>
