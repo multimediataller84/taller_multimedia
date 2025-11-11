@@ -10,7 +10,7 @@ interface PieData {
 
 // Datos vienen del hook useProductStats
 
-const COLORS: string[] = ["#2B7FFF", "#193cb8"]; 
+const COLORS: string[] = ["#309e8e", "#006a5c"]; 
 
 type LegendEntry = { value: string | number; color: string };
 type CustomLegendProps = { payload?: readonly LegendEntry[] };
@@ -42,7 +42,8 @@ const ProductsCard: React.FC = () => {
     <div className="flex flex-col w-full space-y-6">
       <h1 className="font-Lato text-2xl tracking-tight">Stock de productos</h1>
 
-      <div className="w-full bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md flex flex-col h-70">
+      <div className="w-full bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md flex flex-col h-70 relative overflow-hidden pl-6">
+        <div className="absolute left-0 top-0 h-full w-3 bg-emerald-600 rounded-l-2xl" aria-hidden="true" />
         {/* Título */}
         <h2 className="text-2xl font-Lato font-medium ml-4 mt-4 text-gray-700">Activos</h2>
 

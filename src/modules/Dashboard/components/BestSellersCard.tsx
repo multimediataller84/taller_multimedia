@@ -7,8 +7,9 @@ const BestSellersCard: React.FC = () => {
   return (
     <div className="flex flex-col w-full space-y-6">
       <h2 className="font-Lato text-2xl tracking-tight">Productos más vendidos (7 días)</h2>
-      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md">
-        <div className="justify-between flex flex-col h-full p-4">
+      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md relative overflow-hidden">
+        <div className="absolute left-0 top-0 h-full w-3 bg-blue-400 rounded-l-2xl" aria-hidden="true" />
+        <div className="justify-between flex flex-col h-full p-4 pl-6">
           <div className="w-full h-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>

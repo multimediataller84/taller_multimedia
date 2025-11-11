@@ -22,8 +22,9 @@ const IncomeCard: React.FC = () => {
     <div className="flex flex-col w-full space-y-6">
       <h1 className="font-Lato text-2xl tracking-tight">Ingresos</h1>
 
-      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md">
-        <div className="justify-between flex flex-col h-full">
+      <div className="w-full h-70 bg-white rounded-2xl shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-md relative overflow-hidden">
+        <div className="absolute left-0 top-0 h-full w-3 bg-blue-600 rounded-l-2xl" aria-hidden="true" />
+        <div className="justify-between flex flex-col h-full pl-5">
           {/* Monto y fecha */}
           <div className="mt-6 space-y-2">
             <h2 className="text-5xl font-Lato font-medium ml-4">
