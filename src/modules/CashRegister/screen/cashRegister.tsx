@@ -53,8 +53,7 @@ export const CashRegister = () => {
         setConfirmationDeleteCashRegister,
         confirmationOpenCashRegister, 
         setConfirmationOpenCashRegister,
-        errorMessage, 
-        setErrorMessage
+
     } = useCashRegister();
 
     const role = getRoleAuth();
@@ -241,3 +240,10 @@ export const CashRegister = () => {
         </RootLayout>
     );
 }
+
+
+/*
+
+        errorMessage, 
+        setErrorMessage
+*/
