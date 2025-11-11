@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 import { useForm } from "react-hook-form";
 import { TLogin } from "../models/types/TLogin";
 import useLogin from "../hooks/useLogin";
@@ -6,6 +8,8 @@ import { useEffect, useState } from "react";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import gsap from "gsap";
 import { useRef } from "react";
+import { getNameAuth } from "../../../utils/getNameAuth";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,12 +21,12 @@ export default function Login() {
 
   const { requestUser, user, loading, error, clearError } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
-
+  
 
 useEffect(() => {
   if (user) {
     const role = getRoleAuth();
-
+      console.log(getNameAuth());
     if (role === "admin") {
       navigate("/dashboard", { replace: true });
     } else if (role === "employee") {
@@ -252,3 +256,9 @@ useEffect(() => {
     </div>
   );
 }
+
+
+/*
+        alert(JSON.stringify((jwtDecode(sessionStorage.getItem("authToken")??""))));
+
+*/
