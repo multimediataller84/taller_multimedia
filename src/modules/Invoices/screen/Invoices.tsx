@@ -19,6 +19,7 @@ import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { ProductService } from "../../Product/services/productService";
 import { InvoiceService } from "../services/invoiceService";
 import type { TGetAllOptions } from "../../../models/types/TGetAllOptions";
+import { usePaymentTotals } from "../hooks/usePaymentTotals";
 
 export const Invoices = () => {
   const [search, setSearch] = useState("");
@@ -67,7 +68,14 @@ export const Invoices = () => {
   } = useInvoiceHistory(activeTab === "historial" ? search : undefined);
 
   const { registers, loading: loadingRegisters } = useOpenRegisters();
-  const [seller, setSeller] = useState<string>(""); // value will be "userId:registerId"
+  const [seller, setSeller] = useState<string>(""); 
+
+  const { changeDue, totalToPay } = usePaymentTotals(
+    subtotal,
+    paymentMethod,
+    cashAmount,
+    paymentReceipt
+  );
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<TInvoiceEndpoint | null>(null);
@@ -265,7 +273,6 @@ export const Invoices = () => {
                 showAlert("Acción requerida", "Debe ingresar el comprobante de pago para pagos con tarjeta o transferencia", "error");
                 return;
               }
-              const changeDue = method === "Cash" ? Math.max(0, Number(cashAmount) - subtotal) : 0;
               const payload = {
                 customer_id: selectedClient.id,
                 issue_date: issueNow,
@@ -274,11 +281,14 @@ export const Invoices = () => {
                 status: statusForMethod,
                 cash_register_id: selRegisterId,
                 user_id: selUserId,
-                payment_receipt: (method === "Debit Card" || method === "Transfer") && paymentReceipt ? paymentReceipt.trim() : undefined
+                payment_receipt: (method === "Debit Card" || method === "Transfer") && paymentReceipt ? paymentReceipt.trim() : undefined,
+                amount_paid: method !== "Credit" ? totalToPay : undefined,
+                cash_given: method === "Cash" ? Number(cashAmount) : undefined,
+                change_due: method === "Cash" ? changeDue : undefined,
               } as const;
               console.log('[Invoice Submit] payload', payload);
               if (method === "Cash") {
-                console.log('[Invoice Submit] cash_amount', Number(cashAmount), 'subtotal', subtotal, 'change_due', changeDue);
+                console.log('[Invoice Submit] cash_amount', Number(cashAmount), 'subtotal', totalToPay, 'change_due', changeDue);
               }
               await submit(payload);
               const successMsg =
