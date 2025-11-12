@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { TLogin } from "../models/types/TLogin";
 import useLogin from "../hooks/useLogin";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import gsap from "gsap";
 import { useRef } from "react";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,12 +19,12 @@ export default function Login() {
 
   const { requestUser, user, loading, error, clearError } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
-
+  
 
 useEffect(() => {
   if (user) {
     const role = getRoleAuth();
-
+      
     if (role === "admin") {
       navigate("/dashboard", { replace: true });
     } else if (role === "employee") {
@@ -175,7 +177,7 @@ useEffect(() => {
             required: "La contraseña es obligatoria",
             minLength: {
               value: 6,
-              message: "La contrañeña necesita minimo 6 caracteres",
+              message: "La contraseña necesita minimo 6 caracteres",
             },
             onChange: () => clearError(),
           })}
@@ -252,3 +254,9 @@ useEffect(() => {
     </div>
   );
 }
+
+
+/*
+        alert(JSON.stringify((jwtDecode(sessionStorage.getItem("authToken")??""))));
+
+*/

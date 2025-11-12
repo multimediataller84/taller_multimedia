@@ -196,7 +196,7 @@ export default function InfoCashRegister(props: editProfileProps) {
                         {props.cashRegisterSelect?.user
                           ? props.cashRegisterSelect.user.role_id === 1
                           ? "Administrador"
-                          : "Empleado"
+                          : "Cajero"
                           : "No asignado"}
                       </h3>
                     </div>

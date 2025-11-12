@@ -52,86 +52,109 @@ export const useCashRegister = () => {
         return out;
       })();
 
-  const currentCashRegister = filteredCashRegister.slice(
-    indexOfFirstCashRegister,
-    indexOfLastCashRegister
-  );
+    const currentCashRegister = filteredCashRegister.slice(
+      indexOfFirstCashRegister,
+      indexOfLastCashRegister
+    );
 
-  const fetchCashRegister = async () => {
+
+    const [confirmationAddCashRegister, setConfirmationAddCashRegister] = useState(false);
+    const [confirmationCloseCashRegister, setConfirmationCloseCashRegister] = useState(false);
+    const [confirmationDeleteCashRegister, setConfirmationDeleteCashRegister] = useState(false);
+    const [confirmationOpenCashRegister, setConfirmationOpenCashRegister] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("")
+
+
+    const fetchCashRegister = async () => {
+      try {
+        const data = await cashRegisterService.getAll();
+        setCashRegister(data);
+      } catch (error) {
+        console.error("Error al cargar cajas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchCashRegister();
+    }, []);
+
+    const handleAddCashRegister = async (newCashRegister: any) => {
+      try {
+        setLoading(true);
+
+        const dataToSend = {
+          ...newCashRegister,
+          opening_amount: newCashRegister.amount,
+        };
+
+        await cashRegisterService.post(dataToSend);
+
+        await fetchCashRegister();
+
+        setVisibleAdd(false);
+        setConfirmationAddCashRegister(true);
+        setTimeout(() => {
+          setConfirmationAddCashRegister(false);
+        }, 2000);
+        console.log("Caja agregada y lista actualizada correctamente");
+      } catch (error) {
+        console.error("Error al añadir caja:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  const handleOpenCashRegister = async (id: number, data: TOpenRegister) => {
     try {
-      const data = await cashRegisterService.getAll();
-      setCashRegister(data);
+      setLoading(true);
+      await cashRegisterService.open(id, data);
+      await fetchCashRegister(); 
+      console.log("Caja abierta correctamente y lista actualizada");
+      setConfirmationOpenCashRegister(true);
+      setTimeout(() => {
+          setConfirmationOpenCashRegister(false);
+      }, 2000);
     } catch (error) {
-      console.error("Error al cargar cajas:", error);
+      console.error("Error al abrir la caja:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchCashRegister();
-  }, []);
+  const handleCloseCashRegister = async (id: number, data: TCloseRegister) => {
+    try {
+      setLoading(true);
+      await cashRegisterService.close(id, data);
+      await fetchCashRegister(); 
+      console.log("Caja cerrada correctamente y lista actualizada");
+      setConfirmationCloseCashRegister(true);
+      setTimeout(() => {
+          setConfirmationCloseCashRegister(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Error al cerrar la caja:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleAddCashRegister = async (newCashRegister: any) => {
-  try {
-    setLoading(true);
-
-    const dataToSend = {
-      ...newCashRegister,
-      opening_amount: newCashRegister.amount,
-    };
-
-    await cashRegisterService.post(dataToSend);
-
-    await fetchCashRegister();
-
-    setVisibleAdd(false);
-    console.log("Caja agregada y lista actualizada correctamente");
-  } catch (error) {
-    console.error("Error al añadir caja:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleOpenCashRegister = async (id: number, data: TOpenRegister) => {
-  try {
-    setLoading(true);
-    await cashRegisterService.open(id, data);
-    await fetchCashRegister(); 
-    console.log("Caja abierta correctamente y lista actualizada");
-  } catch (error) {
-    console.error("Error al abrir la caja:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleCloseCashRegister = async (id: number, data: TCloseRegister) => {
-  try {
-    setLoading(true);
-    await cashRegisterService.close(id, data);
-    await fetchCashRegister(); 
-    console.log("Caja cerrada correctamente y lista actualizada");
-  } catch (error) {
-    console.error("Error al cerrar la caja:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number) => {
     try {
       await cashRegisterService.delete(id);
       setCashRegister((prev) => prev.filter((c) => c.id !== id));
       setVisibleEdit(false);
-   
+      setConfirmationDeleteCashRegister(true);
+      setTimeout(() => {
+          setConfirmationDeleteCashRegister(false);
+      }, 2000);
     } catch (error) {
       console.error("Error al eliminar cliente:", error);
     }
   };
 
-const handleChange = (
+  const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
   const { name, value } = e.target;
@@ -184,5 +207,15 @@ const handleChange = (
     goPrev,
     goNext,
     pagesDisplay,
+    confirmationAddCashRegister, 
+    setConfirmationAddCashRegister,
+    confirmationCloseCashRegister, 
+    setConfirmationCloseCashRegister,
+    confirmationDeleteCashRegister, 
+    setConfirmationDeleteCashRegister,
+    confirmationOpenCashRegister, 
+    setConfirmationOpenCashRegister,
+    errorMessage, 
+    setErrorMessage
   }
 }

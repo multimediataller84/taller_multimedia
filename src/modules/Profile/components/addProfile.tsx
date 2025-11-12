@@ -30,11 +30,17 @@ export default function addProfile (props: addClientProps){
       newErrors.name = "El nombre es obligatorio";
     }
 
-      if (!props.profileSelect?.password) {
-    newErrors.password = "La contraseña es obligatoria";
-  } else if (props.profileSelect.password.length < 6) {
-    newErrors.password = "La contraseña debe tener al menos 6 caracteres";
-  }
+    if (!props.profileSelect?.password) {
+      newErrors.password = "La contraseña es obligatoria";
+    } else if (props.profileSelect.password.length < 6) {
+      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(props.profileSelect.password)
+    ) {
+      newErrors.password =
+        "Debe incluir al menos una mayúscula, una minúscula y un número";
+    }
+
 
     setErrors(newErrors);
 
@@ -129,7 +135,7 @@ export default function addProfile (props: addClientProps){
                         >
                         <option>Escoger rol</option>
                         <option value={1}>Administrador</option>
-                        <option value={2}>Empleado</option>
+                        <option value={2}>Cajero</option>
                       </select> 
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
                           <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
