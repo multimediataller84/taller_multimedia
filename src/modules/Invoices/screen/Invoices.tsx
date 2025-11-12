@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { RootLayout } from "../../../_Layouts/RootLayout";
 import { ClientSelector } from "../components/ClientSelector";
 import { useInvoices } from "../hooks/useInvoices";
@@ -19,6 +19,8 @@ import { useAiRecommendations } from "../hooks/useAiRecommendations";
 import { ProductService } from "../../Product/services/productService";
 import { InvoiceService } from "../services/invoiceService";
 import type { TGetAllOptions } from "../../../models/types/TGetAllOptions";
+import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import { getNameAuth } from "../../../utils/getNameAuth";
 import { usePaymentTotals } from "../hooks/usePaymentTotals";
 
 export const Invoices = () => {
@@ -70,6 +72,36 @@ export const Invoices = () => {
   const { registers, loading: loadingRegisters } = useOpenRegisters();
   const [seller, setSeller] = useState<string>(""); 
 
+  const myUsername = getUsernameAuth();
+  const myName = getNameAuth();
+  const myRegisters = useMemo(() => (
+    Array.isArray(registers)
+      ? registers.filter((r) => {
+          const uname = r.user?.username?.toLowerCase?.();
+          const name = r.user?.name?.toLowerCase?.();
+          const wantU = myUsername?.toLowerCase?.();
+          const wantN = myName?.toLowerCase?.();
+          if (uname && wantU && uname === wantU) return true;
+          if (name && wantN && name === wantN) return true;
+          return false;
+        })
+      : []
+  ), [registers, myUsername, myName]);
+
+  useEffect(() => {
+    if (loadingRegisters) return;
+    if (myRegisters.length === 1) {
+      const r = myRegisters[0];
+      const value = `${r.user_id}:${r.id}`;
+      if (seller !== value) setSeller(value);
+      return;
+    }
+    if (myRegisters.length > 0 && !seller) {
+      const r = myRegisters[0];
+      setSeller(`${r.user_id}:${r.id}`);
+    }
+  }, [loadingRegisters, myRegisters, seller]);
+
   const { changeDue, totalToPay } = usePaymentTotals(
     subtotal,
     paymentMethod,
@@ -90,11 +122,9 @@ export const Invoices = () => {
     setAlertOpen(true);
   };
 
-
   const { loading: aiLoading, recs, error: aiError, generate, setRecs } = useAiRecommendations();
   const [openAiModal, setOpenAiModal] = useState(false);
   const todayISO = new Date().toLocaleDateString("sv-SE");
-
 
   function toISODate(d: string | Date | undefined) {
     if (!d) return "";
@@ -388,9 +418,13 @@ export const Invoices = () => {
                 disabled={loadingRegisters}
               >
                 <option value="" disabled>
-                  {loadingRegisters ? "Cargando vendedores…" : "Seleccione vendedor"}
+                  {loadingRegisters
+                    ? "Cargando vendedores…"
+                    : myRegisters.length === 0
+                    ? "No tiene caja abierta asignada"
+                    : "Seleccione vendedor"}
                 </option>
-                {registers.map((r) => (
+                {myRegisters.map((r) => (
                   <option key={r.id} value={`${r.user_id}:${r.id}`}>
                     {r.user?.name || r.user?.username || `Usuario ${r.user_id}`} (Caja #{r.id})
                   </option>
