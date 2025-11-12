@@ -3,6 +3,8 @@ import { useProfile } from "../../Profile/hooks/useProfile";
 import { TOpenRegister } from "../models/interfaces/ICashRegisterService";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+
 
 interface OpenCashRegisterProps {
   visibleOpen: boolean;
@@ -42,14 +44,34 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-    const role = getRoleAuth();
+  const role = getRoleAuth();
   const username = getUsernameAuth();
 
-// Si es empleado, solo ve su propio perfil
-const visibleProfiles =
+  const visibleProfiles =
   role === "employee"
     ? filteredProfiles.filter((profile) => profile.username === username)
     : filteredProfiles;
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    payload: null as any,
+  });
+
+    const confirmOpen = async () => {
+    if (!confirmDialog.payload) return;
+
+    await props.handleOpenCashRegister(confirmDialog.payload.id, {
+      opening_amount: confirmDialog.payload.opening_amount,
+      user_id: confirmDialog.payload.user_id,
+    });
+
+    props.setCashRegisterSelect(null);
+    props.setVisibleOpen(false);
+    props.setVisibleInfoCashRegister(false);
+    setConfirmDialog({ open: false, payload: null });
+  };
+
+  if (!props.visibleOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
@@ -59,24 +81,20 @@ const visibleProfiles =
         <div className="flex justify-between items-center">
           <h1 className="text-base sm:text-xl font-semibold">Abrir Caja</h1>
           <div className="space-x-4">
-          <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
-            onClick={ () => {
+          <button
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
+              onClick={() => {
                 if (validateOnSave()) {
-                  props.handleOpenCashRegister(
-                props.cashRegisterSelect?.id,
-                {
-                  opening_amount: props.cashRegisterSelect?.opening_amount,
-                  user_id: props.cashRegisterSelect?.user_id,
+                  // Abre el diálogo de confirmación
+                  setConfirmDialog({
+                    open: true,
+                    payload: props.cashRegisterSelect,
+                  });
                 }
-              );
-              props.setCashRegisterSelect(null);
-              props.setVisibleOpen(false);
-              props.setVisibleInfoCashRegister(false);
-              }
-            }}
-          >
-            Abrir
-          </button>
+              }}
+            >
+              Abrir
+            </button>
           <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
               onClick={() => props.setVisibleOpen(false)}
             >
@@ -165,6 +183,17 @@ const visibleProfiles =
     )}
   </div>
       </div>
+
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onCancel={() => setConfirmDialog({ open: false, payload: null })}
+        onConfirm={confirmOpen}
+        title="¿Abrir caja?"
+        message="¿Seguro que deseas abrir esta caja?"
+        confirmLabel="Abrir"
+        cancelLabel="Cancelar"
+      />
     </div>
   );
 }

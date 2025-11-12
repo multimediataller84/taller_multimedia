@@ -53,7 +53,8 @@ export const CashRegister = () => {
         setConfirmationDeleteCashRegister,
         confirmationOpenCashRegister, 
         setConfirmationOpenCashRegister,
-
+        errorMessage, 
+        setErrorMessage
     } = useCashRegister();
 
     const role = getRoleAuth();
@@ -106,6 +107,7 @@ export const CashRegister = () => {
                     setConfirmationCloseCashRegister(false);
                     setConfirmationDeleteCashRegister(false);
                     setConfirmationOpenCashRegister(false);
+                    setErrorMessage("");
                     setVisibleAdd(true);
                     setVisibleEdit(false);
                     setAdd(false);
@@ -142,6 +144,7 @@ export const CashRegister = () => {
                         }`}
                         onClick={() => {
                             setCashRegisterSelect(items);
+                            setErrorMessage("");
                             setVisibleEdit(true);
                             setVisibleAdd(false);
                             setConfirmationAddCashRegister(false);
@@ -195,7 +198,7 @@ export const CashRegister = () => {
             </h2>
       </div>        
     
-        {!(visibleEdit || visibleAdd || confirmationAddCashRegister || confirmationCloseCashRegister || confirmationDeleteCashRegister || confirmationOpenCashRegister) && (
+        {!(visibleEdit || visibleAdd || confirmationAddCashRegister || confirmationCloseCashRegister || confirmationDeleteCashRegister || confirmationOpenCashRegister || errorMessage) && (
           <div className="flex w-full items-center justify-center bg-[#DEE8ED]">
             <img src={logo2} alt="Logo" className="opacity-20 w-40 sm:w-56 md:w-72 2xl:w-96 select-none pointer-events-none" />
           </div>
@@ -237,13 +240,22 @@ export const CashRegister = () => {
             handleChange = {handleChange}
         />}
                   
+
+        {errorMessage && (
+        <div className="flex relative w-[70%] justify-center items-center flex-col">
+            <div className="bg-white w-auto h-48 -translate-y-20 px-11 items-center rounded-2xl shadow">
+            <div className="h-full items-center flex-col flex justify-center w-full">
+                <div className="w-full justify-center flex mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-12 stroke-red-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                </div>
+                <div className="text-base xl:text-2xl text-center font-Lato font-medium whitespace-pre-line">{errorMessage}</div>
+            </div>       
+            </div>
+        </div>
+        )}
+
         </RootLayout>
     );
 }
-
-
-/*
-
-        errorMessage, 
-        setErrorMessage
-*/

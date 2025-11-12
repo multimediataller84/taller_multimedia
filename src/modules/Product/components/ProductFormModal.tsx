@@ -221,15 +221,15 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
           </div>
           
           <button
-              type="button"
-              className="py-2 rounded-3xl px-2 md:px-3 w-full text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50"
-              disabled={skuStatus === "dup" || skuStatus === "checking"}
-              onClick={() => {
-                handleOpenConfirm(isEditing ? "edit" : "create");
-              }}
-            >
-              {isEditing ? "Guardar cambios" : "Crear producto"}
-            </button>         
+          type="button"
+          className="py-2 rounded-3xl px-2 md:px-3 w-full text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white disabled:opacity-50"
+          disabled={skuStatus === "dup" || skuStatus === "checking"}
+          onClick={handleSubmit(() => {
+            handleOpenConfirm(isEditing ? "edit" : "create");
+          })}
+        >
+          {isEditing ? "Guardar cambios" : "Crear producto"}
+        </button>       
       </form>
     </div>
   </div>
@@ -240,8 +240,8 @@ export const ProductFormModal = ({ isOpen, onClose, initialData, onChange }: Pro
         onCancel={() => setConfirmDialog({ open: false, mode: "", payload: null })}
         onConfirm={() => {
           handleSubmit(async (data) => {
-            await onSubmit(data); // ejecuta el submit del formulario
-            setConfirmDialog({ open: false, mode: "", payload: null }); // ✅ lo cierra después
+            await onSubmit(data); 
+            setConfirmDialog({ open: false, mode: "", payload: null });
           })();
         }}
         title={

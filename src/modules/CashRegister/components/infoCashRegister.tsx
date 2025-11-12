@@ -2,6 +2,9 @@ import { TCashRegisterWithUser, TCloseRegister, TOpenRegister } from "../models/
 import OpenCashRegister from "./OpenCashRegister";
 import CloseCashRegister from "./CloseCashRegister";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+import { useState } from "react";
+
 
 interface editProfileProps {
   cashRegisterSelect: TCashRegisterWithUser | null; 
@@ -18,6 +21,11 @@ interface editProfileProps {
 }
 
 export default function InfoCashRegister(props: editProfileProps) {
+
+  const [confirmDialog, setConfirmDialog] = useState({
+      open: false,
+      payload: null as any,
+    });
 
     return (
             <div className="flex flex-col w-full bg-gray3">
@@ -41,26 +49,44 @@ export default function InfoCashRegister(props: editProfileProps) {
                 </button>
 
                 <button 
-                  className={`text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300
-                    ${
-                      getRoleAuth() === "admin" && props.cashRegisterSelect?.status === "closed"
-                        ? "inline"
-                        : "hidden"
-                    }
-                  `}
-                  onClick={() => 
-                    props.cashRegisterSelect && 
-                    props.handleDelete(props.cashRegisterSelect.id)
+                className={`text-white bg-black py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold hover:bg-[#D32626] hover:border-[#D32626] transition duration-300
+                  ${
+                    getRoleAuth() === "admin" && props.cashRegisterSelect?.status === "closed"
+                      ? "inline"
+                      : "hidden"
                   }
-                >
-                  Eliminar
-                </button>
+                `}
+                onClick={() => {
+                  if (props.cashRegisterSelect) {
+                    setConfirmDialog({
+                      open: true,
+                      payload: props.cashRegisterSelect.id
+                    });
+                  }
+                }}
+              >
+                Eliminar
+              </button>
 
                   <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px]  text-xs sm:text-sm md:text-base font-Lato font-bold bg-black border-black text-white hover:bg-gray-700 hover:border-gray-700 transition duration-300"
                     onClick={() => {props.setVisibleInfoCashRegister(false)
                     props.setCashRegisterSelect(null)}}
                   >Cancelar</button>
                 </div>
+                <ConfirmDialog
+                  open={confirmDialog.open}
+                  onCancel={() => setConfirmDialog({ open: false, payload: null })}
+                  onConfirm={() => {
+                    if (confirmDialog.payload) {
+                      props.handleDelete(confirmDialog.payload);
+                    }
+                    setConfirmDialog({ open: false, payload: null });
+                  }}
+                  title="¿Eliminar caja?"
+                  message="¿Seguro que deseas eliminar esta caja? Esta acción no se puede deshacer."
+                  confirmLabel="Eliminar"
+                  cancelLabel="Cancelar"
+                />
               </div>
 
               <div className="flex flex-col w-full">

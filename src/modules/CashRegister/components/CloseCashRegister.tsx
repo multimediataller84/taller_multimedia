@@ -1,4 +1,6 @@
 import { TCloseRegister } from "../models/interfaces/ICashRegisterService";
+import { useState } from "react";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface CloseCashRegisterProps {
   visibleClose: boolean;
@@ -12,6 +14,28 @@ interface CloseCashRegisterProps {
 
 export default function CloseCashRegister(props: CloseCashRegisterProps) {
 
+    const [confirmDialog, setConfirmDialog] = useState({
+      open: false,
+      payload: null as any,
+    });
+
+    const confirmClose = async () => {
+    if (!confirmDialog.payload) return;
+
+    const closingAmount = confirmDialog.payload.amount ?? 0;
+
+    await props.handleCloseCashRegister(confirmDialog.payload.id, {
+      closing_amount: closingAmount,
+    });
+
+    props.setCashRegisterSelect(null);
+    props.setVisibleClose(false);
+    props.setVisibleInfoCashRegister(false);
+
+    // cerrar el diálogo
+    setConfirmDialog({ open: false, payload: null });
+  };
+
   return (
       <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
        <div className="absolute inset-0 bg-black/50" onClick={() => (props.setVisibleClose(false))} />
@@ -21,18 +45,14 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
         <div className="flex justify-between items-center">
           <h1 className="text-base sm:text-xl font-semibold">Cerrar Caja</h1>
           <div className="space-x-4">
-              <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
-              onClick={async () => {
-                const closingAmount = props.cashRegisterSelect?.amount ?? 0;
-
-                await props.handleCloseCashRegister(
-                  props.cashRegisterSelect?.id,
-                  { closing_amount: closingAmount }
-                );
-
-                props.setCashRegisterSelect(null);
-                props.setVisibleClose(false);
-                props.setVisibleInfoCashRegister(false);
+              <button
+              className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
+              onClick={() => {
+                // Abrir confirmación
+                setConfirmDialog({
+                  open: true,
+                  payload: props.cashRegisterSelect,
+                });
               }}
             >
               Cerrar
@@ -59,6 +79,16 @@ export default function CloseCashRegister(props: CloseCashRegisterProps) {
         />
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onCancel={() => setConfirmDialog({ open: false, payload: null })}
+        onConfirm={confirmClose}
+        title="¿Cerrar caja?"
+        message="¿Seguro que deseas cerrar esta caja?"
+        confirmLabel="Cerrar"
+        cancelLabel="Cancelar"
+      />
     </div>
   );
 }
