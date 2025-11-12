@@ -81,30 +81,47 @@ export const useCashRegister = () => {
     }, []);
 
     const handleAddCashRegister = async (newCashRegister: any) => {
-      try {
-        setLoading(true);
+  try {
+    setLoading(true);
+    setErrorMessage(""); 
 
-        const dataToSend = {
-          ...newCashRegister,
-          opening_amount: newCashRegister.amount,
-        };
-
-        await cashRegisterService.post(dataToSend);
-
-        await fetchCashRegister();
-
-        setVisibleAdd(false);
-        setConfirmationAddCashRegister(true);
-        setTimeout(() => {
-          setConfirmationAddCashRegister(false);
-        }, 2000);
-        console.log("Caja agregada y lista actualizada correctamente");
-      } catch (error) {
-        console.error("Error al añadir caja:", error);
-      } finally {
-        setLoading(false);
-      }
+    const dataToSend = {
+      ...newCashRegister,
+      opening_amount: newCashRegister.amount,
     };
+
+    await cashRegisterService.post(dataToSend);
+    await fetchCashRegister();
+
+    setVisibleAdd(false);
+    setConfirmationAddCashRegister(true);
+    setTimeout(() => {
+      setConfirmationAddCashRegister(false);
+    }, 2000);
+    console.log("Caja agregada y lista actualizada correctamente");
+  } catch (error: any) {
+    console.error("Error al añadir caja:", error);
+
+    if (error.response?.data?.message) {
+
+      setErrorMessage(error.response.data.message);
+    } else if (error.message) {
+      setCashRegisterSelect(null);
+      setVisibleAdd(false);
+      setErrorMessage(error.message);
+    } else {
+      setCashRegisterSelect(null);
+      setVisibleAdd(false);
+      setErrorMessage("Ocurrió un error inesperado al añadir la caja.");
+    }
+  } finally {
+    setLoading(false);
+  }
+
+  setTimeout(() => {
+    setErrorMessage("");
+  }, 2000);
+};
 
   const handleOpenCashRegister = async (id: number, data: TOpenRegister) => {
     try {
@@ -116,12 +133,29 @@ export const useCashRegister = () => {
       setTimeout(() => {
           setConfirmationOpenCashRegister(false);
       }, 2000);
-    } catch (error) {
-      console.error("Error al abrir la caja:", error);
+    } catch (error: any) {
+    console.error("Error al añadir caja:", error);
+
+    if (error.response?.data?.message) {
+
+      setErrorMessage(error.response.data.message);
+    } else if (error.message) {
+      setCashRegisterSelect(null);
+      setVisibleOpen(false);
+      setErrorMessage(error.message);
+    } else {
+      setCashRegisterSelect(null);
+      setVisibleOpen(false);
+      setErrorMessage("Ocurrió un error inesperado al abrir la caja.");
+    }
     } finally {
       setLoading(false);
     }
-  };
+    
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 2000);
+  }
 
   const handleCloseCashRegister = async (id: number, data: TCloseRegister) => {
     try {
@@ -133,12 +167,29 @@ export const useCashRegister = () => {
       setTimeout(() => {
           setConfirmationCloseCashRegister(false);
       }, 2000);
-    } catch (error) {
-      console.error("Error al cerrar la caja:", error);
+    } catch (error: any) {
+    console.error("Error al cerrar caja:", error);
+
+    if (error.response?.data?.message) {
+
+      setErrorMessage(error.response.data.message);
+    } else if (error.message) {
+      setCashRegisterSelect(null);
+      setVisibleClose(false);
+      setErrorMessage(error.message);
+    } else {
+      setCashRegisterSelect(null);
+      setVisibleClose(false);
+      setErrorMessage("Ocurrió un error inesperado al cerrar la caja.");
+    }
     } finally {
       setLoading(false);
     }
-  };
+    
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 2000);
+  }
 
   const handleDelete = async (id: number) => {
     try {
@@ -149,10 +200,29 @@ export const useCashRegister = () => {
       setTimeout(() => {
           setConfirmationDeleteCashRegister(false);
       }, 2000);
-    } catch (error) {
-      console.error("Error al eliminar cliente:", error);
+    } catch (error: any) {
+    console.error("Error al eliminar caja:", error);
+
+    if (error.response?.data?.message) {
+
+      setErrorMessage(error.response.data.message);
+    } else if (error.message) {
+      setCashRegisterSelect(null);
+      setVisibleEdit(false);
+      setErrorMessage(error.message);
+    } else {
+      setCashRegisterSelect(null);
+      setVisibleEdit(false);
+      setErrorMessage("Ocurrió un error inesperado al eliminar la caja.");
     }
-  };
+    } finally {
+      setLoading(false);
+    }
+    
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 2000);
+  }
 
   const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>

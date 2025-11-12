@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useProfile } from "../../Profile/hooks/useProfile";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
+import ConfirmDialog from "../../Credit/components/ConfirmDialog";
 
 interface AddCashRegisterProps {
   visibleAdd: boolean;
@@ -44,11 +45,15 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
   const role = getRoleAuth();
   const username = getUsernameAuth();
 
-// Si es empleado, solo ve su propio perfil
-const visibleProfiles =
-  role === "employee"
-    ? filteredProfiles.filter((profile) => profile.username === username)
-    : filteredProfiles;
+  const visibleProfiles =
+    role === "employee"
+      ? filteredProfiles.filter((profile) => profile.username === username)
+      : filteredProfiles;
+
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    payload: null as any,
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
@@ -60,11 +65,14 @@ const visibleProfiles =
           <h1 className="text-base sm:text-xl font-semibold">Añadir Caja</h1>
           <div className="space-x-4">
             <button className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
-             onClick={() => {
-                if (validateOnSave()) {
-                  props.handleAddCashRegister(props.cashRegisterSelect);
-                }
-              }}
+            onClick={() => {
+              if (validateOnSave()) {
+                setConfirmDialog({
+                  open: true,
+                  payload: props.cashRegisterSelect, 
+                });
+              }
+            }}
             >
               Añadir
             </button>
@@ -159,6 +167,21 @@ const visibleProfiles =
         )}
       </div>
       </div>
+
+          <ConfirmDialog
+          open={confirmDialog.open}
+          onCancel={() => setConfirmDialog({ open: false, payload: null })}
+          onConfirm={() => {
+            if (confirmDialog.payload) {
+              props.handleAddCashRegister(confirmDialog.payload);
+            }
+            setConfirmDialog({ open: false, payload: null });
+          }}
+          title="¿Agregar caja?"
+          message="¿Seguro que deseas agregar esta nueva caja?"
+          confirmLabel="Agregar"
+          cancelLabel="Cancelar"
+        />
     </div>
   );
 }
