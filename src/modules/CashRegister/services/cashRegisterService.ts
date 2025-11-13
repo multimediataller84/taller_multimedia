@@ -14,7 +14,7 @@ export class CashRegisterService implements ICashRegisterService {
   }
 
   async getOpenAll(): Promise<TCashRegisterWithUser[]>{
-     try{
+
         const response = await apiClient.get<TCashRegisterWithUser[]>("/cash/register/open/all");
 
         if(response.status !== 200 && response.status !== 201){
@@ -22,13 +22,11 @@ export class CashRegisterService implements ICashRegisterService {
         }
 
         return response.data;
-    } catch (error){
-        throw new Error(`Invalid getOpenAll`);
-    }
+
   }
 
   async getAll(): Promise<TCashRegisterWithUser[]>{
-     try{
+
         const response = await apiClient.get<TCashRegisterWithUser[]>("/cash/register/all");
 
         if(response.status !== 200 && response.status !== 201){
@@ -36,13 +34,11 @@ export class CashRegisterService implements ICashRegisterService {
         }
 
         return response.data;
-    } catch (error){
-        throw new Error(`Invalid getAll`);
-    }
+
   }
 
   async get(id: number): Promise<TCashRegisterWithUser> {
-    try {
+
       const response = await apiClient.get<TCashRegisterWithUser>(`/cash/register/${id}`);
 
       if (response.status !== 200 && response.status !== 201) {
@@ -50,28 +46,23 @@ export class CashRegisterService implements ICashRegisterService {
       }
 
       return response.data;
-    } catch (error) {
-      throw new Error(`Invalid get`);
-    }
+
   }
 
   async post(data: TCashRegister): Promise<TCashRegisterWithUser> {
-    try{
+   
         const response = await apiClient.post<TCashRegisterWithUser>("/cash/register", data);
 
         if(response.status !== 200 && response.status !== 201){
             throw new Error(`Server error at /cash/register`);
-            }
+        }
 
-            return response.data;
-        } catch (error: any) {
-      console.error("Error en POST /cash/register:", error.response?.data || error.message);
-      throw new Error(`Invalid post`);
-    }
-  }
+        return response.data;   
+}
+
 
   async delete(id: number): Promise<TCashRegisterWithUser>{
-     try {
+
       const response = await apiClient.delete<TCashRegisterWithUser>(`/cash/register/${id}`);
 
       if (response.status !== 200 && response.status !== 201) {
@@ -79,13 +70,11 @@ export class CashRegisterService implements ICashRegisterService {
       }
 
       return response.data;
-    } catch (error) {
-      throw new Error(`Invalid delete`);
-    }
+
   }
 
    async patch(id: number, data: TCashRegister): Promise<TCashRegisterWithUser> {
-    try {
+
       const response = await apiClient.patch<TCashRegisterWithUser>(`/cash/register/${id}`, data);
 
       if (response.status !== 200 && response.status !== 201) {
@@ -93,13 +82,11 @@ export class CashRegisterService implements ICashRegisterService {
       }
 
       return response.data;
-    } catch (error) {
-      throw new Error(`Invalid patch`);
-    }
+
   }
 
   async open(id: number, data: TOpenRegister): Promise<TCashRegisterEndpoint> {
-    try {
+
       const response = await apiClient.patch<TCashRegisterWithUser>(`/cash/register/open/${id}`, data);
 
       if (response.status !== 200 && response.status !== 201) {
@@ -107,13 +94,11 @@ export class CashRegisterService implements ICashRegisterService {
       }
 
       return response.data;
-    } catch (error) {
-      throw new Error(`Invalid open`);
-    }
+
   }
 
   async close(id: number, data: TCloseRegister): Promise<TCashRegisterEndpoint> {
-    try {
+
       const response = await apiClient.patch<TCashRegisterWithUser>(`/cash/register/close/${id}`, data);
 
       if (response.status !== 200 && response.status !== 201) {
@@ -121,9 +106,7 @@ export class CashRegisterService implements ICashRegisterService {
       }
 
       return response.data;
-    } catch (error) {
-      throw new Error(`Invalid close`);
-    }
+
   }
 
 }

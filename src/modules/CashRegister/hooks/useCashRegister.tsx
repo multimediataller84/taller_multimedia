@@ -80,7 +80,7 @@ export const useCashRegister = () => {
       fetchCashRegister();
     }, []);
 
-    const handleAddCashRegister = async (newCashRegister: any) => {
+  const handleAddCashRegister = async (newCashRegister: any) => {
   try {
     setLoading(true);
     setErrorMessage(""); 
@@ -102,13 +102,14 @@ export const useCashRegister = () => {
   } catch (error: any) {
     console.error("Error al añadir caja:", error);
 
-    if (error.response?.data?.message) {
+    const backendError = error?.response?.data?.error || "";
 
-      setErrorMessage(error.response.data.message);
-    } else if (error.message) {
+    if (
+      backendError.includes("this user have a current cash registered")
+    ) {
       setCashRegisterSelect(null);
       setVisibleAdd(false);
-      setErrorMessage(error.message);
+      setErrorMessage("El usuario ya tiene una caja asignada");
     } else {
       setCashRegisterSelect(null);
       setVisibleAdd(false);
@@ -136,13 +137,10 @@ export const useCashRegister = () => {
     } catch (error: any) {
     console.error("Error al añadir caja:", error);
 
-    if (error.response?.data?.message) {
-
-      setErrorMessage(error.response.data.message);
-    } else if (error.message) {
+    if (error?.response?.data?.error) {
       setCashRegisterSelect(null);
-      setVisibleOpen(false);
-      setErrorMessage(error.message);
+      setVisibleAdd(false);
+      setErrorMessage(error?.response?.data?.error);
     } else {
       setCashRegisterSelect(null);
       setVisibleOpen(false);
@@ -170,13 +168,10 @@ export const useCashRegister = () => {
     } catch (error: any) {
     console.error("Error al cerrar caja:", error);
 
-    if (error.response?.data?.message) {
-
-      setErrorMessage(error.response.data.message);
-    } else if (error.message) {
+    if (error?.response?.data?.error) {
       setCashRegisterSelect(null);
-      setVisibleClose(false);
-      setErrorMessage(error.message);
+      setVisibleAdd(false);
+      setErrorMessage(error?.response?.data?.error);
     } else {
       setCashRegisterSelect(null);
       setVisibleClose(false);
@@ -203,13 +198,10 @@ export const useCashRegister = () => {
     } catch (error: any) {
     console.error("Error al eliminar caja:", error);
 
-    if (error.response?.data?.message) {
-
-      setErrorMessage(error.response.data.message);
-    } else if (error.message) {
+    if (error?.response?.data?.error) {
       setCashRegisterSelect(null);
-      setVisibleEdit(false);
-      setErrorMessage(error.message);
+      setVisibleAdd(false);
+      setErrorMessage(error?.response?.data?.error);
     } else {
       setCashRegisterSelect(null);
       setVisibleEdit(false);

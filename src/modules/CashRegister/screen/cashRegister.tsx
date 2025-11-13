@@ -163,7 +163,7 @@ export const CashRegister = () => {
                             {new Intl.NumberFormat("es-CR", {
                             style: "currency",
                             currency: "CRC",
-                            }).format(items.opening_amount)}
+                            }).format(items.amount)}
                         </h4>
                         <h5 className="hidden mt-2 md:mt-5 justify-end w-full sm:flex pr-2 md:pr-4 text-xs sm:text-sm 2xl:text-base">
                             {items.status === "open" ? "Abierta" : "Cerrada"}
