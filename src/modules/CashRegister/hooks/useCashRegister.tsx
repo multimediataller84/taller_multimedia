@@ -201,7 +201,8 @@ export const useCashRegister = () => {
     if (error?.response?.data?.error) {
       setCashRegisterSelect(null);
       setVisibleAdd(false);
-      setErrorMessage(error?.response?.data?.error);
+      setVisibleEdit(false);
+      setErrorMessage("No se puede eliminar Cajas que estén asociadas con facturas de credito");
     } else {
       setCashRegisterSelect(null);
       setVisibleEdit(false);
