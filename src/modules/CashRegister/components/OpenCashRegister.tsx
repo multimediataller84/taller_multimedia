@@ -85,7 +85,6 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
               className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold bg-blue-500 hover:bg-blue-800 text-white"
               onClick={() => {
                 if (validateOnSave()) {
-                  // Abre el diálogo de confirmación
                   setConfirmDialog({
                     open: true,
                     payload: props.cashRegisterSelect,
@@ -123,7 +122,7 @@ export default function OpenCashRegister(props: OpenCashRegisterProps) {
            {errors.opening_amount && <p className="text-red-500 font-lato text-sm">{errors.opening_amount}</p>}
           </div>
 
-          <div className="flex flex-col space-y-2">
+          <div className={` flex-col space-y-2  ${getRoleAuth() === "admin" ? 'flex' : 'hidden'}`}>
             <label htmlFor="searchProfile" className="text-sm sm:text-base text-black font-medium">
               Empleado
             </label>
