@@ -145,31 +145,12 @@ export default function InfoCashRegister(props: editProfileProps) {
                     />
                     </div>
                   </div>
-
-                  <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-                    <label htmlFor="closing_amount" className="text-sm sm:text-base text-black font-medium">Monto Caja Cerrada</label>
-                        <div className="relative">
-                        <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
-                        focus:outline-none"
-                        type="text"
-                        id="closing_amount"
-                        name="closing_amount"
-                        value={
-                        props.cashRegisterSelect?.closing_amount !== undefined
-                          ? new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(props.cashRegisterSelect.closing_amount)
-                          : ""
-                      }
-                        placeholder="Monto Final"
-                        readOnly
-                        />
-                        </div>
-                  </div>
                 </div>
                 
 
                 <div className="flex flex-wrap gap-2 2xl:gap-6">
                     <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-                    <label htmlFor="opened_at" className="text-sm sm:text-base text-black font-medium">Fecha Caja Abierta</label>
+                    <label htmlFor="opened_at" className="text-sm sm:text-base text-black font-medium">Fecha de la última apertura de caja</label>
                     <div className="relative">
                     <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base 
                         focus:outline-none"
@@ -191,7 +172,7 @@ export default function InfoCashRegister(props: editProfileProps) {
                     </div>
 
                     <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-                    <label htmlFor="closed_at" className="text-sm sm:text-base text-black font-medium">Fecha Caja Cerrada</label>
+                    <label htmlFor="closed_at" className="text-sm sm:text-base text-black font-medium">Fecha del último cierre de caja</label>
                     <div className="relative">
                     <input className="appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-none"                        
                     type="text"

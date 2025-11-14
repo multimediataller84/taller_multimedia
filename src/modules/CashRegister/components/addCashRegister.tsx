@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useProfile } from "../../Profile/hooks/useProfile";
 import { getRoleAuth } from "../../../utils/getRoleAuth";
 import { getUsernameAuth } from "../../../utils/getUsernameAuth";
 import ConfirmDialog from "../../Credit/components/ConfirmDialog";
+ 
 
 interface AddCashRegisterProps {
   visibleAdd: boolean;
@@ -55,6 +56,25 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
     payload: null as any,
   });
 
+
+useEffect(() => {
+  if (!props.visibleAdd) return;
+
+  if (role === "employee" && profiles.length > 0) {
+    const loggedProfile = profiles.find(
+      (profile) => profile.username === username
+    );
+
+    if (loggedProfile) {
+      props.setCashRegisterSelect((prev: any) => ({
+        ...prev,
+        user_id: prev?.user_id || loggedProfile.id,
+        employee_name: prev?.employee_name || loggedProfile.username,
+      }));
+    }
+  }
+}, [props.visibleAdd, profiles, role, username]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center size-full">
       <div className="absolute inset-0 bg-black/50" onClick={() => (props.setVisibleAdd(false))} />
@@ -104,7 +124,7 @@ export default function AddCashRegister(props: AddCashRegisterProps) {
             {errors.amount && <p className="text-red-500 font-lato text-sm">{errors.amount}</p>}  
         </div>
 
-        <div className="flex flex-col space-y-2 ">
+        <div className={` flex-col space-y-2  ${getRoleAuth() === "admin" ? 'flex' : 'hidden'}`}>
           <label htmlFor="searchProfile" className="text-sm sm:text-base text-black font-medium">
             Empleado
           </label>
