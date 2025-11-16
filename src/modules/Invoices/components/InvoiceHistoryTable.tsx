@@ -12,9 +12,9 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
     <div className="overflow-hidden ">
       <div className="overflow-x-auto rounded-2xl">
         <table className="w-full text-sm bg-white">
-          <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+          <thead className="bg-blue-500 text-white text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide ">
             <tr className="text-center">
-              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">#</th>
+              <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3 rounded-tl-2xl">#</th>
               <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Fecha</th>
               <th className="px-0.5 sm:px-2 md:px-2 xl:px-4 py-3">Cliente</th>
               <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3">Método</th>
@@ -22,7 +22,7 @@ export const InvoiceHistoryTable: React.FC<Props> = ({ data, onSelect }) => {
               <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Total</th>
               <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Pagado</th>
               <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 ">Pendiente</th>
-              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3">Estado</th>
+              <th className="px-0.5 sm:px-1 md:px-2 xl:px-4 py-3 rounded-tr-2xl">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y">

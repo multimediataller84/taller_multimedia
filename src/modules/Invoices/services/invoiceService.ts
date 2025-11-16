@@ -37,7 +37,6 @@ export class InvoiceService implements IInvoiceService {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      // Propagate the original error so callers can surface specific API messages
       throw error as unknown as Error;
     }
   }
@@ -52,6 +51,31 @@ export class InvoiceService implements IInvoiceService {
     } catch (error) {
       throw new Error("Invalid Get Invoices");
     }
+  };
+
+  /**
+   * Intenta recuperar el historial de facturas paginadas del servidor.
+   */
+  getPaged = async (
+    params: { page: number; limit: number; search?: string; signal?: AbortSignal }
+  ): Promise<{ items: TInvoiceEndpoint[]; total: number }> => {
+    const { page, limit, search, signal } = params;
+    const query = new URLSearchParams();
+    query.set("page", String(page));
+    query.set("limit", String(limit));
+    if (search) query.set("search", search);
+    const url = `/invoice?${query.toString()}`;
+    const response = await apiClient.get<{ items?: TInvoiceEndpoint[]; data?: TInvoiceEndpoint[]; total?: number; count?: number }>(url, { signal });
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error("Server error at /invoice paginated");
+    }
+    const body = response.data as unknown as { items?: TInvoiceEndpoint[]; data?: TInvoiceEndpoint[]; total?: number; count?: number };
+    const items = (body.items ?? body.data) as TInvoiceEndpoint[] | undefined;
+    const total = (typeof body.total === "number" ? body.total : body.count) as number | undefined;
+    if (!Array.isArray(items) || typeof total !== "number") {
+      throw new Error("Unexpected pagination response shape");
+    }
+    return { items, total };
   };
 
   async get(id: number): Promise<TInvoiceEndpoint> {

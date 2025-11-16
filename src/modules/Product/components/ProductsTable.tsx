@@ -58,7 +58,7 @@ export function ProductTable(props: ProductsProps) {
 
   return (
     <table className="table-fixed w-full bg-white rounded-2xl">
-      <thead className="w-full">
+      <thead className="w-full bg-blue-500 text-white">
         <tr>
           {headers.map((item, index) => {
             const pretty =
