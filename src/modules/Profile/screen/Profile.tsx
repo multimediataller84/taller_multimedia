@@ -110,7 +110,7 @@ export const Profile = () => {
             currentProfiles.map((items) => (
               <div key={items.id} className="w-full pl-2 2xl:pl-8 pr-4 2xl:pr-11 flex">
                 <div
-                  className={`cursor-pointer w-full h-auto rounded-xl pb-2 font-lato text-black text-base shadow transition duration-150 delay-75 
+                  className={`cursor-pointer w-full h-auto rounded-xl pb-2 font-lato text-black text-base shadow transition duration-150 delay-75 relative overflow-hidden 
                             ${
                               profileSelect?.id === items.id
                                 ? "bg-blue-500 text-white hover:bg-blue-800"
@@ -128,6 +128,7 @@ export const Profile = () => {
                     setEditProfile(false);
                   }}
                 >
+                  <div className="absolute left-0 top-0 h-full w-1.5 bg-blue-600 rounded-l-xl" aria-hidden="true" />
                   <h2 className="w-full ml-2 md:ml-4 mt-2 md:mt-4 font-medium text-xs sm:text-sm 2xl:text-base">
                     {items.username}
                   </h2>
