@@ -400,8 +400,8 @@ export const Reports = () => {
               </div>
          
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
-                <table className="w-full text-sm bg-white">
-                  <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+                <table className="w-full text-sm bg-blue-500">
+                  <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
                     <tr className="text-center">
                       <Th1>#</Th1>
                       <Th1>Fecha</Th1>
@@ -470,7 +470,7 @@ export const Reports = () => {
           <>
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <table className="w-full text-sm bg-white">
-                <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
                   <tr className="text-center">
                     <Th1>#</Th1>
                     <Th1>Fecha</Th1>
@@ -519,7 +519,7 @@ export const Reports = () => {
           <>
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <table className="w-full text-sm bg-white">
-                <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
                   <tr className="text-center">
                     <Th1>#</Th1>
                     <Th1>Producto</Th1>
@@ -560,7 +560,7 @@ export const Reports = () => {
           <>
             <div className="rounded-2xl border border-gray-200 overflow-hidden">
               <table className="w-full text-sm bg-white">
-                <thead className="bg-white border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-gray-600 ">
+                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
                   <tr className="text-center">
                     <Th1>#</Th1>
                     <Th1>Cliente</Th1>
