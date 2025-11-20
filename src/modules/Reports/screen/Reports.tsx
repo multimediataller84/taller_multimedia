@@ -11,6 +11,7 @@ import {
   paginate,
   buildPageList,
 } from "../utils/reporting";
+import * as XLSX from "xlsx";
 
 type TabKey = "sales" | "products" | "customers" | "credits";
 
@@ -34,12 +35,12 @@ export const Reports = () => {
   const [pageSize] = useState(PAGE_SIZE_DEFAULT);
 
   const methodNames: Record<string, string> = {
-  cash: "Efectivo",
-  "debit card": "Débito",
-  transfer: "Transferencia",
-  credit: "Crédito",
-  "n/a": "Desconocido",
-};
+    cash: "Efectivo",
+    "debit card": "Débito",
+    transfer: "Transferencia",
+    credit: "Crédito",
+    "n/a": "Desconocido",
+  };
 
   useEffect(() => {
     setPageSales(1);
@@ -233,163 +234,246 @@ export const Reports = () => {
   const customersPageData = paginate(customerRanking, pageCustomers, pageSize);
 
   const mapStatusToES = (status?: string) => {
-  if (!status) return "-";
-  const key = status.toLowerCase();
-  const dict: Record<string, string> = {
-    "paid": "Pagada",
-    "unpaid": "No pagada",
-    "pending": "Pendiente",
-    "overdue": "Vencida",
-    "cancelled": "Cancelada",
-    "canceled": "Cancelada",
-    "draft": "Borrador",
-    "partially paid": "Parcialmente pagada",
-    "refunded": "Reembolsada",
-    "issued": "Emitida",
+    if (!status) return "-";
+    const key = status.toLowerCase();
+    const dict: Record<string, string> = {
+      "paid": "Pagada",
+      "unpaid": "No pagada",
+      "pending": "Pendiente",
+      "overdue": "Vencida",
+      "cancelled": "Cancelada",
+      "canceled": "Cancelada",
+      "draft": "Borrador",
+      "partially paid": "Parcialmente pagada",
+      "refunded": "Reembolsada",
+      "issued": "Emitida",
+    };
+    return dict[key] ?? status;
   };
-  return dict[key] ?? status;
-};
 
- const mapPaymentMethodToES = (method?: string) => {
-  if (!method) return "-";
-  const key = method.toLowerCase();
-  const dict: Record<string, string> = {
-    "cash": "Efectivo",
-    "credit": "Crédito",
-    "credit card": "Tarjeta de crédito",
-    "debit": "Débito",
-    "debit card": "Tarjeta de débito",
-    "transfer": "Transferencia",
-    "bank transfer": "Transferencia bancaria",
+  const mapPaymentMethodToES = (method?: string) => {
+    if (!method) return "-";
+    const key = method.toLowerCase();
+    const dict: Record<string, string> = {
+      "cash": "Efectivo",
+      "credit": "Crédito",
+      "credit card": "Tarjeta de crédito",
+      "debit": "Débito",
+      "debit card": "Tarjeta de débito",
+      "transfer": "Transferencia",
+      "bank transfer": "Transferencia bancaria",
+    };
+    return dict[key] ?? method;
   };
-  return dict[key] ?? method;
-};
+
+  const handleExport = () => {
+    let data: any[] = [];
+    let sheetName = "";
+
+    if (activeTab === "sales") {
+      sheetName = "Ventas";
+      data = filteredInvoices.map((r) => {
+        const when = parseDateLoose(r.createdAt ?? r.issue_date);
+        const whenTxt = when
+          ? when.toLocaleString("es-CR", { dateStyle: "short", timeStyle: "medium" })
+          : "-";
+        const cust =
+          `${r.customer?.name ?? ""} ${r.customer?.last_name ?? ""}`.trim() || "-";
+        const pending = Number(r.total || 0) - Number(r.amount_paid || 0);
+
+        return {
+          "#": r.id,
+          "Fecha": whenTxt,
+          "Cliente": cust,
+          "Método": mapPaymentMethodToES(r.payment_method),
+          "Subtotal": crc(Number(r.subtotal || 0)),
+          "Total": crc(Number(r.total || 0)),
+          "Pagado": crc(Number(r.amount_paid || 0)),
+          "Pendiente": crc(pending),
+          "Estado": mapStatusToES(r.status),
+        };
+      });
+    } else if (activeTab === "credits") {
+      sheetName = "Creditos";
+      data = creditPaymentsInRange.map((p) => {
+        const d = parseDateLoose(p.createdAt) ?? parseDateLoose(p.payment_date);
+        const whenTxt = d
+          ? d.toLocaleString("es-CR", { dateStyle: "short", timeStyle: "medium" })
+          : "-";
+        return {
+          "#": p.id,
+          "Fecha": whenTxt,
+          "Factura": p.invoice_id,
+          "Monto": crc(p.amount),
+          "Método": mapPaymentMethodToES(p.payment_method),
+        };
+      });
+    } else if (activeTab === "products") {
+      sheetName = "Productos";
+      data = productRanking.map((p, index) => ({
+        "#": index + 1,
+        "Producto": p.name,
+        "SKU": p.sku || "-",
+        "Cantidad vendida": p.qty,
+      }));
+    } else if (activeTab === "customers") {
+      sheetName = "Clientes";
+      data = customerRanking.map((c, index) => ({
+        "#": index + 1,
+        "Cliente": c.name,
+        "Facturas": c.invoices,
+        "Total facturado": crc(c.total),
+      }));
+    }
+
+    if (!data.length) {
+      window.alert("No hay datos para exportar con los filtros actuales.");
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName || "Reporte");
+
+    const now = new Date();
+    const datePart = now.toISOString().slice(0, 10);
+    const fileName = `reporte-${sheetName.toLowerCase()}-${datePart}.xlsx`;
+
+    XLSX.writeFile(wb, fileName);
+  };
 
   return (
-     <RootLayout search={search} setSearch={setSearch}>
+    <RootLayout search={search} setSearch={setSearch}>
       <div className="flex flex-col w-[90%] h-full bg-gray3 p-2 md:p-8 space-y-4">
         <h1 className="font-Lato text-base xl:text-base 2xl:text-2xl pl-2 pt-2 sm:pl-0 sm:pt-0">Reportes</h1>
 
         <div className="space-y-2">
-        <div className="flex flex-col bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
+          <div className="flex flex-col bg-white rounded-2xl border border-gray-200 p-4 space-y-4">
 
-          <div className="flex">
+            <div className="flex">
 
-            <div className="flex flex-wrap gap-2 2xl:gap-6 w-1/2 ">
-            
-            <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-              <label className="text-sm sm:text-base text-black font-medium">Rango</label>
-              <div className="relative">
-              <select className="cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
-                value={rangeKey}
-                onChange={(e) => setRangeKey(e.target.value as DateRangeKey)}>
-                <option value="today">Hoy</option>
-                <option value="yesterday">Ayer</option>
-                <option value="last7">Últimos 7 días</option>
-                <option value="month">Este mes</option>
-                <option value="custom">Personalizado</option>
-              </select>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                  <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                </svg>
+              <div className="flex flex-wrap gap-2 2xl:gap-6 w-1/2 ">
+
+                <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                  <label className="text-sm sm:text-base text-black font-medium">Rango</label>
+                  <div className="relative">
+                    <select className="cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+                      value={rangeKey}
+                      onChange={(e) => setRangeKey(e.target.value as DateRangeKey)}>
+                      <option value="today">Hoy</option>
+                      <option value="yesterday">Ayer</option>
+                      <option value="last7">Últimos 7 días</option>
+                      <option value="month">Este mes</option>
+                      <option value="custom">Personalizado</option>
+                    </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                  <label className="text-sm sm:text-base text-black font-medium">Desde</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className=" cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+                      disabled={rangeKey !== "custom"}
+                      value={from.toISOString().slice(0, 10)}
+                      onChange={(e) => setFrom(startOfDay(new Date(e.target.value)))}
+
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                      className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
+                  <label className="text-sm sm:text-base text-black font-medium">Hasta</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
+                      disabled={rangeKey !== "custom"}
+                      value={to.toISOString().slice(0, 10)}
+                      onChange={(e) => setTo(endOfDay(new Date(e.target.value)))}
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                      className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
+                      <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className="flex flex-wrap justify-center items-center sm:justify-start gap-3 sm:gap-4 md:gap-6 w-full md:w-3/4 lg:w-2/3 xl:w-1/2 px-4">
+                {activeTab === "sales" && (
+                  <>
+                    <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+                    <KpiCard title="Pagado" value={crc(kpisSales.paid)} />
+                    <KpiCard title="Facturas" value={kpisSales.count} />
+                  </>
+                )}
+
+                {activeTab === "credits" && (
+                  <>
+                    <KpiCard title="Crédito (total)" value={crc(kpisCredits.total)} />
+                    <KpiCard title="Pagado" value={crc(kpisCredits.paid)} />
+                    <KpiCard title="Pendiente" value={crc(kpisCredits.pending)} />
+                    <KpiCard title="Abonos" value={kpisCredits.count} />
+                  </>
+                )}
+
+                {activeTab === "products" && (
+                  <>
+                    <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+                  </>
+                )}
+
+                {activeTab === "customers" && (
+                  <>
+                    <KpiCard title="Ventas" value={crc(kpisSales.total)} />
+                    <KpiCard title="Facturas" value={kpisSales.count} />
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-              <label className="text-sm sm:text-base text-black font-medium">Desde</label>
-              <div className="relative">
-              <input
-                type="date"
-                className=" cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
-                disabled={rangeKey !== "custom"}
-                value={from.toISOString().slice(0, 10)}
-                onChange={(e) => setFrom(startOfDay(new Date(e.target.value)))}
-                
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clipRule="evenodd" />
-              </svg>
-              </div>
-            </div>
+            <div className="flex flex-wrap items-center space-x-4 w-full">
+              {(["sales", "credits", "products", "customers"] as TabKey[]).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setActiveTab(t)}
+                  className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 cursor-pointer ${
+                    t === activeTab ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-800" : "bg-black text-white hover:bg-gray-700"
+                  }`}
+                >
+                  {{
+                    sales: "Ventas",
+                    credits: "Créditos",
+                    products: "Productos",
+                    customers: "Clientes",
+                  }[t]}
+                </button>
+              ))}
 
-            <div className="flex flex-col space-y-2 flex-1 min-w-[220px]">
-              <label className="text-sm sm:text-base text-black font-medium">Hasta</label>
-              <div className="relative">
-              <input
-                type="date"
-                className="cursor-pointer appearance-none w-full py-2 border rounded-3xl px-4 text-gray1 border-gray2 bg-white text-sm sm:text-base focus:outline-2 focus:outline-blue-500"
-                disabled={rangeKey !== "custom"}
-                value={to.toISOString().slice(0, 10)}
-                onChange={(e) => setTo(endOfDay(new Date(e.target.value)))}
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                className="w-4 h-4 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 fill-gray1">
-                <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clipRule="evenodd" />
-              </svg>
-              </div>
-            </div>
-
-            </div>
-
-            <div className="flex flex-wrap justify-center items-center sm:justify-start gap-3 sm:gap-4 md:gap-6 w-full md:w-3/4 lg:w-2/3 xl:w-1/2 px-4">
-            {activeTab === "sales" && (
-              <>
-                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-                <KpiCard title="Pagado" value={crc(kpisSales.paid)} />
-                <KpiCard title="Facturas" value={kpisSales.count} />
-              </>
-            )}
-
-            {activeTab === "credits" && (
-              <>
-                <KpiCard title="Crédito (total)" value={crc(kpisCredits.total)} />
-                <KpiCard title="Pagado" value={crc(kpisCredits.paid)} />
-                <KpiCard title="Pendiente" value={crc(kpisCredits.pending)} />
-                <KpiCard title="Abonos" value={kpisCredits.count} />
-              </>
-            )}
-
-            {activeTab === "products" && (
-              <>
-                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-              </>
-            )}
-
-            {activeTab === "customers" && (
-              <>
-                <KpiCard title="Ventas" value={crc(kpisSales.total)} />
-                <KpiCard title="Facturas" value={kpisSales.count} />
-              </>
-            )}
+              <button
+                type="button"
+                onClick={handleExport}
+                className="ml-auto py-1 xl:py-2 rounded-3xl px-3 md:px-4 text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 cursor-pointer bg-black text-white hover:bg-blue-800"
+              >
+                Exportar
+              </button>
             </div>
           </div>
 
-
-          <div className="flex space-x-4">
-          {(["sales", "credits", "products", "customers"] as TabKey[]).map((t) => (
-            <button
-              key={t}
-              onClick={() => setActiveTab(t)}
-              className={`py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto xl:w-[94px] text-xs sm:text-sm md:text-base font-Lato font-bold transition duration-300 cursor-pointer ${
-                t === activeTab ? "bg-blue-500 text-white border-blue-500 hover:bg-blue-800" : "bg-black text-white hover:bg-gray-700"
-              }`}
-            >
-              {{
-                sales: "Ventas",
-                credits: "Créditos",
-                products: "Productos",
-                customers: "Clientes",
-              }[t]}
-            </button>
-          ))}
-        </div>
-        </div>
-
-        {activeTab === "sales" && (
-          <>
-            <div className="flex gap-3 flex-wrap">
-              {Object.entries(kpisSales.byMethod).map(([m, v]) => (
+          {activeTab === "sales" && (
+            <>
+              <div className="flex gap-3 flex-wrap">
+                {Object.entries(kpisSales.byMethod).map(([m, v]) => (
                   <div key={m} className="py-1 xl:py-2 rounded-3xl px-2 md:px-3 w-auto text-xs sm:text-sm md:text-base font-Lato transition bg-white border border-gray-200">
                     <span className="text-xs sm:text-sm md:text-base font-Lato font-semibold">
                       {methodNames[m] || m}:
@@ -398,8 +482,8 @@ export const Reports = () => {
                   </div>
                 ))}
               </div>
-         
-            <div className="rounded-2xl border border-gray-200 overflow-hidden">
+
+              <div className="rounded-2xl border border-gray-200 overflow-hidden">
                 <table className="w-full text-sm bg-blue-500">
                   <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
                     <tr className="text-center">
@@ -455,150 +539,150 @@ export const Reports = () => {
                       })}
                   </tbody>
                 </table>
-            </div>
+              </div>
 
-            <Pagination
-              total={salesPageData.total}
-              page={salesPageData.page}
-              pageSize={salesPageData.pageSize}
-              onPageChange={setPageSales}
-            />
-          </>
-        )}
+              <Pagination
+                total={salesPageData.total}
+                page={salesPageData.page}
+                pageSize={salesPageData.pageSize}
+                onPageChange={setPageSales}
+              />
+            </>
+          )}
 
-        {activeTab === "credits" && (
-          <>
-            <div className="rounded-2xl border border-gray-200 overflow-hidden">
-              <table className="w-full text-sm bg-white">
-                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
-                  <tr className="text-center">
-                    <Th1>#</Th1>
-                    <Th1>Fecha</Th1>
-                    <Th1>Factura</Th1>
-                    <Th1>Monto</Th1>
-                    <Th1>Método</Th1>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-black">
-                  {creditsPageData.items.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="px-3 py-4 text-center text-gray-500">
-                        Sin resultados
-                      </td>
+          {activeTab === "credits" && (
+            <>
+              <div className="rounded-2xl border border-gray-200 overflow-hidden">
+                <table className="w-full text-sm bg-white">
+                  <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
+                    <tr className="text-center">
+                      <Th1>#</Th1>
+                      <Th1>Fecha</Th1>
+                      <Th1>Factura</Th1>
+                      <Th1>Monto</Th1>
+                      <Th1>Método</Th1>
                     </tr>
-                  )}
-                  {creditsPageData.items.map((p) => {
-                    const d = parseDateLoose(p.createdAt) ?? parseDateLoose(p.payment_date);
-                    const whenTxt = d
-                      ? d.toLocaleString("es-CR", { dateStyle: "short", timeStyle: "medium" })
-                      : "-";
-                    return (
-                      <tr key={p.id} className="hover:bg-gray-50/50">
-                        <Td2>{p.id}</Td2>
-                        <Td2>{whenTxt}</Td2>
-                        <Td2>{p.invoice_id}</Td2>
-                        <Td2>{crc(p.amount)}</Td2>
-                        <Td2>{mapPaymentMethodToES(p.payment_method)}</Td2>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-black">
+                    {creditsPageData.items.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-3 py-4 text-center text-gray-500">
+                          Sin resultados
+                        </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                    )}
+                    {creditsPageData.items.map((p) => {
+                      const d = parseDateLoose(p.createdAt) ?? parseDateLoose(p.payment_date);
+                      const whenTxt = d
+                        ? d.toLocaleString("es-CR", { dateStyle: "short", timeStyle: "medium" })
+                        : "-";
+                      return (
+                        <tr key={p.id} className="hover:bg-gray-50/50">
+                          <Td2>{p.id}</Td2>
+                          <Td2>{whenTxt}</Td2>
+                          <Td2>{p.invoice_id}</Td2>
+                          <Td2>{crc(p.amount)}</Td2>
+                          <Td2>{mapPaymentMethodToES(p.payment_method)}</Td2>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-            <Pagination
-              total={creditsPageData.total}
-              page={creditsPageData.page}
-              pageSize={creditsPageData.pageSize}
-              onPageChange={setPageCredits}
-            />
-          </>
-        )}
+              <Pagination
+                total={creditsPageData.total}
+                page={creditsPageData.page}
+                pageSize={creditsPageData.pageSize}
+                onPageChange={setPageCredits}
+              />
+            </>
+          )}
 
-        {activeTab === "products" && (
-          <>
-            <div className="rounded-2xl border border-gray-200 overflow-hidden">
-              <table className="w-full text-sm bg-white">
-                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
-                  <tr className="text-center">
-                    <Th1>#</Th1>
-                    <Th1>Producto</Th1>
-                    <Th1>SKU</Th1>
-                    <Th1>Cantidad vendida</Th1>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-black">
-                  {productsPageData.items.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
-                        Sin resultados
-                      </td>
+          {activeTab === "products" && (
+            <>
+              <div className="rounded-2xl border border-gray-200 overflow-hidden">
+                <table className="w-full text-sm bg-white">
+                  <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
+                    <tr className="text-center">
+                      <Th1>#</Th1>
+                      <Th1>Producto</Th1>
+                      <Th1>SKU</Th1>
+                      <Th1>Cantidad vendida</Th1>
                     </tr>
-                  )}
-                  {productsPageData.items.map((p, i) => (
-                    <tr key={p.id} className="hover:bg-gray-50/50">
-                      <Td2>{(productsPageData.page - 1) * productsPageData.pageSize + i + 1}</Td2>
-                      <Td2>{p.name}</Td2>
-                      <Td2>{p.sku || "-"}</Td2>
-                      <Td2>{p.qty}</Td2>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-black">
+                    {productsPageData.items.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                          Sin resultados
+                        </td>
+                      </tr>
+                    )}
+                    {productsPageData.items.map((p, i) => (
+                      <tr key={p.id} className="hover:bg-gray-50/50">
+                        <Td2>{(productsPageData.page - 1) * productsPageData.pageSize + i + 1}</Td2>
+                        <Td2>{p.name}</Td2>
+                        <Td2>{p.sku || "-"}</Td2>
+                        <Td2>{p.qty}</Td2>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            <Pagination
-              total={productsPageData.total}
-              page={productsPageData.page}
-              pageSize={productsPageData.pageSize}
-              onPageChange={setPageProducts}
-            />
-          </>
-        )}
+              <Pagination
+                total={productsPageData.total}
+                page={productsPageData.page}
+                pageSize={productsPageData.pageSize}
+                onPageChange={setPageProducts}
+              />
+            </>
+          )}
 
-        {activeTab === "customers" && (
-          <>
-            <div className="rounded-2xl border border-gray-200 overflow-hidden">
-              <table className="w-full text-sm bg-white">
-                <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
-                  <tr className="text-center">
-                    <Th1>#</Th1>
-                    <Th1>Cliente</Th1>
-                    <Th1>Facturas</Th1>
-                    <Th1>Total facturado</Th1>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-black">
-                  {customersPageData.items.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
-                        Sin resultados
-                      </td>
+          {activeTab === "customers" && (
+            <>
+              <div className="rounded-2xl border border-gray-200 overflow-hidden">
+                <table className="w-full text-sm bg-white">
+                  <thead className="bg-blue-500 border-b border-gray-200 text-[10px] sm:text-xs font-semibold font-Lato uppercase tracking-wide text-white ">
+                    <tr className="text-center">
+                      <Th1>#</Th1>
+                      <Th1>Cliente</Th1>
+                      <Th1>Facturas</Th1>
+                      <Th1>Total facturado</Th1>
                     </tr>
-                  )}
-                  {customersPageData.items.map((c, i) => (
-                    <tr key={c.id} className="hover:bg-gray-50/50">
-                      <Td2>{(customersPageData.page - 1) * customersPageData.pageSize + i + 1}</Td2>
-                      <Td2>{c.name}</Td2>
-                      <Td2>{c.invoices}</Td2>
-                      <Td2>{crc(c.total)}</Td2>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-black">
+                    {customersPageData.items.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-3 py-4 text-center text-gray-500">
+                          Sin resultados
+                        </td>
+                      </tr>
+                    )}
+                    {customersPageData.items.map((c, i) => (
+                      <tr key={c.id} className="hover:bg-gray-50/50">
+                        <Td2>{(customersPageData.page - 1) * customersPageData.pageSize + i + 1}</Td2>
+                        <Td2>{c.name}</Td2>
+                        <Td2>{c.invoices}</Td2>
+                        <Td2>{crc(c.total)}</Td2>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            <Pagination
-              total={customersPageData.total}
-              page={customersPageData.page}
-              pageSize={customersPageData.pageSize}
-              onPageChange={setPageCustomers}
-            />
-          </>
-        )}
+              <Pagination
+                total={customersPageData.total}
+                page={customersPageData.page}
+                pageSize={customersPageData.pageSize}
+                onPageChange={setPageCustomers}
+              />
+            </>
+          )}
         </div>
       </div>
-      </RootLayout>
+    </RootLayout>
   );
 };
 
